@@ -525,7 +525,7 @@ function FeaturesSection() {
           className="text-center mb-16"
         >
           <span className="font-mono text-neon-cyan text-xs tracking-[0.3em] uppercase mb-4 block">
-            // FEATURES
+            {'// FEATURES'}
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-text-primary mb-4">
             Built for <span className="text-glow-cyan text-neon-cyan">Battle</span>
@@ -610,7 +610,7 @@ function HowItWorksSection() {
           className="text-center mb-20"
         >
           <span className="font-mono text-neon-violet text-xs tracking-[0.3em] uppercase mb-4 block">
-            // HOW IT WORKS
+            {'// HOW IT WORKS'}
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-text-primary mb-4">
             Four Steps to <span className="text-glow-violet text-neon-violet">Glory</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { getSocket, disconnectSocket, type TypedSocket } from '@/lib/socket';
 
 interface UseSocketReturn {
@@ -10,13 +10,13 @@ interface UseSocketReturn {
 }
 
 export function useSocket(): UseSocketReturn {
+  const [socket, setSocket] = useState<TypedSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const socketRef = useRef<TypedSocket | null>(null);
 
   useEffect(() => {
-    const socket = getSocket();
-    socketRef.current = socket;
+    const socketInstance = getSocket();
+    queueMicrotask(() => setSocket(socketInstance));
 
     const onConnect = () => {
       setIsConnected(true);
@@ -32,7 +32,9 @@ export function useSocket(): UseSocketReturn {
 
     const onConnectError = (err: Error) => {
       setIsConnected(false);
-      setConnectionError(err.message || 'Connection failed');
+      setConnectionError(
+        err.message || 'Realtime server is unavailable. Check NEXT_PUBLIC_SOCKET_URL.',
+      );
     };
 
     const onReconnectAttempt = (attempt: number) => {
@@ -43,30 +45,29 @@ export function useSocket(): UseSocketReturn {
       setConnectionError('Failed to reconnect after maximum attempts');
     };
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('connect_error', onConnectError);
-    socket.io.on('reconnect_attempt', onReconnectAttempt);
-    socket.io.on('reconnect_failed', onReconnectFailed);
+    socketInstance.on('connect', onConnect);
+    socketInstance.on('disconnect', onDisconnect);
+    socketInstance.on('connect_error', onConnectError);
+    socketInstance.io.on('reconnect_attempt', onReconnectAttempt);
+    socketInstance.io.on('reconnect_failed', onReconnectFailed);
 
-    // Check if already connected
-    if (socket.connected) {
-      setIsConnected(true);
+    if (socketInstance.connected) {
+      queueMicrotask(onConnect);
     }
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('connect_error', onConnectError);
-      socket.io.off('reconnect_attempt', onReconnectAttempt);
-      socket.io.off('reconnect_failed', onReconnectFailed);
+      socketInstance.off('connect', onConnect);
+      socketInstance.off('disconnect', onDisconnect);
+      socketInstance.off('connect_error', onConnectError);
+      socketInstance.io.off('reconnect_attempt', onReconnectAttempt);
+      socketInstance.io.off('reconnect_failed', onReconnectFailed);
       disconnectSocket();
-      socketRef.current = null;
+      queueMicrotask(() => setSocket(null));
     };
   }, []);
 
   return {
-    socket: socketRef.current,
+    socket,
     isConnected,
     connectionError,
   };

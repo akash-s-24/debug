@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 
@@ -27,7 +28,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <a href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 group">
               <span className="text-2xl">⚔️</span>
               <span
                 className="text-xl font-black uppercase tracking-wider text-white group-hover:text-[#00F0FF] transition-colors duration-300"
@@ -38,7 +39,7 @@ export function Navbar() {
               >
                 Debug Duel
               </span>
-            </a>
+            </Link>
 
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-6">

@@ -11,8 +11,6 @@ import type {
   CodingStats,
   StreamStatus,
   BattleResult,
-  RoomStatus,
-  LayoutMode,
   ServerToClientEvents,
   ClientToServerEvents,
 } from './src/types/index.js';
@@ -22,6 +20,10 @@ import type {
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = process.env.HOSTNAME ?? 'localhost';
 const port = parseInt(process.env.PORT ?? '3000', 10);
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? process.env.CORS_ORIGIN ?? '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const COUNTDOWN_SECONDS = 5;
 const ROOM_CODE_LENGTH = 6;
@@ -93,12 +95,18 @@ const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer((req, res) => {
+    if (req.url === '/healthz') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, rooms: rooms.size }));
+      return;
+    }
+
     handler(req, res);
   });
 
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
     cors: {
-      origin: dev ? '*' : undefined,
+      origin: dev ? '*' : allowedOrigins.length > 0 ? allowedOrigins : undefined,
       methods: ['GET', 'POST'],
     },
     pingInterval: 25000,

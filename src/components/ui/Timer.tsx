@@ -46,10 +46,13 @@ export function Timer({
 }: TimerProps) {
   const [time, setTime] = useState(timeRemaining);
   const onEndRef = useRef(onEnd);
-  onEndRef.current = onEnd;
 
   useEffect(() => {
-    setTime(timeRemaining);
+    onEndRef.current = onEnd;
+  }, [onEnd]);
+
+  useEffect(() => {
+    queueMicrotask(() => setTime(timeRemaining));
   }, [timeRemaining]);
 
   useEffect(() => {

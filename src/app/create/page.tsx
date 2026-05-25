@@ -15,8 +15,9 @@ import { LANGUAGES, TIMER_PRESETS, DUEL_TYPES } from '@/lib/constants';
 
 export default function CreateRoomPage() {
   const router = useRouter();
-  const { socket, isConnected } = useSocket();
+  const { socket, isConnected, connectionError } = useSocket();
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null);
   
   const [config, setConfig] = useState<RoomConfig>({
@@ -33,16 +34,40 @@ export default function CreateRoomPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!socket || !isConnected) return;
+    if (!socket || !isConnected) {
+      setFormError(
+        connectionError ??
+          'Realtime server is not connected. On Vercel, set NEXT_PUBLIC_SOCKET_URL to a running Socket.IO backend.',
+      );
+      return;
+    }
     
     setLoading(true);
+    setFormError(null);
+    let didRespond = false;
+    const timeout = window.setTimeout(() => {
+      if (didRespond) return;
+      didRespond = true;
+      setLoading(false);
+      setFormError('Room creation timed out. Check that the Socket.IO backend is running.');
+    }, 10000);
+
     socket.emit('room:create', config, (room) => {
+      if (didRespond) return;
+      didRespond = true;
+      window.clearTimeout(timeout);
       setLoading(false);
       if (room && room.code) {
         setCreatedRoomCode(room.code);
+      } else {
+        setFormError('The server did not return a room code.');
       }
     });
   };
+
+  const socketMessage =
+    connectionError ??
+    (!isConnected ? 'Connecting to realtime arena server...' : null);
 
   const copyToClipboard = () => {
     if (createdRoomCode) {
@@ -162,6 +187,11 @@ export default function CreateRoomPage() {
               </div>
 
               <div className="pt-6 border-t border-white/10 flex justify-end">
+                {(socketMessage || formError) && (
+                  <div className="mr-auto max-w-md rounded border border-neon-red/40 bg-neon-red/10 px-4 py-3 text-sm text-neon-red font-mono">
+                    {formError ?? socketMessage}
+                  </div>
+                )}
                 <Button 
                   type="submit" 
                   variant="primary" 

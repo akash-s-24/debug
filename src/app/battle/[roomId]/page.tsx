@@ -43,7 +43,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
 
   useEffect(() => {
     if (room?.status === 'countdown' && !isRunning) {
-      setShowIntro(true);
+      queueMicrotask(() => setShowIntro(true));
     } else if (room?.status === 'battle' && !isRunning && !isPaused) {
       startTimer();
     } else if (room?.status === 'paused' && isRunning) {

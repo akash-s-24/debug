@@ -11,6 +11,38 @@ interface LiveStatsProps {
   compact?: boolean;
 }
 
+interface StatItemProps {
+  label: string;
+  value: number;
+  icon: string;
+  compact: boolean;
+  textClass: string;
+}
+
+function StatItem({ label, value, icon, compact, textClass }: StatItemProps) {
+  return (
+    <div className={`flex flex-col ${compact ? 'items-center' : 'items-start'} p-2 bg-black/20 rounded border border-white/5`}>
+      <div className="flex items-center gap-1.5 text-text-secondary text-xs font-display uppercase tracking-wider mb-1">
+        <span>{icon}</span> {!compact && <span>{label}</span>}
+      </div>
+      <div className={`font-mono text-xl font-bold ${textClass}`}>
+        <AnimatePresence mode="popLayout">
+          <motion.span
+            key={value}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="inline-block"
+          >
+            {value}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 export function LiveStats({ stats, color, compact = false }: LiveStatsProps) {
   const isCyan = color === 'cyan';
   const textClass = isCyan ? 'text-neon-cyan' : 'text-neon-magenta';
@@ -35,37 +67,15 @@ export function LiveStats({ stats, color, compact = false }: LiveStatsProps) {
     }
   };
 
-  const StatItem = ({ label, value, icon }: { label: string, value: number, icon: string }) => (
-    <div className={`flex flex-col ${compact ? 'items-center' : 'items-start'} p-2 bg-black/20 rounded border border-white/5`}>
-      <div className="flex items-center gap-1.5 text-text-secondary text-xs font-display uppercase tracking-wider mb-1">
-        <span>{icon}</span> {!compact && <span>{label}</span>}
-      </div>
-      <div className={`font-mono text-xl font-bold ${textClass}`}>
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={value}
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="inline-block"
-          >
-            {value}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-
   return (
     <Card variant="solid" className="w-full flex flex-col gap-3 p-3">
       {!compact && <h3 className="text-sm font-display uppercase text-text-primary border-b border-slate-dark pb-2">Live Performance</h3>}
       
       <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-2'}`}>
-        <StatItem label="Speed (CPM)" value={stats.typingSpeed} icon="⚡" />
-        <StatItem label="Errors" value={stats.errorCount} icon="🐛" />
-        <StatItem label="Compiles" value={stats.compileCount} icon="🔨" />
-        <StatItem label="Streak" value={stats.streak} icon="🔥" />
+        <StatItem label="Speed (CPM)" value={stats.typingSpeed} icon="⚡" compact={compact} textClass={textClass} />
+        <StatItem label="Errors" value={stats.errorCount} icon="🐛" compact={compact} textClass={textClass} />
+        <StatItem label="Compiles" value={stats.compileCount} icon="🔨" compact={compact} textClass={textClass} />
+        <StatItem label="Streak" value={stats.streak} icon="🔥" compact={compact} textClass={textClass} />
       </div>
 
       <div className="mt-2">

@@ -40,7 +40,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
 
   useEffect(() => {
     if (room?.status === 'countdown' && !isRunning) {
-      setShowIntro(true);
+      queueMicrotask(() => setShowIntro(true));
     } else if (room?.status === 'battle' && !isRunning && !isPaused) {
       startTimer();
     } else if (room?.status === 'paused' && isRunning) {

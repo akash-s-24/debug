@@ -7,9 +7,14 @@ export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 let socket: TypedSocket | null = null;
 
+export const getConfiguredSocketUrl = (): string | undefined => {
+  const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL?.trim();
+  return socketUrl || undefined;
+};
+
 export const getSocket = (): TypedSocket => {
   if (!socket) {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || '';
+    const socketUrl = getConfiguredSocketUrl();
     socket = io(socketUrl, {
       autoConnect: true,
       reconnection: true,
