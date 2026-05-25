@@ -122,9 +122,9 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     );
   }
 
-  const isHost = room.host.name === name;
-  const myUser = room.contestants.find(c => c.name === name) || room.host;
-  const otherUser = room.contestants.find(c => c.name !== name);
+  const isHost = socket?.id ? room.host.socketId === socket.id : room.host.name === name;
+  const myUser = room.contestants.find(c => socket?.id ? c.socketId === socket.id : c.name === name) || room.host;
+  const otherUser = room.contestants.find(c => c.id !== myUser.id);
   const myStats = stats.get(myUser.id);
   const otherStats = otherUser ? stats.get(otherUser.id) : undefined;
   

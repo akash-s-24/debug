@@ -23,7 +23,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const { socket, isConnected } = useSocket();
   const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, error: roomError } = useRoom(socket);
   const { connectionStates, getRemoteStreams } = useWebRTC(socket, roomId);
-  const { timeRemaining, isRunning, isPaused, startTimer, pauseTimer, resetTimer } = useTimer(socket, room?.config.timerSeconds || 900);
+  const { timeRemaining, isRunning, isPaused, startTimer, pauseTimer } = useTimer(socket, room?.config.timerSeconds || 900);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '@/types';
 
@@ -13,6 +13,11 @@ interface BattleIntroProps {
 
 export function BattleIntro({ contestant1, contestant2, challenge, onComplete }: BattleIntroProps) {
   const [stage, setStage] = useState<number>(0);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     // Stage 0: Loading text (0-1s)
@@ -31,12 +36,12 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
       setTimeout(() => setStage(5), 5500),
       setTimeout(() => setStage(6), 6500),
       setTimeout(() => {
-        onComplete();
+        onCompleteRef.current();
       }, 8000)
     ];
 
     return () => timers.forEach(clearTimeout);
-  }, [onComplete]);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-void overflow-hidden">
@@ -67,7 +72,7 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
               <div className="text-neon-cyan font-display font-bold text-6xl uppercase tracking-wider text-glow-cyan">
                 {contestant1.name}
               </div>
-              <div className="text-text-primary mt-2 font-mono text-xl bg-neon-cyan/20 px-4 py-1 inline-block clip-path-[polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]">
+              <div className="text-text-primary mt-2 font-mono text-xl bg-neon-cyan/20 px-4 py-1 inline-block [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]">
                 CHALLENGER ONE
               </div>
             </motion.div>
@@ -81,7 +86,7 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
               <div className="text-neon-magenta font-display font-bold text-6xl uppercase tracking-wider text-glow-magenta">
                 {contestant2.name}
               </div>
-              <div className="text-text-primary mt-2 font-mono text-xl bg-neon-magenta/20 px-4 py-1 inline-block clip-path-[polygon(10px_0,100%_0,100%_100%,0_100%,0_10px)]">
+              <div className="text-text-primary mt-2 font-mono text-xl bg-neon-magenta/20 px-4 py-1 inline-block [clip-path:polygon(10px_0,100%_0,100%_100%,0_100%,0_10px)]">
                 CHALLENGER TWO
               </div>
             </motion.div>

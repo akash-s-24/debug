@@ -60,7 +60,15 @@ export function StreamPanel({
     }
   }, [stream]);
 
-  const momentum = stats?.momentum ?? 0;
+  const getMomentumWidth = (m?: string) => {
+    switch (m) {
+      case 'low': return '25%';
+      case 'medium': return '50%';
+      case 'high': return '75%';
+      case 'extreme': return '100%';
+      default: return '0%';
+    }
+  };
 
   return (
     <motion.div
@@ -140,7 +148,7 @@ export function StreamPanel({
             style={{
               background: `linear-gradient(90deg, ${c.hex}, ${color === 'cyan' ? '#00FF88' : '#FF006E'})`,
             }}
-            animate={{ width: `${momentum}%` }}
+            animate={{ width: getMomentumWidth(stats.momentum) }}
             transition={{ type: 'spring', stiffness: 100, damping: 20 }}
           />
         </div>

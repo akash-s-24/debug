@@ -61,8 +61,6 @@ export function useSocket(): UseSocketReturn {
       socketInstance.off('connect_error', onConnectError);
       socketInstance.io.off('reconnect_attempt', onReconnectAttempt);
       socketInstance.io.off('reconnect_failed', onReconnectFailed);
-      disconnectSocket();
-      queueMicrotask(() => setSocket(null));
     };
   }, []);
 

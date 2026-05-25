@@ -57,11 +57,24 @@ export function Timer({
 
   useEffect(() => {
     if (!isRunning || isPaused) return;
-    if (time <= 0) {
+
+    let interval: NodeJS.Timeout;
+    let isZero = false;
+
+    setTime((prev) => {
+      if (prev <= 0) {
+        isZero = true;
+        return 0;
+      }
+      return prev;
+    });
+
+    if (isZero) {
       onEndRef.current?.();
       return;
     }
-    const interval = setInterval(() => {
+
+    interval = setInterval(() => {
       setTime((prev) => {
         const next = prev - 1;
         if (next <= 0) {
@@ -73,7 +86,7 @@ export function Timer({
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [isRunning, isPaused, time]);
+  }, [isRunning, isPaused]);
 
   const minutes = Math.floor(Math.max(0, time) / 60);
   const seconds = Math.max(0, time) % 60;

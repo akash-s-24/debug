@@ -13,7 +13,6 @@ export function ScoreBoard({ contestants, showDetails = true }: ScoreBoardProps)
   if (contestants.length < 2) return null;
 
   const [p1, p2] = contestants;
-  const isP1Leading = p1.score >= p2.score;
 
   return (
     <Card variant="glass" className="w-full flex flex-col p-4">

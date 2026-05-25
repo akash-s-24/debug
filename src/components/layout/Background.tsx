@@ -43,7 +43,7 @@ export function Background({ children }: BackgroundProps) {
       <div className="relative z-10">{children}</div>
 
       {/* Inject keyframes */}
-      <style jsx>{`
+      <style>{`
         @keyframes bgShift {
           0% {
             transform: translate(0, 0) scale(1);

@@ -26,7 +26,7 @@ export default function CreateRoomPage() {
     challenge: '',
     challengeDescription: '',
     timerSeconds: 900,
-    language: 'JavaScript',
+    language: 'javascript',
     duelType: 'debug-battle',
     maxContestants: 2,
     allowAudience: true,
@@ -126,7 +126,7 @@ export default function CreateRoomPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-display uppercase text-text-secondary ml-1">Description (Optional)</label>
                   <textarea
-                    className="bg-abyss border border-slate-dark text-text-primary px-4 py-3 focus:outline-none focus:border-neon-cyan transition-colors font-mono resize-y min-h-[100px] clip-path-[polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]"
+                    className="bg-abyss border border-slate-dark text-text-primary px-4 py-3 focus:outline-none focus:border-neon-cyan transition-colors font-mono resize-y min-h-[100px] [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]"
                     placeholder="Describe the task..."
                     value={config.challengeDescription}
                     onChange={(e) => setConfig({...config, challengeDescription: e.target.value})}

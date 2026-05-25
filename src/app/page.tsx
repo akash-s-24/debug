@@ -79,7 +79,6 @@ function ParticleField() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color.replace(')', `, ${p.opacity})`).replace('rgb', 'rgba').replace('#', '');
         // Simple hex to rgba
         const hex = p.color;
         const r = parseInt(hex.slice(1, 3), 16);
@@ -101,14 +100,15 @@ function ParticleField() {
     resize();
     initParticles();
     animate();
-    window.addEventListener('resize', () => {
+    const handleResize = () => {
       resize();
       initParticles();
-    });
+    };
+    window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

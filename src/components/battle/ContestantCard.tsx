@@ -19,7 +19,7 @@ export function ContestantCard({ user, color, stats, isActive, score }: Contesta
   const textClass = isCyan ? 'text-neon-cyan' : 'text-neon-magenta';
 
   return (
-    <div className={`relative flex items-center gap-4 bg-abyss p-3 pr-6 border ${borderClass} ${isActive ? glowClass : ''} transition-all duration-300 clip-path-[polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,0_100%)]`}>
+    <div className={`relative flex items-center gap-4 bg-abyss p-3 pr-6 border ${borderClass} ${isActive ? glowClass : ''} transition-all duration-300 [clip-path:polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,0_100%)]`}>
       <div className={`relative w-12 h-12 rounded-full border-2 ${borderClass} flex items-center justify-center overflow-hidden bg-surface`}>
         {user.avatar ? (
           <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />

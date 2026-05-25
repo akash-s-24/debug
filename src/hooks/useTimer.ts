@@ -93,6 +93,7 @@ export function useTimer(
     if (!socket) return;
 
     const onTick = (remaining: number) => {
+      clearTimerInterval(); // Let the server authoritative tick drive the state
       setTimeRemaining(remaining);
     };
 

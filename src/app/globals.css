@@ -1,6 +1,3 @@
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700;800;900&display=swap');
-
 @import "tailwindcss";
 
 @theme inline {
@@ -18,10 +15,10 @@
   --color-text-secondary: #8888AA;
   --color-text-muted: #555577;
 
-  --font-display: 'Orbitron', sans-serif;
-  --font-heading: 'Rajdhani', sans-serif;
-  --font-body: 'Exo 2', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: var(--font-display, 'Orbitron', sans-serif);
+  --font-heading: var(--font-heading, 'Rajdhani', sans-serif);
+  --font-body: var(--font-body, 'Exo 2', sans-serif);
+  --font-mono: var(--font-mono, 'JetBrains Mono', monospace);
 
   --animate-gradient-shift: gradient-shift 15s ease infinite;
   --animate-neon-pulse: neon-breathe 2s ease-in-out infinite alternate;
