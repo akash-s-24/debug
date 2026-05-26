@@ -9,7 +9,7 @@ export interface User {
   name: string;
   avatar?: string;
   role: UserRole;
-  socketId?: string;
+  clientId?: string;
 }
 
 export interface RoomConfig {
@@ -36,6 +36,9 @@ export interface Room {
   createdAt: number;
   battleStartedAt?: number;
   battleEndedAt?: number;
+  // Timer state for client-side computation
+  pausedAt?: number;
+  totalPausedMs?: number;
 }
 
 export interface ChatMessage {
@@ -84,47 +87,4 @@ export interface BattleResult {
   }[];
   duration: number;
   highlights: string[];
-}
-
-// Socket event types
-export interface ServerToClientEvents {
-  'room:state': (room: Room) => void;
-  'room:error': (message: string) => void;
-  'room:user-joined': (user: User) => void;
-  'room:user-left': (userId: string) => void;
-  'battle:countdown': (seconds: number) => void;
-  'battle:start': (startTime: number) => void;
-  'battle:tick': (remaining: number) => void;
-  'battle:pause': () => void;
-  'battle:resume': (remaining: number) => void;
-  'battle:end': (result: BattleResult) => void;
-  'signal:offer': (data: { from: string; sdp: RTCSessionDescriptionInit }) => void;
-  'signal:answer': (data: { from: string; sdp: RTCSessionDescriptionInit }) => void;
-  'signal:ice': (data: { from: string; candidate: RTCIceCandidateInit }) => void;
-  'chat:message': (message: ChatMessage) => void;
-  'chat:reaction': (reaction: Reaction) => void;
-  'analytics:update': (stats: CodingStats) => void;
-  'stream:status': (status: StreamStatus) => void;
-}
-
-export interface ClientToServerEvents {
-  'room:create': (config: RoomConfig, callback: (room: Room) => void) => void;
-  'room:join': (
-    data: { roomId: string; userName: string; role: UserRole; password?: string },
-    callback: (room: Room | null, error?: string) => void,
-  ) => void;
-  'room:leave': (roomId: string) => void;
-  'battle:start-countdown': (roomId: string) => void;
-  'battle:pause': (roomId: string) => void;
-  'battle:resume': (roomId: string) => void;
-  'battle:end': (roomId: string) => void;
-  'battle:reset-timer': (roomId: string, seconds: number) => void;
-  'signal:offer': (data: { roomId: string; to: string; sdp: RTCSessionDescriptionInit }) => void;
-  'signal:answer': (data: { roomId: string; to: string; sdp: RTCSessionDescriptionInit }) => void;
-  'signal:ice': (data: { roomId: string; to: string; candidate: RTCIceCandidateInit }) => void;
-  'chat:message': (data: { roomId: string; text: string }) => void;
-  'chat:reaction': (data: { roomId: string; emoji: string }) => void;
-  'analytics:update': (data: { roomId: string; stats: Partial<CodingStats> }) => void;
-  'stream:status': (data: { roomId: string; status: Partial<StreamStatus> }) => void;
-  'layout:change': (data: { roomId: string; layout: LayoutMode }) => void;
 }

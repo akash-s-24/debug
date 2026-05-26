@@ -1,14 +1,19 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { TypedSocket } from '@/lib/socket';
+import type PusherClient from 'pusher-js';
+import type { Channel, PresenceChannel } from 'pusher-js';
 import type {
   Room,
   ChatMessage,
   Reaction,
   CodingStats,
+  BattleResult,
   UserRole,
+  User,
 } from '@/types';
+import { getClientId } from '@/lib/client-id';
+import { setUserInfo } from '@/lib/pusher-client';
 import { REACTION_DURATION_MS } from '@/lib/constants';
 
 interface UseRoomReturn {
@@ -16,6 +21,7 @@ interface UseRoomReturn {
   messages: ChatMessage[];
   reactions: Reaction[];
   stats: Map<string, CodingStats>;
+  battleResult: BattleResult | null;
   joinRoom: (
     roomId: string,
     userName: string,
@@ -29,56 +35,57 @@ interface UseRoomReturn {
   error: string | null;
 }
 
-export function useRoom(socket: TypedSocket | null): UseRoomReturn {
+export function useRoom(pusher: PusherClient | null): UseRoomReturn {
   const [room, setRoom] = useState<Room | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [stats, setStats] = useState<Map<string, CodingStats>>(new Map());
+  const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [subscribedRoomId, setSubscribedRoomId] = useState<string | null>(null);
+
   const roomIdRef = useRef<string | null>(null);
   const reactionTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 
-  // Listen for room events
+  // ── Pusher channel subscription ──────────────────────────────────────
   useEffect(() => {
-    if (!socket) return;
+    if (!pusher || !subscribedRoomId) return;
 
-    const onRoomState = (roomState: Room) => {
-      setRoom(roomState);
-      roomIdRef.current = roomState.id;
+    const channelName = `presence-room-${subscribedRoomId}`;
+    const channel = pusher.subscribe(channelName) as PresenceChannel;
+
+    const onRoomUpdated = (data: Room) => {
+      setRoom(data);
       setError(null);
     };
 
-    const onRoomError = (message: string) => {
-      setError(message);
+    const onUserJoined = (_user: User) => {
+      // Room state is broadcast via room-updated; this is for optional notifications
     };
 
-    const onUserJoined = () => {
-      // Room state will be broadcast separately; this is for notifications
-    };
-
-    const onUserLeft = () => {
-      // Room state will be broadcast separately
+    const onUserLeft = (_data: { userId: string }) => {
+      // Room state is broadcast via room-updated
     };
 
     const onChatMessage = (message: ChatMessage) => {
       setMessages((prev) => [...prev, message]);
     };
 
-    const onReaction = (reaction: Reaction) => {
+    const onChatReaction = (reaction: Reaction) => {
       setReactions((prev) => [...prev, reaction]);
-
       // Auto-remove reaction after duration
       const timer = setTimeout(() => {
         setReactions((prev) =>
-          prev.filter((r) => r.timestamp !== reaction.timestamp || r.userId !== reaction.userId),
+          prev.filter(
+            (r) => r.timestamp !== reaction.timestamp || r.userId !== reaction.userId,
+          ),
         );
         reactionTimers.current.delete(reaction.timestamp);
       }, REACTION_DURATION_MS);
-
       reactionTimers.current.set(reaction.timestamp, timer);
     };
 
-    const onAnalyticsUpdate = (codingStats: CodingStats) => {
+    const onStatsUpdated = (codingStats: CodingStats) => {
       setStats((prev) => {
         const next = new Map(prev);
         next.set(codingStats.userId, codingStats);
@@ -86,24 +93,35 @@ export function useRoom(socket: TypedSocket | null): UseRoomReturn {
       });
     };
 
-    socket.on('room:state', onRoomState);
-    socket.on('room:error', onRoomError);
-    socket.on('room:user-joined', onUserJoined);
-    socket.on('room:user-left', onUserLeft);
-    socket.on('chat:message', onChatMessage);
-    socket.on('chat:reaction', onReaction);
-    socket.on('analytics:update', onAnalyticsUpdate);
+    const onBattleEnded = (result: BattleResult) => {
+      setBattleResult(result);
+    };
+
+    channel.bind('room-updated', onRoomUpdated);
+    channel.bind('user-joined', onUserJoined);
+    channel.bind('user-left', onUserLeft);
+    channel.bind('chat-message', onChatMessage);
+    channel.bind('chat-reaction', onChatReaction);
+    channel.bind('stats-updated', onStatsUpdated);
+    channel.bind('battle-ended', onBattleEnded);
+
+    // Presence events — when a member drops unexpectedly
+    channel.bind('pusher:member_removed', (_member: { id: string }) => {
+      // The server triggers room-updated on leave; this is a safety net
+    });
 
     return () => {
-      socket.off('room:state', onRoomState);
-      socket.off('room:error', onRoomError);
-      socket.off('room:user-joined', onUserJoined);
-      socket.off('room:user-left', onUserLeft);
-      socket.off('chat:message', onChatMessage);
-      socket.off('chat:reaction', onReaction);
-      socket.off('analytics:update', onAnalyticsUpdate);
+      channel.unbind('room-updated', onRoomUpdated);
+      channel.unbind('user-joined', onUserJoined);
+      channel.unbind('user-left', onUserLeft);
+      channel.unbind('chat-message', onChatMessage);
+      channel.unbind('chat-reaction', onChatReaction);
+      channel.unbind('stats-updated', onStatsUpdated);
+      channel.unbind('battle-ended', onBattleEnded);
+      channel.unbind('pusher:member_removed');
+      pusher.unsubscribe(channelName);
     };
-  }, [socket]);
+  }, [pusher, subscribedRoomId]);
 
   // Cleanup reaction timers on unmount
   useEffect(() => {
@@ -113,6 +131,8 @@ export function useRoom(socket: TypedSocket | null): UseRoomReturn {
     };
   }, []);
 
+  // ── Actions ──────────────────────────────────────────────────────────
+
   const joinRoom = useCallback(
     async (
       roomId: string,
@@ -120,78 +140,120 @@ export function useRoom(socket: TypedSocket | null): UseRoomReturn {
       role: UserRole,
       password?: string,
     ): Promise<Room | null> => {
-      if (!socket) {
-        setError('Socket not connected');
+      const clientId = getClientId();
+
+      try {
+        // Set user info for Pusher presence auth before subscribing
+        setUserInfo({ clientId, userName });
+
+        const res = await fetch('/api/rooms/join', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId, userName, role, clientId, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error || 'Failed to join room');
+          return null;
+        }
+
+        const joinedRoom: Room = data.room;
+        setRoom(joinedRoom);
+        roomIdRef.current = joinedRoom.id;
+        setMessages([]);
+        setReactions([]);
+        setBattleResult(null);
+        setError(null);
+
+        // Trigger Pusher channel subscription
+        setSubscribedRoomId(joinedRoom.id);
+
+        return joinedRoom;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to join room';
+        setError(message);
         return null;
       }
-
-      return new Promise((resolve) => {
-        socket.emit(
-          'room:join',
-          { roomId, userName, role, password },
-          (joinedRoom, joinError) => {
-            if (joinError || !joinedRoom) {
-              setError(joinError ?? 'Failed to join room');
-              resolve(null);
-            } else {
-              setRoom(joinedRoom);
-              roomIdRef.current = joinedRoom.id;
-              setMessages([]);
-              setReactions([]);
-              setError(null);
-              resolve(joinedRoom);
-            }
-          },
-        );
-      });
     },
-    [socket],
+    [],
   );
 
-  const leaveRoom = useCallback(() => {
-    if (socket && roomIdRef.current) {
-      socket.emit('room:leave', roomIdRef.current);
+  const leaveRoom = useCallback(async () => {
+    const clientId = getClientId();
+
+    if (roomIdRef.current) {
+      try {
+        await fetch('/api/rooms/leave', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId: roomIdRef.current, clientId }),
+        });
+      } catch {
+        // Best-effort leave; Pusher presence will handle cleanup
+      }
     }
+
+    setSubscribedRoomId(null);
     setRoom(null);
     setMessages([]);
     setReactions([]);
     setStats(new Map());
+    setBattleResult(null);
     setError(null);
     roomIdRef.current = null;
-  }, [socket]);
+  }, []);
 
-  const sendMessage = useCallback(
-    (text: string) => {
-      if (!socket || !roomIdRef.current) return;
-      socket.emit('chat:message', { roomId: roomIdRef.current, text });
-    },
-    [socket],
-  );
+  const sendMessage = useCallback((text: string) => {
+    if (!roomIdRef.current) return;
+    const clientId = getClientId();
 
-  const sendReaction = useCallback(
-    (emoji: string) => {
-      if (!socket || !roomIdRef.current) return;
-      socket.emit('chat:reaction', { roomId: roomIdRef.current, emoji });
-    },
-    [socket],
-  );
+    fetch('/api/chat/message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ roomId: roomIdRef.current, clientId, text }),
+    }).catch((err) => {
+      console.error('[useRoom] Failed to send message:', err);
+    });
+  }, []);
 
-  const updateStats = useCallback(
-    (partialStats: Partial<CodingStats>) => {
-      if (!socket || !roomIdRef.current) return;
-      socket.emit('analytics:update', {
+  const sendReaction = useCallback((emoji: string) => {
+    if (!roomIdRef.current) return;
+    const clientId = getClientId();
+
+    fetch('/api/chat/reaction', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ roomId: roomIdRef.current, clientId, emoji }),
+    }).catch((err) => {
+      console.error('[useRoom] Failed to send reaction:', err);
+    });
+  }, []);
+
+  const updateStats = useCallback((partialStats: Partial<CodingStats>) => {
+    if (!roomIdRef.current) return;
+    const clientId = getClientId();
+
+    fetch('/api/stats/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         roomId: roomIdRef.current,
+        clientId,
         stats: partialStats,
-      });
-    },
-    [socket],
-  );
+      }),
+    }).catch((err) => {
+      console.error('[useRoom] Failed to update stats:', err);
+    });
+  }, []);
 
   return {
     room,
     messages,
     reactions,
     stats,
+    battleResult,
     joinRoom,
     leaveRoom,
     sendMessage,

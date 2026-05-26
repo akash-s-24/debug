@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, useCallback, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Background } from '@/components/layout/Background';
 import { ChallengeBar } from '@/components/battle/ChallengeBar';
@@ -11,11 +11,12 @@ import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
 import { BattleIntro } from '@/components/battle/BattleIntro';
 import { Button } from '@/components/ui/Button';
-import { useSocket } from '@/hooks/useSocket';
+import { usePusher } from '@/hooks/usePusher';
 import { useRoom } from '@/hooks/useRoom';
 import { useScreenShare } from '@/hooks/useScreenShare';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { useTimer } from '@/hooks/useTimer';
+import { getClientId } from '@/lib/client-id';
 import { LayoutMode, UserRole } from '@/types';
 
 export default function BattlePage({ params }: { params: Promise<{ roomId: string }> }) {
@@ -26,33 +27,32 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const role = (searchParams.get('role') as UserRole) || 'contestant';
   const name = searchParams.get('name') || 'Anonymous';
 
-  const { socket, isConnected } = useSocket();
-  const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, updateStats, error: roomError } = useRoom(socket);
+  const { pusher, isConnected } = usePusher();
+  const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, updateStats, error: roomError } = useRoom(pusher);
   const { startSharing, stopSharing, localStream, isSharing, error: shareError } = useScreenShare();
-  const { connectionStates, getRemoteStreams } = useWebRTC(socket, roomId);
-  const { timeRemaining, isRunning, isPaused, startTimer, pauseTimer, resetTimer } = useTimer(socket, room?.config.timerSeconds || 900);
+  const { connectionStates, getRemoteStreams } = useWebRTC(pusher, roomId);
+  const { timeRemaining, isRunning, isPaused, formatTime } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
 
+  const clientId = typeof window !== 'undefined' ? getClientId() : '';
+
   useEffect(() => {
-    if (isConnected && socket) {
+    if (isConnected && pusher) {
       joinRoom(roomId, name, role);
     }
-  }, [isConnected, socket, roomId, name, role, joinRoom]);
+  }, [isConnected, pusher, roomId, name, role, joinRoom]);
 
+  // Handle status transitions
   useEffect(() => {
-    if (room?.status === 'countdown' && !isRunning) {
+    if (room?.status === 'countdown') {
       queueMicrotask(() => setShowIntro(true));
-    } else if (room?.status === 'battle' && !isRunning && !isPaused) {
-      startTimer();
-    } else if (room?.status === 'paused' && isRunning) {
-      pauseTimer();
     }
-  }, [room?.status, isRunning, isPaused, startTimer, pauseTimer]);
+  }, [room?.status]);
 
+  // Simulate stats while sharing during battle
   useEffect(() => {
-    // Simulate some stats if sharing
     if (isSharing && room?.status === 'battle') {
       const interval = setInterval(() => {
         updateStats({
@@ -67,38 +67,47 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
 
   const handleStartShare = async () => {
     await startSharing();
-    if (socket) {
-      socket.emit('stream:status', { roomId, status: { isSharing: true, connected: true, quality: 'high', fps: 30 } });
-    }
   };
 
   const handleStopShare = () => {
     stopSharing();
-    if (socket) {
-      socket.emit('stream:status', { roomId, status: { isSharing: false, connected: false, quality: 'low', fps: 0 } });
-    }
   };
 
-  const handleHostAction = (action: 'start' | 'pause' | 'resume' | 'end') => {
-    if (!socket) return;
-    switch (action) {
-      case 'start':
-        if (room?.status === 'finished') {
-          socket.emit('battle:reset-timer', roomId, room.config.timerSeconds);
-        }
-        socket.emit('battle:start-countdown', roomId);
-        break;
-      case 'pause':
-        socket.emit('battle:pause', roomId);
-        break;
-      case 'resume':
-        socket.emit('battle:resume', roomId);
-        break;
-      case 'end':
-        socket.emit('battle:end', roomId);
-        break;
+  const handleIntroComplete = useCallback(async () => {
+    setShowIntro(false);
+    // Only the host triggers the actual battle begin
+    const isHost = room?.host.clientId === clientId;
+    if (isHost) {
+      try {
+        await fetch('/api/battle/begin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId, clientId }),
+        });
+      } catch (err) {
+        console.error('[Battle] Failed to begin battle:', err);
+      }
     }
-  };
+  }, [room?.host.clientId, clientId, roomId]);
+
+  const handleHostAction = useCallback(async (action: 'start' | 'pause' | 'resume' | 'end') => {
+    const endpoints: Record<string, string> = {
+      start: '/api/battle/start',
+      pause: '/api/battle/pause',
+      resume: '/api/battle/resume',
+      end: '/api/battle/end',
+    };
+
+    try {
+      await fetch(endpoints[action], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId, clientId }),
+      });
+    } catch (err) {
+      console.error(`[Battle] Failed to ${action}:`, err);
+    }
+  }, [roomId, clientId]);
 
   if (roomError) {
     return (
@@ -122,8 +131,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     );
   }
 
-  const isHost = socket?.id ? room.host.socketId === socket.id : room.host.name === name;
-  const myUser = room.contestants.find(c => socket?.id ? c.socketId === socket.id : c.name === name) || room.host;
+  const isHost = room.host.clientId === clientId;
+  const myUser = room.contestants.find(c => c.clientId === clientId) || room.host;
   const otherUser = room.contestants.find(c => c.id !== myUser.id);
   const myStats = stats.get(myUser.id);
   const otherStats = otherUser ? stats.get(otherUser.id) : undefined;
@@ -138,7 +147,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           contestant1={room.contestants[0]}
           contestant2={room.contestants[1]}
           challenge={room.config.challenge}
-          onComplete={() => setShowIntro(false)}
+          onComplete={handleIntroComplete}
         />
       )}
       

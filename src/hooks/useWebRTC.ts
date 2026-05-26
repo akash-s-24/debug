@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { TypedSocket } from '@/lib/socket';
+import type PusherClient from 'pusher-js';
+import type { PresenceChannel } from 'pusher-js';
+import { getClientId } from '@/lib/client-id';
 import {
   createPeerConnection,
   createOffer,
@@ -22,15 +24,18 @@ interface UseWebRTCReturn {
 }
 
 export function useWebRTC(
-  socket: TypedSocket | null,
+  pusher: PusherClient | null,
   roomId: string | null,
 ): UseWebRTCReturn {
   const peerConnections = useRef<Map<string, RTCPeerConnection>>(new Map());
   const remoteStreams = useRef<Map<string, MediaStream>>(new Map());
   const localStream = useRef<MediaStream | null>(null);
+  const channelRef = useRef<PresenceChannel | null>(null);
   const [connectionStates, setConnectionStates] = useState<Map<string, PeerState>>(
     new Map(),
   );
+
+  const myClientId = typeof window !== 'undefined' ? getClientId() : '';
 
   const updatePeerState = useCallback((peerId: string, pc: RTCPeerConnection) => {
     setConnectionStates((prev) => {
@@ -42,6 +47,19 @@ export function useWebRTC(
       return next;
     });
   }, []);
+
+  const getChannel = useCallback((): PresenceChannel | null => {
+    if (channelRef.current) return channelRef.current;
+    if (!pusher || !roomId) return null;
+
+    const channelName = `presence-room-${roomId}`;
+    const existing = pusher.channel(channelName);
+    if (existing) {
+      channelRef.current = existing as PresenceChannel;
+      return channelRef.current;
+    }
+    return null;
+  }, [pusher, roomId]);
 
   const setupPeerConnection = useCallback(
     (peerId: string): RTCPeerConnection => {
@@ -69,14 +87,17 @@ export function useWebRTC(
         }
       };
 
-      // Handle ICE candidates
+      // Handle ICE candidates — send via Pusher client event
       pc.onicecandidate = (event) => {
-        if (event.candidate && socket && roomId) {
-          socket.emit('signal:ice', {
-            roomId,
-            to: peerId,
-            candidate: event.candidate.toJSON(),
-          });
+        if (event.candidate) {
+          const channel = getChannel();
+          if (channel) {
+            channel.trigger('client-signal-ice', {
+              from: myClientId,
+              to: peerId,
+              candidate: event.candidate.toJSON(),
+            });
+          }
         }
       };
 
@@ -106,21 +127,29 @@ export function useWebRTC(
 
       return pc;
     },
-    [socket, roomId, updatePeerState],
+    [myClientId, updatePeerState, getChannel],
   );
 
-  // Handle incoming signaling events
+  // Handle incoming signaling events via Pusher client events
   useEffect(() => {
-    if (!socket || !roomId) return;
+    if (!pusher || !roomId) return;
+
+    const channelName = `presence-room-${roomId}`;
+    const channel = pusher.channel(channelName) as PresenceChannel | undefined;
+
+    if (!channel) return;
+    channelRef.current = channel;
 
     const handleOffer = async (data: {
       from: string;
+      to: string;
       sdp: RTCSessionDescriptionInit;
     }) => {
+      if (data.to !== myClientId) return;
       const pc = setupPeerConnection(data.from);
       const answer = await createAnswer(pc, data.sdp);
-      socket.emit('signal:answer', {
-        roomId,
+      channel.trigger('client-signal-answer', {
+        from: myClientId,
         to: data.from,
         sdp: answer,
       });
@@ -128,8 +157,10 @@ export function useWebRTC(
 
     const handleAnswer = async (data: {
       from: string;
+      to: string;
       sdp: RTCSessionDescriptionInit;
     }) => {
+      if (data.to !== myClientId) return;
       const pc = peerConnections.current.get(data.from);
       if (pc && pc.signalingState === 'have-local-offer') {
         await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
@@ -138,24 +169,27 @@ export function useWebRTC(
 
     const handleIce = async (data: {
       from: string;
+      to: string;
       candidate: RTCIceCandidateInit;
     }) => {
+      if (data.to !== myClientId) return;
       const pc = peerConnections.current.get(data.from);
       if (pc) {
         await addIceCandidate(pc, data.candidate);
       }
     };
 
-    socket.on('signal:offer', handleOffer);
-    socket.on('signal:answer', handleAnswer);
-    socket.on('signal:ice', handleIce);
+    channel.bind('client-signal-offer', handleOffer);
+    channel.bind('client-signal-answer', handleAnswer);
+    channel.bind('client-signal-ice', handleIce);
 
     return () => {
-      socket.off('signal:offer', handleOffer);
-      socket.off('signal:answer', handleAnswer);
-      socket.off('signal:ice', handleIce);
+      channel.unbind('client-signal-offer', handleOffer);
+      channel.unbind('client-signal-answer', handleAnswer);
+      channel.unbind('client-signal-ice', handleIce);
+      channelRef.current = null;
     };
-  }, [socket, roomId, setupPeerConnection]);
+  }, [pusher, roomId, myClientId, setupPeerConnection]);
 
   // Cleanup all peer connections on unmount
   useEffect(() => {
@@ -180,18 +214,19 @@ export function useWebRTC(
         }
       });
 
-      // Create and send offer
-      if (socket && roomId) {
+      // Create and send offer via Pusher client event
+      const channel = getChannel();
+      if (channel) {
         createOffer(pc).then((offer) => {
-          socket.emit('signal:offer', {
-            roomId,
+          channel.trigger('client-signal-offer', {
+            from: myClientId,
             to: peerId,
             sdp: offer,
           });
         });
       }
     },
-    [socket, roomId, setupPeerConnection],
+    [myClientId, setupPeerConnection, getChannel],
   );
 
   const removeStream = useCallback((peerId: string) => {

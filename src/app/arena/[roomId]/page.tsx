@@ -9,10 +9,11 @@ import { ScoreBoard } from '@/components/arena/ScoreBoard';
 
 import { BattleIntro } from '@/components/battle/BattleIntro';
 import { Button } from '@/components/ui/Button';
-import { useSocket } from '@/hooks/useSocket';
+import { usePusher } from '@/hooks/usePusher';
 import { useRoom } from '@/hooks/useRoom';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { useTimer } from '@/hooks/useTimer';
+import { getClientId } from '@/lib/client-id';
 import { LayoutMode } from '@/types';
 
 export default function ArenaPage({ params }: { params: Promise<{ roomId: string }> }) {
@@ -20,10 +21,10 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const roomId = resolvedParams.roomId;
   const router = useRouter();
   
-  const { socket, isConnected } = useSocket();
-  const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, error: roomError } = useRoom(socket);
-  const { connectionStates, getRemoteStreams } = useWebRTC(socket, roomId);
-  const { timeRemaining, isRunning, isPaused, startTimer, pauseTimer } = useTimer(socket, room?.config.timerSeconds || 900);
+  const { pusher, isConnected } = usePusher();
+  const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, error: roomError } = useRoom(pusher);
+  const { connectionStates, getRemoteStreams } = useWebRTC(pusher, roomId);
+  const { timeRemaining, isRunning, isPaused, formatTime } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
@@ -31,22 +32,19 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const [showSidebar, setShowSidebar] = useState(true);
 
   useEffect(() => {
-    if (isConnected && socket) {
+    if (isConnected && pusher) {
       // Generate a random viewer name
       const randomId = Math.floor(Math.random() * 10000);
       joinRoom(roomId, `Viewer_${randomId}`, 'viewer');
     }
-  }, [isConnected, socket, roomId, joinRoom]);
+  }, [isConnected, pusher, roomId, joinRoom]);
 
+  // Handle status transitions
   useEffect(() => {
-    if (room?.status === 'countdown' && !isRunning) {
+    if (room?.status === 'countdown') {
       queueMicrotask(() => setShowIntro(true));
-    } else if (room?.status === 'battle' && !isRunning && !isPaused) {
-      startTimer();
-    } else if (room?.status === 'paused' && isRunning) {
-      pauseTimer();
     }
-  }, [room?.status, isRunning, isPaused, startTimer, pauseTimer]);
+  }, [room?.status]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
