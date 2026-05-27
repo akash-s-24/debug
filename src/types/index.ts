@@ -41,21 +41,7 @@ export interface Room {
   totalPausedMs?: number;
 }
 
-export interface ChatMessage {
-  id: string;
-  userId: string;
-  userName: string;
-  text: string;
-  timestamp: number;
-  type: 'message' | 'system' | 'announcement';
-}
 
-export interface Reaction {
-  emoji: string;
-  userId: string;
-  userName: string;
-  timestamp: number;
-}
 
 export interface CodingStats {
   userId: string;

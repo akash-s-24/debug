@@ -5,8 +5,6 @@ import type PusherClient from 'pusher-js';
 import type { Channel, PresenceChannel } from 'pusher-js';
 import type {
   Room,
-  ChatMessage,
-  Reaction,
   CodingStats,
   BattleResult,
   UserRole,
@@ -14,12 +12,9 @@ import type {
 } from '@/types';
 import { getClientId } from '@/lib/client-id';
 import { setUserInfo } from '@/lib/pusher-client';
-import { REACTION_DURATION_MS } from '@/lib/constants';
 
 interface UseRoomReturn {
   room: Room | null;
-  messages: ChatMessage[];
-  reactions: Reaction[];
   stats: Map<string, CodingStats>;
   battleResult: BattleResult | null;
   joinRoom: (
@@ -29,23 +24,18 @@ interface UseRoomReturn {
     password?: string,
   ) => Promise<Room | null>;
   leaveRoom: () => void;
-  sendMessage: (text: string) => void;
-  sendReaction: (emoji: string) => void;
   updateStats: (stats: Partial<CodingStats>) => void;
   error: string | null;
 }
 
 export function useRoom(pusher: PusherClient | null): UseRoomReturn {
   const [room, setRoom] = useState<Room | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [reactions, setReactions] = useState<Reaction[]>([]);
   const [stats, setStats] = useState<Map<string, CodingStats>>(new Map());
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [subscribedRoomId, setSubscribedRoomId] = useState<string | null>(null);
 
   const roomIdRef = useRef<string | null>(null);
-  const reactionTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 
   // ── Pusher channel subscription ──────────────────────────────────────
   useEffect(() => {
@@ -60,29 +50,11 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     };
 
     const onUserJoined = (_user: User) => {
-      // Room state is broadcast via room-updated; this is for optional notifications
+      // Room state is broadcast via room-updated
     };
 
     const onUserLeft = (_data: { userId: string }) => {
       // Room state is broadcast via room-updated
-    };
-
-    const onChatMessage = (message: ChatMessage) => {
-      setMessages((prev) => [...prev, message]);
-    };
-
-    const onChatReaction = (reaction: Reaction) => {
-      setReactions((prev) => [...prev, reaction]);
-      // Auto-remove reaction after duration
-      const timer = setTimeout(() => {
-        setReactions((prev) =>
-          prev.filter(
-            (r) => r.timestamp !== reaction.timestamp || r.userId !== reaction.userId,
-          ),
-        );
-        reactionTimers.current.delete(reaction.timestamp);
-      }, REACTION_DURATION_MS);
-      reactionTimers.current.set(reaction.timestamp, timer);
     };
 
     const onStatsUpdated = (codingStats: CodingStats) => {
@@ -100,8 +72,6 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     channel.bind('room-updated', onRoomUpdated);
     channel.bind('user-joined', onUserJoined);
     channel.bind('user-left', onUserLeft);
-    channel.bind('chat-message', onChatMessage);
-    channel.bind('chat-reaction', onChatReaction);
     channel.bind('stats-updated', onStatsUpdated);
     channel.bind('battle-ended', onBattleEnded);
 
@@ -114,22 +84,12 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
       channel.unbind('room-updated', onRoomUpdated);
       channel.unbind('user-joined', onUserJoined);
       channel.unbind('user-left', onUserLeft);
-      channel.unbind('chat-message', onChatMessage);
-      channel.unbind('chat-reaction', onChatReaction);
       channel.unbind('stats-updated', onStatsUpdated);
       channel.unbind('battle-ended', onBattleEnded);
       channel.unbind('pusher:member_removed');
       pusher.unsubscribe(channelName);
     };
   }, [pusher, subscribedRoomId]);
-
-  // Cleanup reaction timers on unmount
-  useEffect(() => {
-    return () => {
-      reactionTimers.current.forEach((timer) => clearTimeout(timer));
-      reactionTimers.current.clear();
-    };
-  }, []);
 
   // ── Actions ──────────────────────────────────────────────────────────
 
@@ -162,8 +122,6 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
         const joinedRoom: Room = data.room;
         setRoom(joinedRoom);
         roomIdRef.current = joinedRoom.id;
-        setMessages([]);
-        setReactions([]);
         setBattleResult(null);
         setError(null);
 
@@ -197,38 +155,10 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
 
     setSubscribedRoomId(null);
     setRoom(null);
-    setMessages([]);
-    setReactions([]);
     setStats(new Map());
     setBattleResult(null);
     setError(null);
     roomIdRef.current = null;
-  }, []);
-
-  const sendMessage = useCallback((text: string) => {
-    if (!roomIdRef.current) return;
-    const clientId = getClientId();
-
-    fetch('/api/chat/message', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ roomId: roomIdRef.current, clientId, text }),
-    }).catch((err) => {
-      console.error('[useRoom] Failed to send message:', err);
-    });
-  }, []);
-
-  const sendReaction = useCallback((emoji: string) => {
-    if (!roomIdRef.current) return;
-    const clientId = getClientId();
-
-    fetch('/api/chat/reaction', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ roomId: roomIdRef.current, clientId, emoji }),
-    }).catch((err) => {
-      console.error('[useRoom] Failed to send reaction:', err);
-    });
   }, []);
 
   const updateStats = useCallback((partialStats: Partial<CodingStats>) => {
@@ -250,14 +180,10 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
 
   return {
     room,
-    messages,
-    reactions,
     stats,
     battleResult,
     joinRoom,
     leaveRoom,
-    sendMessage,
-    sendReaction,
     updateStats,
     error,
   };

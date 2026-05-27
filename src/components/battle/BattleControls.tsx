@@ -35,37 +35,37 @@ export function BattleControls({
   };
 
   return (
-    <Card variant="glass" className="w-full mt-4 p-4 flex flex-wrap items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-4">
+      <div className="flex items-center gap-2">
         {status === 'waiting' || status === 'ready' || status === 'finished' ? (
-          <Button variant="primary" onClick={onStartBattle}>
+          <Button variant="primary" size="sm" onClick={onStartBattle}>
             {status === 'finished' ? 'RESTART BATTLE' : 'START BATTLE'}
           </Button>
         ) : (
-          <Button variant="danger" onClick={onEndBattle}>
+          <Button variant="danger" size="sm" onClick={onEndBattle}>
             END BATTLE
           </Button>
         )}
 
         {status === 'battle' && (
-          <Button variant="ghost" onClick={onPauseBattle}>
+          <Button variant="ghost" size="sm" onClick={onPauseBattle}>
             PAUSE
           </Button>
         )}
         
         {status === 'paused' && (
-          <Button variant="neon" onClick={onStartBattle}>
+          <Button variant="neon" size="sm" onClick={onStartBattle}>
             RESUME
           </Button>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <label className="text-text-secondary text-sm font-display uppercase">Layout:</label>
+      <div className="flex items-center gap-2 ml-4">
+        <label className="text-text-secondary text-xs font-display uppercase tracking-widest">Layout:</label>
         <select 
           value={selectedLayout} 
           onChange={handleLayoutChange}
-          className="bg-abyss border border-slate-dark text-text-primary px-3 py-1.5 rounded focus:outline-none focus:border-neon-cyan font-mono text-sm"
+          className="bg-black/40 border border-white/10 text-white px-2 py-1 rounded focus:outline-none focus:border-neon-cyan font-mono text-sm"
         >
           <option value="side-by-side">Side by Side</option>
           <option value="focus-left">Focus Left</option>
@@ -73,6 +73,6 @@ export function BattleControls({
           <option value="vertical">Vertical</option>
         </select>
       </div>
-    </Card>
+    </div>
   );
 }

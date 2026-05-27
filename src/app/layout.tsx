@@ -58,10 +58,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${orbitron.variable} ${rajdhani.variable} ${exo2.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${orbitron.variable} ${rajdhani.variable} ${exo2.variable} ${jetbrainsMono.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-void text-text-primary">
-        <main className="min-h-screen flex flex-col">{children}</main>
+      <body className="min-h-screen flex flex-col bg-void text-text-primary">
+        <main className="flex-grow flex flex-col">{children}</main>
       </body>
     </html>
   );

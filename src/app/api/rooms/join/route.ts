@@ -37,7 +37,12 @@ export async function POST(req: Request) {
     }
 
     // Role-specific validation
-    if (role === 'contestant' || role === 'host') {
+    if (role === 'host') {
+      // If we got here, findUserByClientId didn't match the original host.
+      return Response.json({ error: 'Host already exists for this room' }, { status: 403 });
+    }
+
+    if (role === 'contestant') {
       if (room.contestants.length >= room.config.maxContestants) {
         return Response.json(
           { error: 'Room is full — max contestants reached' },
@@ -62,7 +67,7 @@ export async function POST(req: Request) {
 
     if (role === 'viewer') {
       room.viewers.push(newUser);
-    } else {
+    } else if (role === 'contestant') {
       room.contestants.push(newUser);
     }
 

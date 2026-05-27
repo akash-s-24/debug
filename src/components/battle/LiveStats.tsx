@@ -43,7 +43,7 @@ function StatItem({ label, value, icon, compact, textClass }: StatItemProps) {
   );
 }
 
-export function LiveStats({ stats, color, compact = false }: LiveStatsProps) {
+export const LiveStats = React.memo(function LiveStats({ stats, color, compact = false }: LiveStatsProps) {
   const isCyan = color === 'cyan';
   const textClass = isCyan ? 'text-neon-cyan' : 'text-neon-magenta';
   
@@ -94,4 +94,4 @@ export function LiveStats({ stats, color, compact = false }: LiveStatsProps) {
       </div>
     </Card>
   );
-}
+});

@@ -4,9 +4,8 @@ import React, { useEffect, useState, useCallback, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Background } from '@/components/layout/Background';
 import { ChallengeBar } from '@/components/battle/ChallengeBar';
-import { BattleControls } from '@/components/battle/BattleControls';
 import { StreamPanel } from '@/components/battle/StreamPanel';
-
+import { HostDashboard } from '@/components/battle/HostDashboard';
 import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
 import { BattleIntro } from '@/components/battle/BattleIntro';
@@ -28,10 +27,10 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const name = searchParams.get('name') || 'Anonymous';
 
   const { pusher, isConnected } = usePusher();
-  const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, updateStats, error: roomError } = useRoom(pusher);
+  const { room, stats, joinRoom, updateStats, error: roomError } = useRoom(pusher);
   const { startSharing, stopSharing, localStream, isSharing, error: shareError } = useScreenShare();
-  const { connectionStates, getRemoteStreams } = useWebRTC(pusher, roomId);
-  const { timeRemaining, isRunning, isPaused, formatTime } = useTimer(room);
+  const { getRemoteStreams } = useWebRTC(pusher, roomId);
+  const { timeRemaining, isRunning, isPaused } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
@@ -132,7 +131,37 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   }
 
   const isHost = room.host.clientId === clientId;
-  const myUser = room.contestants.find(c => c.clientId === clientId) || room.host;
+  
+  if (isHost) {
+    // ── HOST DASHBOARD ──────────────────────────────────────────────────
+    return (
+      <Background>
+        <div className="flex flex-col h-screen overflow-hidden">
+          <ChallengeBar 
+            title={room.config.challenge}
+            description={room.config.challengeDescription}
+            language={room.config.language}
+            duelType={room.config.duelType}
+            timeRemaining={timeRemaining}
+            isRunning={isRunning}
+            isPaused={isPaused}
+          />
+          <HostDashboard 
+            room={room}
+            stats={stats}
+            remoteStreams={getRemoteStreams()}
+            timeRemaining={timeRemaining}
+            isRunning={isRunning}
+            isPaused={isPaused}
+            onAction={handleHostAction}
+          />
+        </div>
+      </Background>
+    );
+  }
+
+  // ── PARTICIPANT ARENA ───────────────────────────────────────────────
+  const myUser = room.contestants.find(c => c.clientId === clientId) || room.viewers.find(v => v.clientId === clientId) || { id: 'temp', name: name, role: 'viewer', clientId };
   const otherUser = room.contestants.find(c => c.id !== myUser.id);
   const myStats = stats.get(myUser.id);
   const otherStats = otherUser ? stats.get(otherUser.id) : undefined;
@@ -165,8 +194,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
         <div className="flex flex-1 overflow-hidden p-2 gap-2">
           {/* Main Battle Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {!isSharing ? (
-              <div className="flex-1 flex flex-col items-center justify-center bg-black/40 border border-white/5 rounded backdrop-blur-sm m-4">
+            {!isSharing && myUser.role === 'contestant' ? (
+              <div className="flex-1 flex flex-col items-center justify-center bg-black/40 border border-white/5 rounded-xl backdrop-blur-sm m-4">
                 <div className="text-5xl mb-6">📺</div>
                 <h2 className="text-2xl font-display text-text-primary mb-2">Ready to Enter the Arena?</h2>
                 <p className="text-text-secondary mb-8 text-center max-w-md">
@@ -179,17 +208,19 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
               </div>
             ) : (
               <div className="flex-1 relative flex flex-col">
-                <div className="absolute top-2 right-2 z-20 flex gap-2">
-                  <Button variant="danger" size="sm" onClick={handleStopShare}>
-                    STOP SHARING
-                  </Button>
-                </div>
+                {isSharing && (
+                  <div className="absolute top-2 right-2 z-20 flex gap-2">
+                    <Button variant="danger" size="sm" onClick={handleStopShare}>
+                      STOP SHARING
+                    </Button>
+                  </div>
+                )}
                 
                 {layout === 'side-by-side' && otherUser ? (
                   <DualView
                     stream1={localStream}
                     stream2={otherStream}
-                    user1={myUser}
+                    user1={myUser as any}
                     user2={otherUser}
                     stats1={myStats || null}
                     stats2={otherStats || null}
@@ -199,43 +230,36 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 ) : (
                   <div className="flex-1 relative h-full w-full p-2">
                     <StreamPanel
-                      stream={localStream}
-                      userName={myUser.name}
-                      isLocal={true}
+                      stream={localStream || (myUser.role === 'viewer' && otherStream ? otherStream : null)}
+                      userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
+                      isLocal={myUser.role === 'contestant'}
                       isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}
                       color="cyan"
-                      stats={myStats || null}
+                      stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
                     />
                   </div>
                 )}
               </div>
             )}
-
-            {isHost && (
-              <BattleControls 
-                roomId={roomId}
-                isHost={isHost}
-                status={room.status}
-                onStartBattle={() => handleHostAction(room.status === 'paused' ? 'resume' : 'start')}
-                onPauseBattle={() => handleHostAction('pause')}
-                onEndBattle={() => handleHostAction('end')}
-                onChangeLayout={setLayout}
-              />
-            )}
           </div>
 
           {/* Sidebar */}
           <div className="w-80 flex flex-col gap-2 flex-shrink-0 h-full overflow-hidden">
-            {myStats && (
+            {myStats && myUser.role === 'contestant' && (
               <div className="flex-shrink-0">
                 <LiveStats stats={myStats} color="cyan" compact />
               </div>
             )}
             
-            <div className="flex-1 min-h-0 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg p-4 flex flex-col justify-center items-center text-center">
-              <div className="text-4xl mb-4">🏆</div>
-              <h3 className="text-xl font-display text-text-primary tracking-widest mb-2">BATTLE ARENA</h3>
-              <p className="text-text-secondary text-sm font-body">Focus on the code. Live chat is disabled for this arena.</p>
+            <div className="flex-1 min-h-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col items-center text-center">
+              <div className="text-4xl mb-6">🏆</div>
+              <h3 className="text-2xl font-display text-text-primary tracking-widest mb-4">BATTLE ARENA</h3>
+              <p className="text-text-secondary text-sm font-body mb-8">Focus on the code. Outperform your opponent.</p>
+              
+              <div className="w-full bg-black/40 rounded-lg p-4 border border-white/5 mt-auto">
+                <div className="text-xs text-text-muted uppercase tracking-widest mb-2">Room Code</div>
+                <div className="text-xl font-mono text-white tracking-widest">{room.code}</div>
+              </div>
             </div>
           </div>
         </div>

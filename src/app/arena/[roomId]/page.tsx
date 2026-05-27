@@ -22,7 +22,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const router = useRouter();
   
   const { pusher, isConnected } = usePusher();
-  const { room, messages, reactions, stats, joinRoom, sendMessage, sendReaction, error: roomError } = useRoom(pusher);
+  const { room, stats, joinRoom, error: roomError } = useRoom(pusher);
   const { connectionStates, getRemoteStreams } = useWebRTC(pusher, roomId);
   const { timeRemaining, isRunning, isPaused, formatTime } = useTimer(room);
 

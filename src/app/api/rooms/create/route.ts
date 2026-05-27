@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       config,
       status: 'waiting',
       host,
-      contestants: [host],
+      contestants: [],
       viewers: [],
       createdAt: Date.now(),
       totalPausedMs: 0,

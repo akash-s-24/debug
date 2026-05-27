@@ -43,7 +43,7 @@ function CornerBrackets({ color }: { color: string }) {
   );
 }
 
-export function StreamPanel({
+export const StreamPanel = React.memo(function StreamPanel({
   stream,
   userName,
   isLocal = false,
@@ -155,6 +155,6 @@ export function StreamPanel({
       )}
     </motion.div>
   );
-}
+});
 
 export default StreamPanel;
