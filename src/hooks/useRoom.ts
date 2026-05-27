@@ -36,6 +36,25 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
   const [subscribedRoomId, setSubscribedRoomId] = useState<string | null>(null);
 
   const roomIdRef = useRef<string | null>(null);
+  const roomRef = useRef<Room | null>(null);
+
+  // Keep roomRef synced with the latest room state without triggering dependency arrays
+  useEffect(() => {
+    roomRef.current = room;
+  }, [room]);
+
+  // ── Tab Close Cleanup ────────────────────────────────────────────────
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (roomIdRef.current) {
+        const payload = JSON.stringify({ roomId: roomIdRef.current, clientId: getClientId() });
+        const blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon('/api/rooms/leave', blob);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   // ── Pusher channel subscription ──────────────────────────────────────
   useEffect(() => {
@@ -75,9 +94,36 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     channel.bind('stats-updated', onStatsUpdated);
     channel.bind('battle-ended', onBattleEnded);
 
-    // Presence events — when a member drops unexpectedly
-    channel.bind('pusher:member_removed', (_member: { id: string }) => {
-      // The server triggers room-updated on leave; this is a safety net
+    // Presence events — when a member drops unexpectedly (e.g. closes tab)
+    channel.bind('pusher:member_removed', (member: { id: string }) => {
+      const droppedClientId = member.id;
+
+      // Optimistically remove them from the UI instantly
+      setRoom((prev) => {
+        if (!prev) return prev;
+        const next = { ...prev };
+        next.contestants = next.contestants.filter((u) => u.clientId !== droppedClientId);
+        next.viewers = next.viewers.filter((u) => u.clientId !== droppedClientId);
+
+        if (prev.host.clientId === droppedClientId) {
+          next.status = 'finished';
+        } else if (next.contestants.length < 2 && next.status !== 'finished') {
+          next.status = 'waiting';
+        }
+        return next;
+      });
+
+      // If we are the Host, we take responsibility for telling the server to clean up Redis
+      const currentRoom = roomRef.current;
+      const myClientId = getClientId();
+      
+      if (currentRoom && currentRoom.host.clientId === myClientId) {
+        fetch('/api/rooms/leave', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId: currentRoom.id, clientId: droppedClientId }),
+        }).catch((err) => console.error('[useRoom] Host failed to clean up dropped member:', err));
+      }
     });
 
     return () => {
