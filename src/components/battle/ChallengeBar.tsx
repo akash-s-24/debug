@@ -14,6 +14,8 @@ interface ChallengeBarProps {
   timeRemaining: number;
   isRunning: boolean;
   isPaused: boolean;
+  onExit?: () => void;
+  isHost?: boolean;
 }
 
 export function ChallengeBar({
@@ -24,6 +26,8 @@ export function ChallengeBar({
   timeRemaining,
   isRunning,
   isPaused,
+  onExit,
+  isHost = false,
 }: ChallengeBarProps) {
   return (
     <motion.div
@@ -43,11 +47,20 @@ export function ChallengeBar({
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         <div className="flex flex-col items-end">
           <span className="text-xs text-text-muted font-display uppercase tracking-widest mb-1">Time Remaining</span>
           <Timer timeRemaining={timeRemaining} isRunning={isRunning} isPaused={isPaused} size="md" />
         </div>
+        
+        {onExit && (
+          <button 
+            onClick={onExit}
+            className="px-4 py-2 border border-neon-red/50 text-neon-red bg-neon-red/10 hover:bg-neon-red hover:text-white rounded-md font-display tracking-widest uppercase transition-colors text-sm"
+          >
+            {isHost ? 'Disband Room' : 'Exit Arena'}
+          </button>
+        )}
       </div>
     </motion.div>
   );

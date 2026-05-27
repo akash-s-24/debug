@@ -27,7 +27,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const name = searchParams.get('name') || 'Anonymous';
 
   const { pusher, isConnected } = usePusher();
-  const { room, stats, joinRoom, updateStats, error: roomError } = useRoom(pusher);
+  const { room, stats, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
   const { startSharing, stopSharing, localStream, isSharing, error: shareError } = useScreenShare();
   const { getRemoteStreams } = useWebRTC(pusher, roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
@@ -36,6 +36,11 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const [showIntro, setShowIntro] = useState(false);
 
   const clientId = typeof window !== 'undefined' ? getClientId() : '';
+
+  const handleExit = useCallback(() => {
+    leaveRoom();
+    router.push('/');
+  }, [leaveRoom, router]);
 
   useEffect(() => {
     if (isConnected && pusher) {
@@ -145,6 +150,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
             timeRemaining={timeRemaining}
             isRunning={isRunning}
             isPaused={isPaused}
+            onExit={handleExit}
+            isHost={true}
           />
           <HostDashboard 
             room={room}
@@ -189,6 +196,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           timeRemaining={timeRemaining}
           isRunning={isRunning}
           isPaused={isPaused}
+          onExit={handleExit}
+          isHost={false}
         />
 
         <div className="flex flex-1 overflow-hidden p-2 gap-2">
