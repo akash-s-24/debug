@@ -54,14 +54,26 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   // Handle status transitions
   useEffect(() => {
     if (room?.status === 'countdown') {
-      queueMicrotask(() => setShowIntro(true));
+      if (room.contestants.length >= 2) {
+        queueMicrotask(() => setShowIntro(true));
+      } else {
+        // If not enough contestants for intro, begin immediately
+        const isHost = room?.host.clientId === clientId;
+        if (isHost) {
+          fetch('/api/battle/begin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomId, clientId }),
+          }).catch(console.error);
+        }
+      }
     }
     
     // Auto-exit if host disbands the room
     if (room?.status === 'finished' && role !== 'host') {
       router.push('/');
     }
-  }, [room?.status, role, router]);
+  }, [room?.status, room?.host.clientId, clientId, roomId, room?.contestants.length, role, router]);
 
   // Simulate stats while sharing during battle
   useEffect(() => {

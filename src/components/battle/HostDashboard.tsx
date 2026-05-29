@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Room, CodingStats, LayoutMode } from '@/types';
 import { BattleControls } from './BattleControls';
 import { DualView } from '../arena/DualView';
@@ -26,6 +26,8 @@ export function HostDashboard({
   isPaused,
   onAction
 }: HostDashboardProps) {
+  const [layout, setLayout] = useState<LayoutMode>('side-by-side');
+
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code);
   };
@@ -74,36 +76,49 @@ export function HostDashboard({
             onStartBattle={() => onAction(room.status === 'paused' ? 'resume' : 'start')}
             onPauseBattle={() => onAction('pause')}
             onEndBattle={() => onAction('end')}
-            onChangeLayout={() => {}}
+            onChangeLayout={setLayout}
           />
         </div>
       </div>
 
       {/* Contestants Grid */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex-1 min-h-0 flex flex-col gap-4">
         {contestants.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8">
+          <div className="flex-1 flex flex-col items-center justify-center bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8">
             <div className="text-4xl mb-4 animate-bounce">⏳</div>
             <h3 className="text-xl font-display text-text-primary tracking-widest">Waiting for contestants...</h3>
             <p className="text-text-secondary mt-2">Share the room code or invite link above to get started.</p>
           </div>
+        ) : contestants.length === 2 ? (
+          <DualView
+            stream1={contestants[0].clientId ? remoteStreams.get(contestants[0].clientId) || null : null}
+            stream2={contestants[1].clientId ? remoteStreams.get(contestants[1].clientId) || null : null}
+            user1={contestants[0]}
+            user2={contestants[1]}
+            stats1={stats.get(contestants[0].id) || null}
+            stats2={stats.get(contestants[1].id) || null}
+            layout={layout}
+            challenge={room.config.challenge}
+          />
         ) : (
-          contestants.map((user) => {
-            const stream = user.clientId ? remoteStreams.get(user.clientId) : undefined;
-            const userStats = stats.get(user.id);
-            return (
-              <div key={user.id} className="relative bg-black border border-white/10 rounded-xl overflow-hidden flex flex-col">
-                <StreamPanel
-                  stream={stream || null}
-                  userName={user.name}
-                  isLocal={false}
-                  isActive={userStats?.momentum === 'high' || userStats?.momentum === 'extreme'}
-                  color="magenta"
-                  stats={userStats || null}
-                />
-              </div>
-            );
-          })
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full w-full">
+            {contestants.map((user) => {
+              const stream = user.clientId ? remoteStreams.get(user.clientId) : undefined;
+              const userStats = stats.get(user.id);
+              return (
+                <div key={user.id} className="relative bg-black border border-white/10 rounded-xl overflow-hidden flex flex-col">
+                  <StreamPanel
+                    stream={stream || null}
+                    userName={user.name}
+                    isLocal={false}
+                    isActive={userStats?.momentum === 'high' || userStats?.momentum === 'extreme'}
+                    color="magenta"
+                    stats={userStats || null}
+                  />
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

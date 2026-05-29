@@ -94,7 +94,7 @@ export const StreamPanel = React.memo(function StreamPanel({
           autoPlay
           playsInline
           muted={isLocal}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
