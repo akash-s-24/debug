@@ -114,21 +114,22 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
       const droppedClientId = member.id;
       console.log(`[useRoom] member_removed: ${droppedClientId} — waiting 3s before cleanup`);
 
-      // Wait 3 seconds before acting — if they reconnect, member_added will cancel this
       const timer = setTimeout(() => {
         pendingRemovals.delete(droppedClientId);
+        
+        // Double-check they're not in the current channel members before acting
+        const members = (channel as PresenceChannel).members;
+        if (members && members.get(droppedClientId)) {
+          console.log(`[useRoom] ${droppedClientId} is still in channel members — aborting removal`);
+          return;
+        }
+
         console.log(`[useRoom] Confirmed removal of ${droppedClientId} after 3s`);
 
         // Optimistically remove them from the UI
         setRoom((prev) => {
           if (!prev) return prev;
-          // Double-check they're not in the current channel members
-          const members = (channel as PresenceChannel).members;
-          if (members && members.get(droppedClientId)) {
-            console.log(`[useRoom] ${droppedClientId} is still in channel members — skipping removal`);
-            return prev;
-          }
-
+          
           const next = { ...prev };
           next.contestants = next.contestants.filter((u) => u.clientId !== droppedClientId);
           next.viewers = next.viewers.filter((u) => u.clientId !== droppedClientId);
@@ -152,7 +153,7 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
             body: JSON.stringify({ roomId: currentRoom.id, clientId: droppedClientId }),
           }).catch((err) => console.error('[useRoom] Host cleanup failed:', err));
         }
-      }, 3000);
+      }, 5000);
 
       pendingRemovals.set(droppedClientId, timer);
     });

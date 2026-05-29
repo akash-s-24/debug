@@ -9,6 +9,7 @@ import {
   createOffer,
   createAnswer,
   addIceCandidate,
+  setAdaptiveBitrate,
 } from '@/lib/webrtc';
 
 interface UseWebRTCReturn {
@@ -115,9 +116,12 @@ export function useWebRTC(
             console.log(`[WebRTC] Remote stream track removed from ${peerId}`);
             if (stream.getTracks().length === 0) {
               setRemoteStreams((prev) => {
-                const next = new Map(prev);
-                next.delete(peerId);
-                return next;
+                if (prev.get(peerId) === stream) {
+                  const next = new Map(prev);
+                  next.delete(peerId);
+                  return next;
+                }
+                return prev;
               });
             }
           };
@@ -143,12 +147,14 @@ export function useWebRTC(
           pc.restartIce();
         }
         if (pc.connectionState === 'closed') {
-          peerConnections.current.delete(peerId);
-          setRemoteStreams((prev) => {
-            const next = new Map(prev);
-            next.delete(peerId);
-            return next;
-          });
+          if (peerConnections.current.get(peerId) === pc) {
+            peerConnections.current.delete(peerId);
+            setRemoteStreams((prev) => {
+              const next = new Map(prev);
+              next.delete(peerId);
+              return next;
+            });
+          }
         }
       };
 
@@ -270,8 +276,11 @@ export function useWebRTC(
         const senders = pc.getSenders();
         const existing = senders.find((s) => s.track?.id === track.id);
         if (!existing) {
-          pc.addTrack(track, stream);
+          const sender = pc.addTrack(track, stream);
           console.log(`[WebRTC] Added track ${track.kind} to PC for ${peerId}`);
+          if (track.kind === 'video') {
+            setAdaptiveBitrate(sender, 'high').catch(err => console.warn('[WebRTC] Failed to set bitrate:', err));
+          }
         }
       });
 
