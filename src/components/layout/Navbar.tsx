@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 
 const navLinks = [
-  { label: 'Arena', href: '#arena' },
-  { label: 'Features', href: '#features' },
-  { label: 'Leaderboard', href: '#leaderboard' },
+  { label: 'Arena', href: '/' },
+  { label: 'Features', href: '/#features' },
+  { label: 'Leaderboard', href: '/leaderboard' },
 ];
 
 export function Navbar() {
@@ -44,13 +44,13 @@ export function Navbar() {
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
                   className="text-sm text-white/50 hover:text-white uppercase tracking-wider font-medium transition-colors duration-200"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
 
               {/* Connection indicator */}
@@ -62,12 +62,16 @@ export function Navbar() {
                 ONLINE
               </div>
 
-              <Button variant="ghost" size="sm">
-                Join
-              </Button>
-              <Button variant="primary" size="sm">
-                Create Battle
-              </Button>
+              <Link href="/?join=true">
+                <Button variant="ghost" size="sm">
+                  Join
+                </Button>
+              </Link>
+              <Link href="/create">
+                <Button variant="primary" size="sm">
+                  Create Battle
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile hamburger */}
@@ -104,22 +108,26 @@ export function Navbar() {
           >
             <div className="px-4 py-4 flex flex-col gap-3">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
                   className="text-sm text-white/60 hover:text-white uppercase tracking-wider font-medium py-2"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
               <div className="flex gap-3 mt-2">
-                <Button variant="ghost" size="sm" className="flex-1">
-                  Join
-                </Button>
-                <Button variant="primary" size="sm" className="flex-1">
-                  Create Battle
-                </Button>
+                <Link href="/?join=true" onClick={() => setMobileOpen(false)} className="flex-1">
+                  <Button variant="ghost" size="sm" className="w-full">
+                    Join
+                  </Button>
+                </Link>
+                <Link href="/create" onClick={() => setMobileOpen(false)} className="flex-1">
+                  <Button variant="primary" size="sm" className="w-full">
+                    Create Battle
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>

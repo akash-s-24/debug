@@ -210,6 +210,13 @@ function HeroSection() {
   const [joinName, setJoinName] = useState('');
   const [joinRole, setJoinRole] = useState<'contestant' | 'viewer'>('contestant');
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('join=true')) {
+      setShowJoinModal(true);
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
+
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!joinCode) return;

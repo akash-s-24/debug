@@ -157,7 +157,37 @@ export default function CreateRoomPage() {
                           {preset.shortLabel}
                         </button>
                       ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const isCurrentlyCustom = !TIMER_PRESETS.some(p => p.value === config.timerSeconds);
+                          if (!isCurrentlyCustom) setConfig({...config, timerSeconds: 1800}); // default 30 min
+                        }}
+                        className={`px-3 py-1.5 text-sm font-mono border transition-colors ${!TIMER_PRESETS.some(p => p.value === config.timerSeconds) ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
+                      >
+                        Custom
+                      </button>
                     </div>
+                    
+                    {!TIMER_PRESETS.some(p => p.value === config.timerSeconds) && (
+                      <div className="mt-3 animate-in fade-in slide-in-from-top-1">
+                        <label className="text-xs font-display uppercase text-text-secondary ml-1">Custom Minutes</label>
+                        <div className="flex items-center gap-2 mt-1">
+                          <input
+                            type="number"
+                            min="1"
+                            max="300"
+                            value={Math.floor(config.timerSeconds / 60)}
+                            onChange={(e) => {
+                              const mins = parseInt(e.target.value) || 1;
+                              setConfig({...config, timerSeconds: mins * 60});
+                            }}
+                            className="bg-abyss border border-slate-dark text-text-primary px-3 py-2 focus:outline-none focus:border-neon-cyan transition-colors font-mono w-24 text-center"
+                          />
+                          <span className="text-sm font-mono text-text-secondary">min</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
