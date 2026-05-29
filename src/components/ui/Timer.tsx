@@ -44,7 +44,6 @@ export function Timer({
   size = 'md',
   onEnd,
 }: TimerProps) {
-  const [time, setTime] = useState(timeRemaining);
   const onEndRef = useRef(onEnd);
 
   useEffect(() => {
@@ -52,41 +51,12 @@ export function Timer({
   }, [onEnd]);
 
   useEffect(() => {
-    queueMicrotask(() => setTime(timeRemaining));
+    if (timeRemaining <= 0) {
+      onEndRef.current?.();
+    }
   }, [timeRemaining]);
 
-  useEffect(() => {
-    if (!isRunning || isPaused) return;
-
-    let interval: NodeJS.Timeout;
-    let isZero = false;
-
-    setTime((prev) => {
-      if (prev <= 0) {
-        isZero = true;
-        return 0;
-      }
-      return prev;
-    });
-
-    if (isZero) {
-      onEndRef.current?.();
-      return;
-    }
-
-    interval = setInterval(() => {
-      setTime((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          clearInterval(interval);
-          onEndRef.current?.();
-          return 0;
-        }
-        return next;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isRunning, isPaused]);
+  const time = timeRemaining;
 
   const minutes = Math.floor(Math.max(0, time) / 60);
   const seconds = Math.max(0, time) % 60;
