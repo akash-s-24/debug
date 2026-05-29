@@ -181,6 +181,14 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     console.log(`[HOST] Rendering dashboard with ${remoteStreams.size} remote streams`);
     return (
       <Background>
+        {showIntro && room.contestants.length >= 2 && (
+          <BattleIntro
+            contestant1={room.contestants[0]}
+            contestant2={room.contestants[1]}
+            challenge={room.config.challenge}
+            onComplete={handleIntroComplete}
+          />
+        )}
         <div className="flex flex-col h-screen overflow-hidden">
           <ChallengeBar 
             title={room.config.challenge}
