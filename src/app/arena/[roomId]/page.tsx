@@ -23,8 +23,8 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   
   const { pusher, isConnected } = usePusher();
   const { room, stats, joinRoom, error: roomError } = useRoom(pusher);
-  const { connectionStates, getRemoteStreams } = useWebRTC(pusher, roomId);
-  const { timeRemaining, isRunning, isPaused, formatTime } = useTimer(room);
+  const { remoteStreams } = useWebRTC(pusher, room?.id ?? null);
+  const { timeRemaining, isRunning, isPaused } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
@@ -96,9 +96,8 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const stats1 = c1 ? stats.get(c1.id) : null;
   const stats2 = c2 ? stats.get(c2.id) : null;
   
-  const remoteStreams = getRemoteStreams();
-  const stream1 = c1 ? remoteStreams.get(c1.id) || null : null;
-  const stream2 = c2 ? remoteStreams.get(c2.id) || null : null;
+  const stream1 = c1?.clientId ? remoteStreams.get(c1.clientId) || null : null;
+  const stream2 = c2?.clientId ? remoteStreams.get(c2.clientId) || null : null;
 
   return (
     <div className="bg-void text-white h-screen w-screen overflow-hidden flex font-body selection:bg-neon-cyan/30">

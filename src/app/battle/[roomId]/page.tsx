@@ -20,7 +20,7 @@ import { LayoutMode, UserRole } from '@/types';
 
 export default function BattlePage({ params }: { params: Promise<{ roomId: string }> }) {
   const resolvedParams = use(params);
-  const roomId = resolvedParams.roomId;
+  const roomId = resolvedParams.roomId; // This is the URL slug (could be room code OR room ID)
   const router = useRouter();
   const searchParams = useSearchParams();
   const role = (searchParams.get('role') as UserRole) || 'contestant';
@@ -29,7 +29,10 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const { pusher, isConnected } = usePusher();
   const { room, stats, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
   const { startSharing, stopSharing, localStream, isSharing, error: shareError } = useScreenShare();
-  const { getRemoteStreams, addStream } = useWebRTC(pusher, roomId);
+  
+  // ★ KEY FIX: Pass room.id (the actual ID used in Pusher channel names), not the URL slug
+  const actualRoomId = room?.id ?? null;
+  const { remoteStreams, addStream } = useWebRTC(pusher, actualRoomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
@@ -74,7 +77,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     }
   }, [isSharing, room?.status, updateStats]);
 
-  // Broadcast WebRTC stream to all peers when sharing starts or when new peers join
+  // ★ KEY FIX: Broadcast WebRTC stream to all peers when sharing starts or new peers join
   const connectedPeers = useRef<Set<string>>(new Set());
   useEffect(() => {
     if (localStream && room) {
@@ -84,8 +87,11 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
         ...room.viewers.map(v => v.clientId)
       ].filter(id => id && id !== clientId) as string[];
 
+      console.log(`[Battle] Broadcasting stream to peers:`, allPeers);
+
       allPeers.forEach(peerId => {
         if (!connectedPeers.current.has(peerId)) {
+          console.log(`[Battle] Connecting to new peer: ${peerId}`);
           addStream(peerId, localStream);
           connectedPeers.current.add(peerId);
         }
@@ -105,7 +111,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
 
   const handleIntroComplete = useCallback(async () => {
     setShowIntro(false);
-    // Only the host triggers the actual battle begin
     const isHost = room?.host.clientId === clientId;
     if (isHost) {
       try {
@@ -165,6 +170,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   
   if (isHost) {
     // ── HOST DASHBOARD ──────────────────────────────────────────────────
+    // ★ KEY FIX: Pass reactive remoteStreams directly (no getRemoteStreams() call)
+    console.log(`[HOST] Rendering dashboard with ${remoteStreams.size} remote streams`);
     return (
       <Background>
         <div className="flex flex-col h-screen overflow-hidden">
@@ -182,7 +189,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           <HostDashboard 
             room={room}
             stats={stats}
-            remoteStreams={getRemoteStreams()}
+            remoteStreams={remoteStreams}
             timeRemaining={timeRemaining}
             isRunning={isRunning}
             isPaused={isPaused}
@@ -194,12 +201,12 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   }
 
   // ── PARTICIPANT ARENA ───────────────────────────────────────────────
-  const myUser = room.contestants.find(c => c.clientId === clientId) || room.viewers.find(v => v.clientId === clientId) || { id: 'temp', name: name, role: 'viewer', clientId };
+  const myUser = room.contestants.find(c => c.clientId === clientId) || room.viewers.find(v => v.clientId === clientId) || { id: 'temp', name: name, role: 'viewer' as const, clientId };
   const otherUser = room.contestants.find(c => c.id !== myUser.id);
   const myStats = stats.get(myUser.id);
   const otherStats = otherUser ? stats.get(otherUser.id) : undefined;
   
-  const remoteStreams = getRemoteStreams();
+  // ★ KEY FIX: Use reactive remoteStreams directly, lookup by clientId
   const otherStream = (otherUser && otherUser.clientId) ? remoteStreams.get(otherUser.clientId) || null : null;
 
   return (
