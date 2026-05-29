@@ -26,10 +26,7 @@ export async function POST(req: Request) {
       return Response.json({ error: 'User not in room' }, { status: 404 });
     }
 
-    // Host leaving ends the room
-    if (room.host.clientId === clientId) {
-      room.status = 'finished';
-    }
+    // Allow host to temporarily leave without destroying the room
 
     // Remove from contestants and viewers
     room.contestants = room.contestants.filter((u) => u.clientId !== clientId);

@@ -134,9 +134,7 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
           next.contestants = next.contestants.filter((u) => u.clientId !== droppedClientId);
           next.viewers = next.viewers.filter((u) => u.clientId !== droppedClientId);
 
-          if (prev.host.clientId === droppedClientId) {
-            next.status = 'finished';
-          } else if (next.contestants.length < 2 && next.status !== 'finished') {
+          if (next.contestants.length < 2 && next.status !== 'finished') {
             next.status = 'waiting';
           }
           return next;

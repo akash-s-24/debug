@@ -68,11 +68,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
         }
       }
     }
-    
-    // Auto-exit if host disbands the room
-    if (room?.status === 'finished' && role !== 'host') {
-      router.push('/');
-    }
   }, [room?.status, room?.host.clientId, clientId, roomId, room?.contestants.length, role, router]);
 
   // Simulate stats while sharing during battle
