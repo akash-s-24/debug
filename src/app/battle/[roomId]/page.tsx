@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, use } from 'react';
+import React, { useEffect, useState, useCallback, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Background } from '@/components/layout/Background';
 import { ChallengeBar } from '@/components/battle/ChallengeBar';
@@ -29,7 +29,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const { pusher, isConnected } = usePusher();
   const { room, stats, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
   const { startSharing, stopSharing, localStream, isSharing, error: shareError } = useScreenShare();
-  const { getRemoteStreams } = useWebRTC(pusher, roomId);
+  const { getRemoteStreams, addStream } = useWebRTC(pusher, roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
@@ -53,7 +53,12 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     if (room?.status === 'countdown') {
       queueMicrotask(() => setShowIntro(true));
     }
-  }, [room?.status]);
+    
+    // Auto-exit if host disbands the room
+    if (room?.status === 'finished' && role !== 'host') {
+      router.push('/');
+    }
+  }, [room?.status, role, router]);
 
   // Simulate stats while sharing during battle
   useEffect(() => {
@@ -68,6 +73,27 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       return () => clearInterval(interval);
     }
   }, [isSharing, room?.status, updateStats]);
+
+  // Broadcast WebRTC stream to all peers when sharing starts or when new peers join
+  const connectedPeers = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (localStream && room) {
+      const allPeers = [
+        room.host.clientId,
+        ...room.contestants.map(c => c.clientId),
+        ...room.viewers.map(v => v.clientId)
+      ].filter(id => id && id !== clientId) as string[];
+
+      allPeers.forEach(peerId => {
+        if (!connectedPeers.current.has(peerId)) {
+          addStream(peerId, localStream);
+          connectedPeers.current.add(peerId);
+        }
+      });
+    } else if (!localStream) {
+      connectedPeers.current.clear();
+    }
+  }, [localStream, room, addStream, clientId]);
 
   const handleStartShare = async () => {
     await startSharing();

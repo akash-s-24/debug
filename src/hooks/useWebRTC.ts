@@ -90,13 +90,20 @@ export function useWebRTC(
       // Handle ICE candidates — send via Pusher client event
       pc.onicecandidate = (event) => {
         if (event.candidate) {
-          const channel = getChannel();
-          if (channel) {
-            channel.trigger('client-signal-ice', {
-              from: myClientId,
-              to: peerId,
-              candidate: event.candidate.toJSON(),
-            });
+          if (roomId) {
+            fetch('/api/webrtc/signal', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                roomId,
+                event: 'server-signal-ice',
+                data: {
+                  from: myClientId,
+                  to: peerId,
+                  candidate: event.candidate.toJSON(),
+                }
+              })
+            }).catch(console.error);
           }
         }
       };
@@ -148,11 +155,19 @@ export function useWebRTC(
       if (data.to !== myClientId) return;
       const pc = setupPeerConnection(data.from);
       const answer = await createAnswer(pc, data.sdp);
-      channel.trigger('client-signal-answer', {
-        from: myClientId,
-        to: data.from,
-        sdp: answer,
-      });
+      fetch('/api/webrtc/signal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomId,
+          event: 'server-signal-answer',
+          data: {
+            from: myClientId,
+            to: data.from,
+            sdp: answer,
+          }
+        })
+      }).catch(console.error);
     };
 
     const handleAnswer = async (data: {
@@ -179,14 +194,14 @@ export function useWebRTC(
       }
     };
 
-    channel.bind('client-signal-offer', handleOffer);
-    channel.bind('client-signal-answer', handleAnswer);
-    channel.bind('client-signal-ice', handleIce);
+    channel.bind('server-signal-offer', handleOffer);
+    channel.bind('server-signal-answer', handleAnswer);
+    channel.bind('server-signal-ice', handleIce);
 
     return () => {
-      channel.unbind('client-signal-offer', handleOffer);
-      channel.unbind('client-signal-answer', handleAnswer);
-      channel.unbind('client-signal-ice', handleIce);
+      channel.unbind('server-signal-offer', handleOffer);
+      channel.unbind('server-signal-answer', handleAnswer);
+      channel.unbind('server-signal-ice', handleIce);
       channelRef.current = null;
     };
   }, [pusher, roomId, myClientId, setupPeerConnection]);
@@ -214,15 +229,22 @@ export function useWebRTC(
         }
       });
 
-      // Create and send offer via Pusher client event
-      const channel = getChannel();
-      if (channel) {
+      // Create and send offer via API
+      if (roomId) {
         createOffer(pc).then((offer) => {
-          channel.trigger('client-signal-offer', {
-            from: myClientId,
-            to: peerId,
-            sdp: offer,
-          });
+          fetch('/api/webrtc/signal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              roomId,
+              event: 'server-signal-offer',
+              data: {
+                from: myClientId,
+                to: peerId,
+                sdp: offer,
+              }
+            })
+          }).catch(console.error);
         });
       }
     },
