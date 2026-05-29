@@ -200,7 +200,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const otherStats = otherUser ? stats.get(otherUser.id) : undefined;
   
   const remoteStreams = getRemoteStreams();
-  const otherStream = otherUser ? remoteStreams.get(otherUser.id) || null : null;
+  const otherStream = (otherUser && otherUser.clientId) ? remoteStreams.get(otherUser.clientId) || null : null;
 
   return (
     <Background>

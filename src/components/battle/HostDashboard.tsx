@@ -89,7 +89,7 @@ export function HostDashboard({
           </div>
         ) : (
           contestants.map((user) => {
-            const stream = remoteStreams.get(user.id);
+            const stream = user.clientId ? remoteStreams.get(user.clientId) : undefined;
             const userStats = stats.get(user.id);
             return (
               <div key={user.id} className="relative bg-black border border-white/10 rounded-xl overflow-hidden flex flex-col">
