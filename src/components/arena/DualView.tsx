@@ -30,17 +30,17 @@ export function DualView({
   const getLayoutClasses = () => {
     switch (layout) {
       case 'side-by-side':
-        return 'grid-cols-1 md:grid-cols-2';
+        return 'grid-cols-1 md:grid-cols-2 grid-rows-2 md:grid-rows-1';
       case 'focus-left':
-        return 'grid-cols-[70%_30%]';
+        return 'grid-cols-1 md:grid-cols-[70%_30%] grid-rows-2 md:grid-rows-1';
       case 'focus-right':
-        return 'grid-cols-[30%_70%]';
+        return 'grid-cols-1 md:grid-cols-[30%_70%] grid-rows-2 md:grid-rows-1';
       case 'vertical':
         return 'grid-cols-1 grid-rows-2';
       case 'quad':
-        return 'grid-cols-2 grid-rows-2'; // simplified handling for now
+        return 'grid-cols-1 md:grid-cols-2 grid-rows-2'; // simplified handling for now
       default:
-        return 'grid-cols-1 md:grid-cols-2';
+        return 'grid-cols-1 md:grid-cols-2 grid-rows-2 md:grid-rows-1';
     }
   };
 

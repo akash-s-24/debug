@@ -18,6 +18,7 @@ export default function CreateRoomPage() {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null);
+  const [isCustomTimeMode, setIsCustomTimeMode] = useState(false);
   
   const [config, setConfig] = useState<RoomConfig>({
     roomName: '',
@@ -151,8 +152,11 @@ export default function CreateRoomPage() {
                         <button
                           key={preset.value}
                           type="button"
-                          onClick={() => setConfig({...config, timerSeconds: preset.value})}
-                          className={`px-3 py-1.5 text-sm font-mono border transition-colors ${config.timerSeconds === preset.value ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
+                          onClick={() => {
+                            setIsCustomTimeMode(false);
+                            setConfig({...config, timerSeconds: preset.value});
+                          }}
+                          className={`px-3 py-1.5 text-sm font-mono border transition-colors ${!isCustomTimeMode && config.timerSeconds === preset.value ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
                         >
                           {preset.shortLabel}
                         </button>
@@ -160,16 +164,18 @@ export default function CreateRoomPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          const isCurrentlyCustom = !TIMER_PRESETS.some(p => p.value === config.timerSeconds);
-                          if (!isCurrentlyCustom) setConfig({...config, timerSeconds: 1800}); // default 30 min
+                          setIsCustomTimeMode(true);
+                          if (TIMER_PRESETS.some(p => p.value === config.timerSeconds)) {
+                            setConfig({...config, timerSeconds: 1200}); // default 20 min if switching from preset
+                          }
                         }}
-                        className={`px-3 py-1.5 text-sm font-mono border transition-colors ${!TIMER_PRESETS.some(p => p.value === config.timerSeconds) ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
+                        className={`px-3 py-1.5 text-sm font-mono border transition-colors ${isCustomTimeMode ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
                       >
                         Custom
                       </button>
                     </div>
                     
-                    {!TIMER_PRESETS.some(p => p.value === config.timerSeconds) && (
+                    {isCustomTimeMode && (
                       <div className="mt-3 animate-in fade-in slide-in-from-top-1">
                         <label className="text-xs font-display uppercase text-text-secondary ml-1">Custom Minutes</label>
                         <div className="flex items-center gap-2 mt-1">
@@ -177,10 +183,14 @@ export default function CreateRoomPage() {
                             type="number"
                             min="1"
                             max="300"
-                            value={Math.floor(config.timerSeconds / 60)}
+                            value={Math.floor(config.timerSeconds / 60) || ''}
                             onChange={(e) => {
-                              const mins = parseInt(e.target.value) || 1;
-                              setConfig({...config, timerSeconds: mins * 60});
+                              const mins = parseInt(e.target.value);
+                              if (!isNaN(mins)) {
+                                setConfig({...config, timerSeconds: mins * 60});
+                              } else {
+                                setConfig({...config, timerSeconds: 0});
+                              }
                             }}
                             className="bg-abyss border border-slate-dark text-text-primary px-3 py-2 focus:outline-none focus:border-neon-cyan transition-colors font-mono w-24 text-center"
                           />
