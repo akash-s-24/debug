@@ -26,7 +26,17 @@ export async function POST(req: Request) {
       return Response.json({ error: 'User not in room' }, { status: 404 });
     }
 
-    // Allow host to temporarily leave without destroying the room
+    const isHost = room.host.clientId === clientId;
+
+    if (isHost) {
+      // Host is leaving, destroy the room and notify everyone
+      await triggerRoomEvent(room.id, 'room-closed', { reason: 'Host closed the room' });
+      // We don't necessarily need to delete from Redis immediately, TTL will handle it,
+      // but let's change status to finished to be safe
+      room.status = 'finished';
+      await saveRoom(room);
+      return Response.json({ success: true, closed: true }, { status: 200 });
+    }
 
     // Remove from contestants and viewers
     room.contestants = room.contestants.filter((u) => u.clientId !== clientId);
