@@ -93,12 +93,19 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
       window.location.href = '/';
     };
 
+    const onUserKicked = (data: { clientId: string }) => {
+      if (data.clientId === getClientId()) {
+        window.location.href = '/';
+      }
+    };
+
     channel.bind('room-updated', onRoomUpdated);
     channel.bind('user-joined', onUserJoined);
     channel.bind('user-left', onUserLeft);
     channel.bind('stats-updated', onStatsUpdated);
     channel.bind('battle-ended', onBattleEnded);
     channel.bind('room-closed', onRoomClosed);
+    channel.bind('user-kicked', onUserKicked);
 
     // Presence events — when a member drops unexpectedly (e.g. closes tab)
     // IMPORTANT: Use a delay to avoid the Pusher disconnect/reconnect race.

@@ -6,6 +6,7 @@ import { BattleControls } from './BattleControls';
 import { DualView } from '../arena/DualView';
 import { StreamPanel } from './StreamPanel';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 
 interface HostDashboardProps {
   room: Room;
@@ -40,6 +41,24 @@ export function HostDashboard({
   // Up to 4 contestants supported visually for now
   const contestants = room.contestants;
 
+  const [showManagePlayers, setShowManagePlayers] = useState(false);
+  const [kickLoading, setKickLoading] = useState<string | null>(null);
+
+  const handleKick = async (targetClientId: string) => {
+    setKickLoading(targetClientId);
+    try {
+      await fetch('/api/rooms/kick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId: room.id, hostClientId: room.host.clientId, targetClientId }),
+      });
+    } catch (err) {
+      console.error('Failed to kick player:', err);
+    } finally {
+      setKickLoading(null);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-black/20 p-4 gap-4">
       {/* Top Bar: Room Info & Controls */}
@@ -56,6 +75,9 @@ export function HostDashboard({
               </button>
               <button onClick={handleCopyLink} className="text-xs text-neon-magenta hover:text-white transition-colors bg-neon-magenta/10 px-2 py-1 rounded border border-neon-magenta/30">
                 Copy Invite Link
+              </button>
+              <button onClick={() => setShowManagePlayers(true)} className="text-xs text-neon-cyan hover:text-white transition-colors bg-neon-cyan/10 px-2 py-1 rounded border border-neon-cyan/30">
+                Manage Players
               </button>
             </div>
           </div>
@@ -125,6 +147,64 @@ export function HostDashboard({
           </div>
         )}
       </div>
+      {/* Manage Players Modal */}
+      <Modal isOpen={showManagePlayers} onClose={() => setShowManagePlayers(false)} title="Manage Players">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+          {room.contestants.filter(u => u.id !== room.host.id).length === 0 && room.viewers.length === 0 ? (
+            <p className="text-text-secondary text-center py-4">No other players in the room.</p>
+          ) : (
+            <>
+              {room.contestants.filter(u => u.id !== room.host.id).length > 0 && (
+                <div>
+                  <h3 className="text-xs font-display uppercase tracking-widest text-text-muted mb-2 border-b border-white/10 pb-1">Contestants</h3>
+                  <div className="space-y-2">
+                    {room.contestants.filter(u => u.id !== room.host.id).map(user => (
+                      <div key={user.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                        <div>
+                          <span className="text-white font-medium">{user.name}</span>
+                          <span className="text-xs text-text-muted ml-2 font-mono">[{user.clientId}]</span>
+                        </div>
+                        <Button 
+                          variant="danger" 
+                          size="sm" 
+                          onClick={() => user.clientId && handleKick(user.clientId)}
+                          disabled={kickLoading === user.clientId}
+                        >
+                          {kickLoading === user.clientId ? 'KICKING...' : 'KICK'}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {room.viewers.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-display uppercase tracking-widest text-text-muted mb-2 border-b border-white/10 pb-1">Viewers</h3>
+                  <div className="space-y-2">
+                    {room.viewers.map(user => (
+                      <div key={user.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                        <div>
+                          <span className="text-white font-medium">{user.name}</span>
+                          <span className="text-xs text-text-muted ml-2 font-mono">[{user.clientId}]</span>
+                        </div>
+                        <Button 
+                          variant="danger" 
+                          size="sm" 
+                          onClick={() => user.clientId && handleKick(user.clientId)}
+                          disabled={kickLoading === user.clientId}
+                        >
+                          {kickLoading === user.clientId ? 'KICKING...' : 'KICK'}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }
