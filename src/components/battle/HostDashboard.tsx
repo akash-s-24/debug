@@ -43,41 +43,45 @@ export function HostDashboard({
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-black/20 p-4 gap-4">
       {/* Top Bar: Room Info & Controls */}
-      <div className="flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4">
-        <div>
-          <h2 className="text-xl font-display text-neon-cyan tracking-widest uppercase text-glow-cyan">Host Dashboard</h2>
-          <div className="flex gap-4 mt-2">
-            <div className="text-text-secondary text-sm">
-              Room Code: <span className="text-white font-mono">{room.code}</span>
+      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 gap-4">
+        <div className="w-full xl:w-auto">
+          <h2 className="text-lg md:text-xl font-display text-neon-cyan tracking-widest uppercase text-glow-cyan">Host Dashboard</h2>
+          <div className="flex flex-wrap gap-2 md:gap-4 mt-2">
+            <div className="text-text-secondary text-sm flex items-center gap-2">
+              Room Code: <span className="text-white font-mono bg-white/10 px-2 py-0.5 rounded">{room.code}</span>
             </div>
-            <button onClick={handleCopyCode} className="text-xs text-neon-violet hover:text-white transition-colors">
-              [Copy Code]
-            </button>
-            <button onClick={handleCopyLink} className="text-xs text-neon-magenta hover:text-white transition-colors">
-              [Copy Invite Link]
-            </button>
+            <div className="flex gap-2">
+              <button onClick={handleCopyCode} className="text-xs text-neon-violet hover:text-white transition-colors bg-neon-violet/10 px-2 py-1 rounded border border-neon-violet/30">
+                Copy Code
+              </button>
+              <button onClick={handleCopyLink} className="text-xs text-neon-magenta hover:text-white transition-colors bg-neon-magenta/10 px-2 py-1 rounded border border-neon-magenta/30">
+                Copy Invite Link
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="flex gap-4 items-center">
-          <div className="text-center">
-            <div className="text-xs text-text-secondary uppercase tracking-widest mb-1">Status</div>
-            <div className="text-white font-mono uppercase">
+        <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4 items-start sm:items-center border-t border-white/10 xl:border-none pt-4 xl:pt-0">
+          <div className="text-left sm:text-center shrink-0">
+            <div className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">Status</div>
+            <div className="text-white font-mono uppercase text-sm bg-black/50 px-3 py-1 rounded-full border border-white/10">
               {room.status === 'battle' ? (isPaused ? 'Paused' : 'Live') : room.status}
             </div>
           </div>
           
-          <div className="h-8 w-px bg-white/10 mx-2" />
+          <div className="hidden sm:block h-8 w-px bg-white/10 mx-2" />
 
-          <BattleControls 
-            roomId={room.id}
-            isHost={true}
-            status={room.status}
-            onStartBattle={() => onAction(room.status === 'paused' ? 'resume' : 'start')}
-            onPauseBattle={() => onAction('pause')}
-            onEndBattle={() => onAction('end')}
-            onChangeLayout={setLayout}
-          />
+          <div className="w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+            <BattleControls 
+              roomId={room.id}
+              isHost={true}
+              status={room.status}
+              onStartBattle={() => onAction(room.status === 'paused' ? 'resume' : 'start')}
+              onPauseBattle={() => onAction('pause')}
+              onEndBattle={() => onAction('end')}
+              onChangeLayout={setLayout}
+            />
+          </div>
         </div>
       </div>
 

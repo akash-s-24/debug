@@ -35,8 +35,8 @@ export function BattleControls({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full">
+      <div className="flex flex-wrap items-center gap-2">
         {status === 'waiting' || status === 'ready' || status === 'finished' ? (
           <Button variant="primary" size="sm" onClick={onStartBattle}>
             {status === 'finished' ? 'RESTART BATTLE' : 'START BATTLE'}

@@ -255,7 +255,7 @@ export default function CreateRoomPage() {
         <div className="flex flex-col items-center py-6 space-y-6">
           <div className="text-center">
             <p className="text-text-secondary mb-2 uppercase tracking-widest text-sm font-display">Your Room Code</p>
-            <div className="text-5xl font-mono text-neon-cyan text-glow-cyan bg-abyss border-2 border-neon-cyan p-6 rounded-lg tracking-[0.2em]">
+            <div className="text-3xl md:text-5xl font-mono text-neon-cyan text-glow-cyan bg-abyss border-2 border-neon-cyan p-4 md:p-6 rounded-lg tracking-[0.2em]">
               {createdRoomCode}
             </div>
           </div>
