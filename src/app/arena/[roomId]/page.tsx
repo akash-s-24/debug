@@ -31,6 +31,13 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
 
+  // Default hide sidebar on small screens
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+      setShowSidebar(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (isConnected && pusher) {
       // Generate a random viewer name
@@ -115,9 +122,9 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
       )}
 
       {/* Main Arena Area */}
-      <div className={`relative flex flex-col transition-all duration-300 ${showSidebar ? 'w-[calc(100%-350px)]' : 'w-full'}`}>
+      <div className={`relative flex flex-col transition-all duration-300 ${showSidebar ? 'w-full xl:w-[calc(100%-350px)]' : 'w-full'}`}>
         {/* Top Controls Overlay (Only visible on hover or when not fullscreen) */}
-        <div className="absolute top-0 left-0 w-full z-30 flex justify-between p-4 opacity-0 hover:opacity-100 transition-opacity">
+        <div className="absolute top-0 left-0 w-full z-30 flex flex-wrap justify-between p-2 sm:p-4 opacity-0 hover:opacity-100 transition-opacity gap-2">
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" onClick={() => router.push('/')}>Exit Arena</Button>
             <select 
@@ -135,7 +142,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
             <Button variant="ghost" size="sm" onClick={() => setShowSidebar(!showSidebar)}>
               {showSidebar ? 'Hide Panel' : 'Show Panel'}
             </Button>
-            <Button variant="ghost" size="sm" onClick={toggleFullscreen}>
+            <Button variant="ghost" size="sm" onClick={toggleFullscreen} className="hidden sm:flex">
               {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             </Button>
           </div>
@@ -162,15 +169,15 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
             />
           </div>
         ) : (
-          <div className="flex-1 flex items-center justify-center z-10 flex-col">
-            <h2 className="text-3xl font-display text-text-primary tracking-widest mb-4">WAITING FOR CONTESTANTS</h2>
-            <p className="text-text-secondary font-mono">Arena requires two challengers to begin.</p>
-            <div className="mt-8 flex gap-8">
-              <div className="w-64 h-40 border border-dashed border-white/20 rounded flex items-center justify-center bg-white/5">
-                {c1 ? <span className="text-neon-cyan font-bold">{c1.name} (Ready)</span> : <span className="text-text-muted">Player 1 Empty</span>}
+          <div className="flex-1 flex items-center justify-center z-10 flex-col px-4 text-center">
+            <h2 className="text-xl sm:text-3xl font-display text-text-primary tracking-widest mb-4">WAITING FOR CONTESTANTS</h2>
+            <p className="text-text-secondary font-mono text-sm sm:text-base">Arena requires two challengers to begin.</p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-8">
+              <div className="w-full sm:w-64 h-24 sm:h-40 border border-dashed border-white/20 rounded flex items-center justify-center bg-white/5 p-4">
+                {c1 ? <span className="text-neon-cyan font-bold truncate">{c1.name} (Ready)</span> : <span className="text-text-muted">Player 1 Empty</span>}
               </div>
-              <div className="w-64 h-40 border border-dashed border-white/20 rounded flex items-center justify-center bg-white/5">
-                {c2 ? <span className="text-neon-magenta font-bold">{c2.name} (Ready)</span> : <span className="text-text-muted">Player 2 Empty</span>}
+              <div className="w-full sm:w-64 h-24 sm:h-40 border border-dashed border-white/20 rounded flex items-center justify-center bg-white/5 p-4">
+                {c2 ? <span className="text-neon-magenta font-bold truncate">{c2.name} (Ready)</span> : <span className="text-text-muted">Player 2 Empty</span>}
               </div>
             </div>
           </div>
@@ -179,7 +186,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
 
       {/* Side Panel */}
       {showSidebar && (
-        <div className="w-[350px] flex-shrink-0 h-full border-l border-white/10 bg-black/40 backdrop-blur-xl flex flex-col z-20">
+        <div className="absolute right-0 xl:relative w-[300px] sm:w-[350px] flex-shrink-0 h-full border-l border-white/10 bg-black/80 xl:bg-black/40 backdrop-blur-xl flex flex-col z-40 xl:z-20 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] xl:shadow-none">
           <div className="p-4 border-b border-white/10 shrink-0">
             <div className="text-center font-display uppercase tracking-widest text-glow-cyan text-neon-cyan mb-2">DEBUG DUEL ARENA</div>
             <div className="text-xs text-text-muted text-center font-mono uppercase tracking-wider">Live Spectator Mode</div>
