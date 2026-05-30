@@ -11,7 +11,6 @@ import { BattleIntro } from '@/components/battle/BattleIntro';
 import { Button } from '@/components/ui/Button';
 import { usePusher } from '@/hooks/usePusher';
 import { useRoom } from '@/hooks/useRoom';
-import { useWebRTC } from '@/hooks/useWebRTC';
 import { useTimer } from '@/hooks/useTimer';
 import { getClientId } from '@/lib/client-id';
 import { LayoutMode } from '@/types';
@@ -22,8 +21,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const router = useRouter();
   
   const { pusher, isConnected } = usePusher();
-  const { room, stats, joinRoom, error: roomError } = useRoom(pusher);
-  const { remoteStreams } = useWebRTC(pusher, room?.id ?? null);
+  const { room, stats, codes, joinRoom, error: roomError } = useRoom(pusher);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
@@ -103,8 +101,8 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const stats1 = c1 ? stats.get(c1.id) : null;
   const stats2 = c2 ? stats.get(c2.id) : null;
   
-  const stream1 = c1?.clientId ? remoteStreams.get(c1.clientId) || null : null;
-  const stream2 = c2?.clientId ? remoteStreams.get(c2.clientId) || null : null;
+  const code1 = c1 ? codes.get(c1.id) || '// Waiting for code...' : '// Waiting for code...';
+  const code2 = c2 ? codes.get(c2.id) || '// Waiting for code...' : '// Waiting for code...';
 
   return (
     <div className="bg-void text-white h-screen w-screen overflow-hidden flex font-body selection:bg-neon-cyan/30">
@@ -151,8 +149,8 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
         {c1 && c2 ? (
           <div className="relative w-full h-full p-2 pb-0">
             <DualView
-              stream1={stream1}
-              stream2={stream2}
+              code1={code1}
+              code2={code2}
               user1={c1}
               user2={c2}
               stats1={stats1 || null}

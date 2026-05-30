@@ -48,4 +48,63 @@ export async function deleteRoom(roomId: string): Promise<void> {
   }
 }
 
+// ── Leaderboard Functions ─────────────────────────────────────────────
+
+export interface LeaderboardUser {
+  id: string;
+  rank: number;
+  name: string;
+  points: number;
+  wins: number;
+  language: string;
+}
+
+/**
+ * Update a user's score in the leaderboard.
+ */
+export async function updateUserScore(userId: string, name: string, points: number, isWin: boolean, language: string = 'TypeScript') {
+  const userKey = `user:${userId}`;
+  
+  // Set name and language if they don't exist
+  await redis.hsetnx(userKey, 'name', name);
+  await redis.hsetnx(userKey, 'language', language);
+  
+  if (isWin) {
+    await redis.hincrby(userKey, 'wins', 1);
+  }
+  
+  // Update points in sorted set
+  await redis.zincrby('leaderboard:points', points, userId);
+}
+
+/**
+ * Get top players for the leaderboard.
+ */
+export async function getTopPlayers(limit: number = 50): Promise<LeaderboardUser[]> {
+  // Get top users from sorted set
+  const topData = await redis.zrange('leaderboard:points', 0, limit - 1, { rev: true, withScores: true }) as (string | number)[];
+  
+  const players: LeaderboardUser[] = [];
+  for (let i = 0; i < topData.length; i += 2) {
+    const userId = topData[i] as string;
+    const points = topData[i + 1] as number;
+    const userDetails = await redis.hgetall(userKey(userId)) as Record<string, string | number> | null;
+    
+    players.push({
+      id: userId,
+      rank: Math.floor(i / 2) + 1,
+      name: (userDetails?.name as string) || 'Unknown Hacker',
+      points: Number(points),
+      wins: Number(userDetails?.wins || 0),
+      language: (userDetails?.language as string) || 'TypeScript'
+    });
+  }
+  
+  return players;
+}
+
+function userKey(userId: string) {
+  return `user:${userId}`;
+}
+
 export { redis };

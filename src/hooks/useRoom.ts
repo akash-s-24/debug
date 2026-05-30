@@ -16,6 +16,7 @@ import { setUserInfo } from '@/lib/pusher-client';
 interface UseRoomReturn {
   room: Room | null;
   stats: Map<string, CodingStats>;
+  codes: Map<string, string>;
   battleResult: BattleResult | null;
   joinRoom: (
     roomId: string,
@@ -31,6 +32,7 @@ interface UseRoomReturn {
 export function useRoom(pusher: PusherClient | null): UseRoomReturn {
   const [room, setRoom] = useState<Room | null>(null);
   const [stats, setStats] = useState<Map<string, CodingStats>>(new Map());
+  const [codes, setCodes] = useState<Map<string, string>>(new Map());
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [subscribedRoomId, setSubscribedRoomId] = useState<string | null>(null);
@@ -99,6 +101,14 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
       }
     };
 
+    const onCodeUpdated = (data: { userId: string; code: string }) => {
+      setCodes((prev) => {
+        const next = new Map(prev);
+        next.set(data.userId, data.code);
+        return next;
+      });
+    };
+
     channel.bind('room-updated', onRoomUpdated);
     channel.bind('user-joined', onUserJoined);
     channel.bind('user-left', onUserLeft);
@@ -106,6 +116,7 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     channel.bind('battle-ended', onBattleEnded);
     channel.bind('room-closed', onRoomClosed);
     channel.bind('user-kicked', onUserKicked);
+    channel.bind('code-updated', onCodeUpdated);
 
     // Presence events — when a member drops unexpectedly (e.g. closes tab)
     // IMPORTANT: Use a delay to avoid the Pusher disconnect/reconnect race.
@@ -281,6 +292,7 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
   return {
     room,
     stats,
+    codes,
     battleResult,
     joinRoom,
     leaveRoom,

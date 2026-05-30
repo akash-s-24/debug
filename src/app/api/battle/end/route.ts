@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       contestants: room.contestants.map((u) => ({
         userId: u.id,
         userName: u.name,
-        score: 0,
+        score: 50,
         stats: {
           userId: u.id,
           typingSpeed: 0,
@@ -62,6 +62,12 @@ export async function POST(req: Request) {
       duration,
       highlights: [],
     };
+
+    // Give points to all contestants who finished the battle
+    const { updateUserScore } = await import('@/lib/redis');
+    for (const c of room.contestants) {
+      await updateUserScore(c.id, c.name, 50, true, room.config.language);
+    }
 
     await saveRoom(room);
     await triggerRoomEvent(room.id, 'room-updated', room);

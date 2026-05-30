@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Background } from '@/components/layout/Background';
 import { ChallengeBar } from '@/components/battle/ChallengeBar';
-import { StreamPanel } from '@/components/battle/StreamPanel';
+import { EditorPanel } from '@/components/battle/EditorPanel';
 import { HostDashboard } from '@/components/battle/HostDashboard';
 import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
@@ -12,33 +12,32 @@ import { BattleIntro } from '@/components/battle/BattleIntro';
 import { Button } from '@/components/ui/Button';
 import { usePusher } from '@/hooks/usePusher';
 import { useRoom } from '@/hooks/useRoom';
-import { useScreenShare } from '@/hooks/useScreenShare';
-import { useWebRTC } from '@/hooks/useWebRTC';
+import { useCodeStats } from '@/hooks/useCodeStats';
 import { useTimer } from '@/hooks/useTimer';
 import { getClientId } from '@/lib/client-id';
 import { LayoutMode, UserRole } from '@/types';
 
 export default function BattlePage({ params }: { params: Promise<{ roomId: string }> }) {
   const resolvedParams = use(params);
-  const roomId = resolvedParams.roomId; // This is the URL slug (could be room code OR room ID)
+  const roomId = resolvedParams.roomId;
   const router = useRouter();
   const searchParams = useSearchParams();
   const role = (searchParams.get('role') as UserRole) || 'contestant';
   const name = searchParams.get('name') || 'Anonymous';
 
   const { pusher, isConnected } = usePusher();
-  const { room, stats, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
-  const { startSharing, stopSharing, localStream, isSharing, error: shareError } = useScreenShare();
-  
-  // ★ KEY FIX: Pass room.id (the actual ID used in Pusher channel names), not the URL slug
-  const actualRoomId = room?.id ?? null;
-  const { remoteStreams, addStream } = useWebRTC(pusher, actualRoomId);
+  const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
+
+  const clientId = typeof window !== 'undefined' ? getClientId() : '';
+  
+  // Local code and stats tracking
+  const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
+  const { stats: localStats, handleCodeChange: onCodeChange, handleValidation } = useCodeStats(myUserId);
+  const [localCode, setLocalCode] = useState('// Enter your code here...');
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
-
-  const clientId = typeof window !== 'undefined' ? getClientId() : '';
 
   const handleExit = useCallback(() => {
     leaveRoom();
@@ -57,7 +56,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       if (room.contestants.length >= 2) {
         queueMicrotask(() => setShowIntro(true));
       } else {
-        // If not enough contestants for intro, begin immediately
         const isHost = room?.host.clientId === clientId;
         if (isHost) {
           fetch('/api/battle/begin', {
@@ -70,50 +68,26 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     }
   }, [room?.status, room?.host.clientId, clientId, roomId, room?.contestants.length, role, router]);
 
-  // Simulate stats while sharing during battle
+  // Sync local code & stats to server
   useEffect(() => {
-    if (isSharing && room?.status === 'battle') {
-      const interval = setInterval(() => {
-        updateStats({
-          typingSpeed: Math.floor(Math.random() * 150) + 200,
-          momentum: Math.random() > 0.7 ? 'extreme' : Math.random() > 0.4 ? 'high' : 'medium',
-          streak: Math.floor(Math.random() * 10),
-        });
-      }, 3000);
-      return () => clearInterval(interval);
+    if (role === 'contestant' && room?.status === 'battle') {
+      // Broadcast Stats
+      updateStats(localStats);
+      
+      // Broadcast Code
+      fetch('/api/battle/code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId: room.id, clientId, code: localCode }),
+      }).catch(err => console.error('Failed to sync code:', err));
     }
-  }, [isSharing, room?.status, updateStats]);
+  }, [localCode, localStats, role, room?.status, room?.id, clientId, updateStats]);
 
-  // ★ KEY FIX: Broadcast WebRTC stream to all peers when sharing starts or new peers join
-  const connectedPeers = useRef<Set<string>>(new Set());
-  useEffect(() => {
-    if (localStream && room) {
-      const allPeers = [
-        room.host.clientId,
-        ...room.contestants.map(c => c.clientId),
-        ...room.viewers.map(v => v.clientId)
-      ].filter(id => id && id !== clientId) as string[];
-
-      console.log(`[Battle] Broadcasting stream to peers:`, allPeers);
-
-      allPeers.forEach(peerId => {
-        if (!connectedPeers.current.has(peerId)) {
-          console.log(`[Battle] Connecting to new peer: ${peerId}`);
-          addStream(peerId, localStream);
-          connectedPeers.current.add(peerId);
-        }
-      });
-    } else if (!localStream) {
-      connectedPeers.current.clear();
+  const handleCodeChange = (value: string | undefined) => {
+    if (value !== undefined) {
+      setLocalCode(value);
+      onCodeChange(value);
     }
-  }, [localStream, room, addStream, clientId]);
-
-  const handleStartShare = async () => {
-    await startSharing();
-  };
-
-  const handleStopShare = () => {
-    stopSharing();
   };
 
   const handleIntroComplete = useCallback(async () => {
@@ -177,8 +151,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   
   if (isHost) {
     // ── HOST DASHBOARD ──────────────────────────────────────────────────
-    // ★ KEY FIX: Pass reactive remoteStreams directly (no getRemoteStreams() call)
-    console.log(`[HOST] Rendering dashboard with ${remoteStreams.size} remote streams`);
     return (
       <Background>
         {showIntro && room.contestants.length >= 2 && (
@@ -203,8 +175,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           />
           <HostDashboard 
             room={room}
-            stats={stats}
-            remoteStreams={remoteStreams}
+            stats={remoteStats}
+            remoteCodes={remoteCodes}
             timeRemaining={timeRemaining}
             isRunning={isRunning}
             isPaused={isPaused}
@@ -218,11 +190,12 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   // ── PARTICIPANT ARENA ───────────────────────────────────────────────
   const myUser = room.contestants.find(c => c.clientId === clientId) || room.viewers.find(v => v.clientId === clientId) || { id: 'temp', name: name, role: 'viewer' as const, clientId };
   const otherUser = room.contestants.find(c => c.id !== myUser.id);
-  const myStats = stats.get(myUser.id);
-  const otherStats = otherUser ? stats.get(otherUser.id) : undefined;
   
-  // ★ KEY FIX: Use reactive remoteStreams directly, lookup by clientId
-  const otherStream = (otherUser && otherUser.clientId) ? remoteStreams.get(otherUser.clientId) || null : null;
+  const myStats = myUser.role === 'contestant' ? localStats : remoteStats.get(myUser.id);
+  const otherStats = otherUser ? remoteStats.get(otherUser.id) : undefined;
+  
+  const myCode = myUser.role === 'contestant' ? localCode : remoteCodes.get(myUser.id) || '// Waiting for code...';
+  const otherCode = otherUser ? remoteCodes.get(otherUser.id) || '// Waiting for code...' : '// Waiting for code...';
 
   return (
     <Background>
@@ -251,51 +224,33 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
         <div className="flex flex-1 overflow-hidden p-2 gap-2">
           {/* Main Battle Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {!isSharing && myUser.role === 'contestant' ? (
-              <div className="flex-1 flex flex-col items-center justify-center bg-black/40 border border-white/5 rounded-xl backdrop-blur-sm m-4">
-                <div className="text-5xl mb-6">📺</div>
-                <h2 className="text-2xl font-display text-text-primary mb-2">Ready to Enter the Arena?</h2>
-                <p className="text-text-secondary mb-8 text-center max-w-md">
-                  Share your IDE screen to broadcast your coding battle to the audience.
-                </p>
-                <Button variant="neon" size="lg" onClick={handleStartShare}>
-                  SHARE SCREEN NOW
-                </Button>
-                {shareError && <p className="text-neon-red mt-4">{shareError}</p>}
-              </div>
+            {layout === 'side-by-side' && otherUser ? (
+              <DualView
+                code1={myCode}
+                code2={otherCode}
+                user1={myUser as any}
+                user2={otherUser}
+                stats1={myStats || null}
+                stats2={otherStats || null}
+                layout={layout}
+                challenge={room.config.challenge}
+                isLocalUser1={myUser.role === 'contestant'}
+                isLocalUser2={false}
+                onCodeChange1={myUser.role === 'contestant' ? handleCodeChange : undefined}
+                onValidate1={myUser.role === 'contestant' ? handleValidation : undefined}
+              />
             ) : (
-              <div className="flex-1 relative flex flex-col">
-                {isSharing && (
-                  <div className="absolute top-2 right-2 z-20 flex gap-2">
-                    <Button variant="danger" size="sm" onClick={handleStopShare}>
-                      STOP SHARING
-                    </Button>
-                  </div>
-                )}
-                
-                {layout === 'side-by-side' && otherUser ? (
-                  <DualView
-                    stream1={localStream}
-                    stream2={otherStream}
-                    user1={myUser as any}
-                    user2={otherUser}
-                    stats1={myStats || null}
-                    stats2={otherStats || null}
-                    layout={layout}
-                    challenge={room.config.challenge}
-                  />
-                ) : (
-                  <div className="flex-1 relative h-full w-full p-2">
-                    <StreamPanel
-                      stream={localStream || (myUser.role === 'viewer' && otherStream ? otherStream : null)}
-                      userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
-                      isLocal={myUser.role === 'contestant'}
-                      isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}
-                      color="cyan"
-                      stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
-                    />
-                  </div>
-                )}
+              <div className="flex-1 relative h-full w-full p-2">
+                <EditorPanel
+                  code={myUser.role === 'viewer' && otherUser ? otherCode : myCode}
+                  userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
+                  isLocal={myUser.role === 'contestant'}
+                  isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}
+                  color="cyan"
+                  stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
+                  onChange={myUser.role === 'contestant' ? handleCodeChange : undefined}
+                  onValidation={myUser.role === 'contestant' ? handleValidation : undefined}
+                />
               </div>
             )}
           </div>

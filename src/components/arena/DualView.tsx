@@ -3,28 +3,40 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { User, CodingStats, LayoutMode } from '@/types';
-import { StreamPanel } from '../battle/StreamPanel';
+import { EditorPanel } from '../battle/EditorPanel';
 
 interface DualViewProps {
-  stream1: MediaStream | null;
-  stream2: MediaStream | null;
+  code1: string;
+  code2: string;
   user1: User;
   user2: User;
   stats1: CodingStats | null;
   stats2: CodingStats | null;
   layout: LayoutMode;
   challenge: string;
+  isLocalUser1?: boolean;
+  isLocalUser2?: boolean;
+  onCodeChange1?: (val: string | undefined) => void;
+  onCodeChange2?: (val: string | undefined) => void;
+  onValidate1?: (markers: any[]) => void;
+  onValidate2?: (markers: any[]) => void;
 }
 
 export function DualView({
-  stream1,
-  stream2,
+  code1,
+  code2,
   user1,
   user2,
   stats1,
   stats2,
   layout,
   challenge,
+  isLocalUser1 = false,
+  isLocalUser2 = false,
+  onCodeChange1,
+  onCodeChange2,
+  onValidate1,
+  onValidate2
 }: DualViewProps) {
   
   const getLayoutClasses = () => {
@@ -48,24 +60,28 @@ export function DualView({
     <div className="relative w-full h-full flex-grow overflow-hidden bg-void">
       <div className={`w-full h-full grid ${getLayoutClasses()} gap-1 p-1`}>
         <motion.div layout transition={{ type: 'spring', damping: 25, stiffness: 120 }} className="relative h-full">
-          <StreamPanel 
-            stream={stream1} 
+          <EditorPanel 
+            code={code1}
             userName={user1.name} 
-            isLocal={false} 
+            isLocal={isLocalUser1} 
             isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'} 
             color="cyan" 
-            stats={stats1} 
+            stats={stats1}
+            onChange={onCodeChange1}
+            onValidation={onValidate1}
           />
         </motion.div>
         
         <motion.div layout transition={{ type: 'spring', damping: 25, stiffness: 120 }} className="relative h-full">
-          <StreamPanel 
-            stream={stream2} 
+          <EditorPanel 
+            code={code2}
             userName={user2.name} 
-            isLocal={false} 
+            isLocal={isLocalUser2} 
             isActive={stats2?.momentum === 'high' || stats2?.momentum === 'extreme'} 
             color="magenta" 
-            stats={stats2} 
+            stats={stats2}
+            onChange={onCodeChange2}
+            onValidation={onValidate2}
           />
         </motion.div>
       </div>

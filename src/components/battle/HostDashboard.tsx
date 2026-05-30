@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { Room, CodingStats, LayoutMode } from '@/types';
 import { BattleControls } from './BattleControls';
 import { DualView } from '../arena/DualView';
-import { StreamPanel } from './StreamPanel';
+import { EditorPanel } from './EditorPanel';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 
 interface HostDashboardProps {
   room: Room;
   stats: Map<string, CodingStats>;
-  remoteStreams: Map<string, MediaStream>;
+  remoteCodes: Map<string, string>;
   timeRemaining: number;
   isRunning: boolean;
   isPaused: boolean;
@@ -21,7 +21,7 @@ interface HostDashboardProps {
 export function HostDashboard({
   room,
   stats,
-  remoteStreams,
+  remoteCodes,
   timeRemaining,
   isRunning,
   isPaused,
@@ -117,8 +117,8 @@ export function HostDashboard({
           </div>
         ) : contestants.length === 2 ? (
           <DualView
-            stream1={contestants[0].clientId ? remoteStreams.get(contestants[0].clientId) || null : null}
-            stream2={contestants[1].clientId ? remoteStreams.get(contestants[1].clientId) || null : null}
+            code1={remoteCodes.get(contestants[0].id) || '// Waiting for code...'}
+            code2={remoteCodes.get(contestants[1].id) || '// Waiting for code...'}
             user1={contestants[0]}
             user2={contestants[1]}
             stats1={stats.get(contestants[0].id) || null}
@@ -129,12 +129,12 @@ export function HostDashboard({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full w-full">
             {contestants.map((user) => {
-              const stream = user.clientId ? remoteStreams.get(user.clientId) : undefined;
+              const code = remoteCodes.get(user.id) || '// Waiting for code...';
               const userStats = stats.get(user.id);
               return (
                 <div key={user.id} className="relative bg-black border border-white/10 rounded-xl overflow-hidden flex flex-col">
-                  <StreamPanel
-                    stream={stream || null}
+                  <EditorPanel
+                    code={code}
                     userName={user.name}
                     isLocal={false}
                     isActive={userStats?.momentum === 'high' || userStats?.momentum === 'extreme'}
