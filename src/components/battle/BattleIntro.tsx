@@ -65,11 +65,11 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
           <div key="vs-screen" className="relative w-full h-full flex items-center justify-center">
             {/* Player 1 */}
             <motion.div
-              initial={{ x: '-100vw', skewX: -20 }}
+              initial={{ x: '-100vw', skewX: -10 }}
               animate={{ x: '-15vw', skewX: 0 }}
               className="absolute text-right"
             >
-              <div className="text-neon-cyan font-display font-bold text-6xl uppercase tracking-wider text-glow-cyan">
+              <div className="text-neon-cyan font-display font-bold text-5xl md:text-6xl uppercase tracking-wider text-glow-cyan">
                 {contestant1.name}
               </div>
               <div className="text-text-primary mt-2 font-mono text-xl bg-neon-cyan/20 px-4 py-1 inline-block [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]">
@@ -79,11 +79,11 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
 
             {/* Player 2 */}
             <motion.div
-              initial={{ x: '100vw', skewX: 20 }}
+              initial={{ x: '100vw', skewX: 10 }}
               animate={{ x: '15vw', skewX: 0 }}
               className="absolute text-left"
             >
-              <div className="text-neon-magenta font-display font-bold text-6xl uppercase tracking-wider text-glow-magenta">
+              <div className="text-neon-magenta font-display font-bold text-5xl md:text-6xl uppercase tracking-wider text-glow-magenta">
                 {contestant2.name}
               </div>
               <div className="text-text-primary mt-2 font-mono text-xl bg-neon-magenta/20 px-4 py-1 inline-block [clip-path:polygon(10px_0,100%_0,100%_100%,0_100%,0_10px)]">
@@ -94,10 +94,9 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
             {/* VS Symbol */}
             {stage >= 2 && (
               <motion.div
-                initial={{ scale: 0, rotate: -180 }}
+                initial={{ scale: 0, rotate: -90 }}
                 animate={{ scale: 1, rotate: 0 }}
-                className="absolute z-10 text-9xl font-display font-black text-white italic"
-                style={{ textShadow: '0 0 20px #fff, 0 0 40px #7B2FF7, 0 0 80px #7B2FF7' }}
+                className="absolute z-10 text-8xl md:text-9xl font-display font-black text-white italic text-glow-violet"
               >
                 VS
               </motion.div>
@@ -105,29 +104,28 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
 
             {/* Challenge Info */}
             <motion.div
-              initial={{ y: 100, opacity: 0 }}
+              initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 1 }}
+              transition={{ delay: 0.5 }}
               className="absolute bottom-20 text-center w-full"
             >
               <div className="text-text-secondary font-mono tracking-widest text-sm mb-2 uppercase">Current Challenge</div>
-              <div className="text-white font-display text-3xl tracking-wide text-glow-violet">{challenge}</div>
+              <div className="text-white font-display text-2xl md:text-3xl tracking-wide text-glow-violet">{challenge}</div>
             </motion.div>
           </div>
         )}
 
         {/* Countdown */}
         {stage >= 3 && stage <= 5 && (
-          <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/60 backdrop-blur-sm">
+          <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/80">
             <AnimatePresence mode="popLayout">
               <motion.div
                 key={`count-${stage}`}
-                initial={{ scale: 3, opacity: 0 }}
+                initial={{ scale: 2, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="text-9xl font-display font-black text-neon-yellow text-glow-yellow"
-                style={{ textShadow: '0 0 30px #EEFF00, 0 0 60px #EEFF00' }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-[8rem] md:text-[10rem] font-display font-black text-neon-yellow text-glow-yellow"
               >
                 {6 - stage}
               </motion.div>
@@ -139,18 +137,15 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
         {stage === 6 && (
           <motion.div
             key="fight"
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: [1.5, 1], opacity: 1 }}
-            exit={{ opacity: 0, scale: 2 }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.2 }}
+            transition={{ duration: 0.4 }}
             className="absolute inset-0 flex items-center justify-center z-30 bg-white"
           >
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 0.2 }}
-              className="text-[12rem] font-display font-black text-black tracking-tighter italic"
-            >
+            <div className="text-[8rem] md:text-[12rem] font-display font-black text-black tracking-tighter italic">
               CODE!
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

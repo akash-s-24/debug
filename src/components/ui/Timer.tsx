@@ -54,7 +54,35 @@ export function Timer({
     if (timeRemaining <= 0) {
       onEndRef.current?.();
     }
-  }, [timeRemaining]);
+
+    if (timeRemaining === 60 && isRunning && !isPaused) {
+      // 1-minute warning alarm
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContext) {
+          const playBeep = (delay: number) => {
+            setTimeout(() => {
+              const ctx = new AudioContext();
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(880, ctx.currentTime);
+              gain.gain.setValueAtTime(0, ctx.currentTime);
+              gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+              gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start();
+              osc.stop(ctx.currentTime + 0.6);
+            }, delay);
+          };
+          playBeep(0);
+          playBeep(500);
+          playBeep(1000);
+        }
+      } catch(e) {}
+    }
+  }, [timeRemaining, isRunning, isPaused]);
 
   const time = timeRemaining;
 

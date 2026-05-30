@@ -47,11 +47,11 @@ export function useTimer(room: Room | null): UseTimerReturn {
     if (pausedAt) {
       // Paused — freeze at the moment we paused
       const elapsed = Math.floor((pausedAt - battleStartedAt - totalPausedMs) / 1000);
-      timeRemaining = Math.max(0, timerSeconds - elapsed);
+      timeRemaining = Math.min(timerSeconds, Math.max(0, timerSeconds - elapsed));
     } else if (room.status === 'battle') {
       // Running — compute from current time using effective start time
       const elapsed = Math.floor(Math.max(0, now - effectiveStartedAt - totalPausedMs) / 1000);
-      timeRemaining = Math.max(0, timerSeconds - elapsed);
+      timeRemaining = Math.min(timerSeconds, Math.max(0, timerSeconds - elapsed));
     } else if (room.status === 'finished') {
       timeRemaining = 0;
     }
