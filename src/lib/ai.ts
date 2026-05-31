@@ -12,7 +12,7 @@ export async function analyzeCodeErrors(code: string, language: string): Promise
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const prompt = `
-    You are a strict code analyzer and syntax checker.
+    You are an extremely strict, hardcore code analyzer. 
     Language: ${language}
     
     Code to analyze:
@@ -20,11 +20,23 @@ export async function analyzeCodeErrors(code: string, language: string): Promise
     ${code}
     \`\`\`
     
-    Count the exact total number of syntax and logical errors in this code. 
-    Respond ONLY with a valid JSON object in this exact format:
+    Your task is to detect EVERY SINGLE bug in this code. This includes:
+    1. Syntax errors
+    2. Logical errors
+    3. Type errors
+    4. Missing parentheses/brackets
+    5. Undefined variables or functions
+    6. Incorrect method calls (e.g. using .split() on an object that doesn't support it)
+    7. Semantic errors (logic that will fail at runtime)
+    
+    Respond ONLY with a valid JSON object in this EXACT format:
     {
-      "errorCount": number
+      "errors": [
+        { "type": "syntax", "description": "missing colon" },
+        { "type": "logic", "description": "map object has no split method" }
+      ]
     }
+    If the code is absolutely perfect and bug-free, return { "errors": [] }.
     Do NOT include markdown formatting like \`\`\`json. Just the raw JSON object.
     `;
 
@@ -37,8 +49,9 @@ export async function analyzeCodeErrors(code: string, language: string): Promise
     
     const data = JSON.parse(cleanJson);
     
-    if (typeof data.errorCount === 'number') {
-      return data.errorCount;
+    if (data && Array.isArray(data.errors)) {
+      console.log('[AI] Detected ' + data.errors.length + ' errors: ', data.errors);
+      return data.errors.length;
     }
     return 0;
   } catch (error) {

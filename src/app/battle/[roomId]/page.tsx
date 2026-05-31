@@ -34,7 +34,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
   const { reactions } = useReactions(roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
-  const { playGong, playWarning, playVictory } = useSoundEffects();
+  const { playGong, playWarning, playVictory, playAlarm } = useSoundEffects();
   
   // Local code and stats tracking
   const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
@@ -74,6 +74,49 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       playWarning();
     }
   }, [timeRemaining, isRunning, isPaused, playWarning]);
+
+  const handleHostAction = useCallback(async (action: 'start' | 'pause' | 'resume' | 'end') => {
+    const endpoints: Record<string, string> = {
+      start: '/api/battle/start',
+      pause: '/api/battle/pause',
+      resume: '/api/battle/resume',
+      end: '/api/battle/end',
+    };
+
+    try {
+      const body: any = { roomId, clientId };
+      
+      if (action === 'end') {
+        body.codes = Object.fromEntries(remoteCodes.entries());
+        
+        // Merge local stats if host is also a contestant
+        const allStats = new Map(remoteStats);
+        if (myUserId !== 'temp' && localStats) {
+          allStats.set(myUserId, localStats);
+        }
+        body.finalStats = Object.fromEntries(allStats.entries());
+      }
+
+      await fetch(endpoints[action], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      console.error(`[Battle] Failed to ${action}:`, err);
+    }
+  }, [roomId, clientId, remoteCodes, remoteStats, myUserId, localStats]);
+
+  // Handle timer hitting zero
+  useEffect(() => {
+    if (timeRemaining === 0 && isRunning && !isPaused && room?.status === 'battle') {
+      playAlarm();
+      const isHost = room?.host.clientId === clientId;
+      if (isHost) {
+        handleHostAction('end');
+      }
+    }
+  }, [timeRemaining, isRunning, isPaused, room?.status, room?.host.clientId, clientId, playAlarm, handleHostAction]);
 
   useEffect(() => {
     if (isConnected && pusher) {
@@ -137,37 +180,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     }
   }, [room?.host.clientId, clientId, roomId]);
 
-  const handleHostAction = useCallback(async (action: 'start' | 'pause' | 'resume' | 'end') => {
-    const endpoints: Record<string, string> = {
-      start: '/api/battle/start',
-      pause: '/api/battle/pause',
-      resume: '/api/battle/resume',
-      end: '/api/battle/end',
-    };
-
-    try {
-      const body: any = { roomId, clientId };
-      
-      if (action === 'end') {
-        body.codes = Object.fromEntries(remoteCodes.entries());
-        
-        // Merge local stats if host is also a contestant
-        const allStats = new Map(remoteStats);
-        if (myUserId !== 'temp' && localStats) {
-          allStats.set(myUserId, localStats);
-        }
-        body.finalStats = Object.fromEntries(allStats.entries());
-      }
-
-      await fetch(endpoints[action], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-    } catch (err) {
-      console.error(`[Battle] Failed to ${action}:`, err);
-    }
-  }, [roomId, clientId]);
 
   if (roomError) {
     return (

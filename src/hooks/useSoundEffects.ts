@@ -95,5 +95,30 @@ export function useSoundEffects() {
     });
   }, []);
 
-  return { playGong, playWarning, playVictory };
+  const playAlarm = useCallback(() => {
+    if (!audioCtxRef.current) return;
+    const ctx = audioCtxRef.current;
+    
+    // Play a harsh buzzer/alarm sound 3 times
+    for (let i = 0; i < 3; i++) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(300, ctx.currentTime + i * 0.4);
+      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + i * 0.4 + 0.3);
+      
+      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.4);
+      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + i * 0.4 + 0.05);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.4 + 0.3);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(ctx.currentTime + i * 0.4);
+      osc.stop(ctx.currentTime + i * 0.4 + 0.3);
+    }
+  }, []);
+
+  return { playGong, playWarning, playVictory, playAlarm };
 }
