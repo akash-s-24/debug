@@ -9,10 +9,14 @@ import { HostDashboard } from '@/components/battle/HostDashboard';
 import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
 import { BattleIntro } from '@/components/battle/BattleIntro';
+import { VictoryScreen } from '@/components/battle/VictoryScreen';
+import { FloatingReactions } from '@/components/battle/FloatingReactions';
 import { Button } from '@/components/ui/Button';
 import { usePusher } from '@/hooks/usePusher';
 import { useRoom } from '@/hooks/useRoom';
 import { useCodeStats } from '@/hooks/useCodeStats';
+import { useReactions } from '@/hooks/useReactions';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useTimer } from '@/hooks/useTimer';
 import { getClientId } from '@/lib/client-id';
 import { LayoutMode, UserRole } from '@/types';
@@ -24,12 +28,13 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const searchParams = useSearchParams();
   const role = (searchParams.get('role') as UserRole) || 'contestant';
   const name = searchParams.get('name') || 'Anonymous';
+  const clientId = typeof window !== 'undefined' ? getClientId() : '';
 
   const { pusher, isConnected } = usePusher();
   const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
+  const { reactions } = useReactions(roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
-
-  const clientId = typeof window !== 'undefined' ? getClientId() : '';
+  const { playGong, playWarning, playVictory } = useSoundEffects();
   
   // Local code and stats tracking
   const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
@@ -53,6 +58,22 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     leaveRoom();
     router.push('/');
   }, [leaveRoom, router]);
+
+  useEffect(() => {
+    if (!room) return;
+    if (room.status === 'battle' && !isPaused) {
+      playGong();
+    } else if (room.status === 'finished') {
+      playVictory();
+    }
+  }, [room?.status, isPaused, playGong, playVictory]);
+
+  // Handle warning sound
+  useEffect(() => {
+    if (timeRemaining === 60 && isRunning && !isPaused) {
+      playWarning();
+    }
+  }, [timeRemaining, isRunning, isPaused, playWarning]);
 
   useEffect(() => {
     if (isConnected && pusher) {
@@ -217,6 +238,16 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           onComplete={handleIntroComplete}
         />
       )}
+
+      {room.status === 'finished' && (
+        <VictoryScreen 
+          contestants={room.contestants} 
+          stats={remoteStats} 
+          onClose={handleExit} 
+        />
+      )}
+
+      <FloatingReactions reactions={reactions} />
       
       <div className="flex flex-col h-screen overflow-hidden">
         <ChallengeBar 
@@ -229,6 +260,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           isPaused={isPaused}
           onExit={handleExit}
           isHost={false}
+          roomId={room.id}
+          userName={myUser.name}
         />
 
         <div className="flex flex-1 overflow-hidden p-2 gap-2">

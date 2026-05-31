@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DuelType } from '@/types';
 import { Badge } from '../ui/Badge';
 import { Timer } from '../ui/Timer';
+import { Button } from '../ui/Button';
+import { useReactions } from '@/hooks/useReactions';
+import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline';
 
 interface ChallengeBarProps {
   title: string;
@@ -16,6 +19,8 @@ interface ChallengeBarProps {
   isPaused: boolean;
   onExit?: () => void;
   isHost?: boolean;
+  roomId?: string;
+  userName?: string;
 }
 
 export function ChallengeBar({
@@ -28,7 +33,11 @@ export function ChallengeBar({
   isPaused,
   onExit,
   isHost = false,
+  roomId,
+  userName,
 }: ChallengeBarProps) {
+  const { sendReaction } = useReactions(roomId);
+
   return (
     <motion.div
       initial={{ y: -50, opacity: 0 }}
@@ -53,13 +62,30 @@ export function ChallengeBar({
           <Timer timeRemaining={timeRemaining} isRunning={isRunning} isPaused={isPaused} size="md" />
         </div>
         
+        {roomId && (
+          <div className="flex gap-2 mr-2 border-r border-white/10 pr-4">
+            {['🔥', '🤯', '💀', '👏'].map(emoji => (
+              <button 
+                key={emoji}
+                onClick={() => sendReaction(emoji, userName || 'Anonymous')}
+                className="text-lg hover:scale-125 transition-transform bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center"
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        )}
+
         {onExit && (
-          <button 
+          <Button 
+            variant="danger" 
+            size="sm" 
             onClick={onExit}
-            className="px-3 py-1.5 md:px-4 md:py-2 border border-neon-red/50 text-neon-red bg-neon-red/10 hover:bg-neon-red hover:text-white rounded-md font-display tracking-widest uppercase transition-colors text-xs md:text-sm whitespace-nowrap"
+            className="border-neon-red/50 text-neon-red hover:bg-neon-red/10 hover:text-white"
           >
+            <ArrowLeftStartOnRectangleIcon className="w-4 h-4 mr-2" />
             {isHost ? 'Disband Room' : 'Exit Arena'}
-          </button>
+          </Button>
         )}
       </div>
     </motion.div>

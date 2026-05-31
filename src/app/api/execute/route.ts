@@ -23,16 +23,20 @@ export async function POST(req: Request) {
       return Response.json({ error: `Unsupported language: ${language}` }, { status: 400 });
     }
 
-    // Call Judge0 CE public API
-    const response = await fetch('https://ce.judge0.com/submissions?base64_encoded=false&wait=true', {
+    // Encode payload to Base64 to prevent JSON parsing errors with special chars
+    const encodedCode = Buffer.from(code).toString('base64');
+    const encodedStdin = stdin ? Buffer.from(stdin).toString('base64') : '';
+
+    // Call Judge0 CE public API with base64_encoded=true
+    const response = await fetch('https://ce.judge0.com/submissions?base64_encoded=true&wait=true', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        source_code: code,
+        source_code: encodedCode,
         language_id: languageId,
-        stdin: stdin || '',
+        stdin: encodedStdin,
       }),
     });
 
@@ -43,18 +47,28 @@ export async function POST(req: Request) {
 
     const data = await response.json();
     
+    // Helper to decode base64
+    const decodeBase64 = (b64: string | null) => {
+      if (!b64) return null;
+      return Buffer.from(b64, 'base64').toString('utf-8');
+    };
+
     // Extract output
     let output = '';
-    if (data.compile_output) {
-      output += `[Compiler Output]\n${data.compile_output}\n`;
+    const compileOut = decodeBase64(data.compile_output);
+    const stderrOut = decodeBase64(data.stderr);
+    const stdoutOut = decodeBase64(data.stdout);
+
+    if (compileOut) {
+      output += `[Compiler Output]\n${compileOut}\n`;
     }
-    if (data.stderr) {
-      output += `[Error]\n${data.stderr}\n`;
+    if (stderrOut) {
+      output += `[Error]\n${stderrOut}\n`;
     }
-    if (data.stdout) {
-      output += `${data.stdout}\n`;
+    if (stdoutOut) {
+      output += `${stdoutOut}\n`;
     }
-    if (!data.compile_output && !data.stderr && !data.stdout) {
+    if (!compileOut && !stderrOut && !stdoutOut) {
       output = `[Execution completed with status: ${data.status?.description || 'Unknown'}]`;
     }
 
