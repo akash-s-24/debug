@@ -247,23 +247,34 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 language={room.config.language}
                 isLocalUser1={myUser.role === 'contestant'}
                 isLocalUser2={false}
+                hideCode1={myUser.role === 'contestant' && room.status !== 'battle'}
                 hideCode2={myUser.role === 'contestant'}
                 onCodeChange1={myUser.role === 'contestant' ? handleCodeChange : undefined}
                 onValidate1={myUser.role === 'contestant' ? handleValidation : undefined}
               />
             ) : (
               <div className="flex-1 relative h-full w-full p-2">
-                <EditorPanel
-                  code={myUser.role === 'viewer' && otherUser ? otherCode : myCode}
-                  language={room.config.language}
-                  userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
-                  isLocal={myUser.role === 'contestant'}
-                  isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}
-                  color="cyan"
-                  stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
-                  onChange={myUser.role === 'contestant' ? handleCodeChange : undefined}
-                  onValidation={myUser.role === 'contestant' ? handleValidation : undefined}
-                />
+                {myUser.role === 'contestant' && room.status !== 'battle' ? (
+                  <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-xl border border-white/10 p-8 text-center">
+                    <div>
+                      <div className="text-4xl mb-4">🔒</div>
+                      <h3 className="text-xl font-display tracking-widest text-text-primary uppercase mb-2">Battle Not Started</h3>
+                      <p className="text-sm font-mono text-text-secondary">Code is locked until the host starts the battle.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <EditorPanel
+                    code={myUser.role === 'viewer' && otherUser ? otherCode : myCode}
+                    language={room.config.language}
+                    userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
+                    isLocal={myUser.role === 'contestant'}
+                    isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}
+                    color="cyan"
+                    stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
+                    onChange={myUser.role === 'contestant' ? handleCodeChange : undefined}
+                    onValidation={myUser.role === 'contestant' ? handleValidation : undefined}
+                  />
+                )}
               </div>
             )}
           </div>
