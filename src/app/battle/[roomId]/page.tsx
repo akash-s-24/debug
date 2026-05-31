@@ -38,7 +38,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   
   // Local code and stats tracking
   const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
-  const { stats: localStats, handleCodeChange: onCodeChange, handleValidation } = useCodeStats(myUserId);
+  const { stats: localStats, handleCodeChange: onCodeChange, handleValidation, handleTerminalChange } = useCodeStats(myUserId);
   const [localCode, setLocalCode] = useState('// Enter your code here...');
   const initialCodeLoaded = useRef(false);
 
@@ -315,6 +315,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 hideCode2={myUser.role === 'contestant'}
                 onCodeChange1={myUser.role === 'contestant' ? handleCodeChange : undefined}
                 onValidate1={myUser.role === 'contestant' ? handleValidation : undefined}
+                onTerminalChange1={myUser.role === 'contestant' ? handleTerminalChange : undefined}
               />
             ) : (
               <div className="flex-1 relative h-full w-full p-2">
@@ -337,6 +338,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                     stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
                     onChange={myUser.role === 'contestant' ? handleCodeChange : undefined}
                     onValidation={myUser.role === 'contestant' ? handleValidation : undefined}
+                    onTerminalChange={myUser.role === 'contestant' ? handleTerminalChange : undefined}
                   />
                 )}
               </div>

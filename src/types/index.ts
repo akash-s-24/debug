@@ -57,6 +57,10 @@ export interface CodingStats {
   momentum: 'low' | 'medium' | 'high' | 'extreme';
   initialErrors: number;
   errorsSolved: number;
+  terminalOutput?: string;
+  terminalInput?: string;
+  showTerminal?: boolean;
+  activeTab?: 'input' | 'output';
 }
 
 export interface StreamStatus {

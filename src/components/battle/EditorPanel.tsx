@@ -16,6 +16,7 @@ interface EditorPanelProps {
   language?: string;
   onChange?: (value: string | undefined) => void;
   onValidation?: (markers: any[]) => void;
+  onTerminalChange?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => void;
 }
 
 export function EditorPanel({
@@ -27,7 +28,8 @@ export function EditorPanel({
   code,
   language = 'typescript',
   onChange,
-  onValidation
+  onValidation,
+  onTerminalChange
 }: EditorPanelProps) {
   const monaco = useMonaco();
   const [output, setOutput] = useState<string | null>(null);
@@ -36,11 +38,29 @@ export function EditorPanel({
   const [showTerminal, setShowTerminal] = useState(false);
   const [activeTab, setActiveTab] = useState<'input' | 'output'>('output');
 
+  // Sync remote terminal state if not local
+  const currentOutput = isLocal ? output : stats?.terminalOutput ?? null;
+  const currentStdin = isLocal ? stdin : stats?.terminalInput ?? '';
+  const currentShowTerminal = isLocal ? showTerminal : stats?.showTerminal ?? false;
+  const currentActiveTab = isLocal ? activeTab : stats?.activeTab ?? 'output';
+
+  // Broadcast terminal changes
+  const updateTerminal = (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => {
+    if (updates.terminalOutput !== undefined) setOutput(updates.terminalOutput);
+    if (updates.terminalInput !== undefined) setStdin(updates.terminalInput);
+    if (updates.showTerminal !== undefined) setShowTerminal(updates.showTerminal);
+    if (updates.activeTab !== undefined) setActiveTab(updates.activeTab);
+    
+    if (isLocal && onTerminalChange) {
+      onTerminalChange(updates);
+    }
+  };
+
   const handleRunCode = async () => {
     if (!code) return;
     setIsExecuting(true);
-    setShowTerminal(true);
-    setActiveTab('output');
+    updateTerminal({ showTerminal: true, activeTab: 'output' });
+
     try {
       const res = await fetch('/api/execute', {
         method: 'POST',
@@ -49,12 +69,12 @@ export function EditorPanel({
       });
       const data = await res.json();
       if (!res.ok) {
-        setOutput(data.error || 'Execution failed');
+        updateTerminal({ terminalOutput: data.error || 'Execution failed' });
       } else {
-        setOutput(data.output || 'No output');
+        updateTerminal({ terminalOutput: data.output || 'No output' });
       }
     } catch (err) {
-      setOutput('Failed to run code. Network error.');
+      updateTerminal({ terminalOutput: 'Failed to run code. Network error.' });
     } finally {
       setIsExecuting(false);
     }
@@ -100,8 +120,7 @@ export function EditorPanel({
               <div className="flex items-center gap-2 mr-2">
                 <button 
                   onClick={() => {
-                    setShowTerminal(!showTerminal);
-                    setActiveTab('input');
+                    updateTerminal({ showTerminal: !showTerminal, activeTab: 'input' });
                   }}
                   className="flex items-center gap-1 bg-white/5 hover:bg-white/10 transition-colors px-2 py-1 rounded text-text-secondary border border-white/10"
                 >
@@ -129,7 +148,7 @@ export function EditorPanel({
       </div>
 
       {/* Monaco Editor Container */}
-      <div className={`flex-1 relative flex flex-col ${showTerminal ? 'h-1/2' : 'h-full'}`}>
+      <div className={`flex-1 relative flex flex-col ${currentShowTerminal ? 'h-1/2' : 'h-full'}`}>
         <Editor
           height="100%"
           language={language.toLowerCase()}
@@ -170,7 +189,7 @@ export function EditorPanel({
       </div>
 
       {/* Terminal UI */}
-      {showTerminal && (
+      {currentShowTerminal && (
         <div className="h-1/2 bg-black border-t border-white/10 flex flex-col relative z-10 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-white/5">
             <div className="flex items-center gap-4">
@@ -181,36 +200,39 @@ export function EditorPanel({
               
               <div className="flex gap-2">
                 <button 
-                  onClick={() => setActiveTab('input')}
-                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${activeTab === 'input' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
+                  onClick={() => isLocal && updateTerminal({ activeTab: 'input' })}
+                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${currentActiveTab === 'input' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
                 >
                   Input (stdin)
                 </button>
                 <button 
-                  onClick={() => setActiveTab('output')}
-                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${activeTab === 'output' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
+                  onClick={() => isLocal && updateTerminal({ activeTab: 'output' })}
+                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${currentActiveTab === 'output' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
                 >
                   Output
                 </button>
               </div>
             </div>
-            <button onClick={() => setShowTerminal(false)} className="text-text-muted hover:text-white transition-colors">
-              <XMarkIcon className="w-4 h-4" />
-            </button>
+            {isLocal && (
+              <button onClick={() => updateTerminal({ showTerminal: false })} className="text-text-muted hover:text-white transition-colors">
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+            )}
           </div>
           
           <div className="flex-1 overflow-hidden relative">
-            {activeTab === 'input' ? (
+            {currentActiveTab === 'input' ? (
               <textarea
-                value={stdin}
-                onChange={(e) => setStdin(e.target.value)}
-                placeholder="Enter input values here (one per line)..."
+                value={currentStdin}
+                onChange={(e) => updateTerminal({ terminalInput: e.target.value })}
+                readOnly={!isLocal}
+                placeholder={isLocal ? "Enter input values here (one per line)..." : "Player has not entered any input."}
                 className="w-full h-full bg-transparent text-white font-mono text-sm p-4 resize-none focus:outline-none placeholder:text-white/20"
                 spellCheck={false}
               />
             ) : (
               <div className="w-full h-full p-4 font-mono text-sm overflow-y-auto text-white whitespace-pre-wrap bg-black/50">
-                {output || <span className="text-white/30 italic">No output yet. Click RUN to execute.</span>}
+                {currentOutput || <span className="text-white/30 italic">No output yet. Click RUN to execute.</span>}
               </div>
             )}
           </div>

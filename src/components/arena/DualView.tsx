@@ -21,6 +21,8 @@ interface DualViewProps {
   onCodeChange2?: (val: string | undefined) => void;
   onValidate1?: (markers: any[]) => void;
   onValidate2?: (markers: any[]) => void;
+  onTerminalChange1?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => void;
+  onTerminalChange2?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => void;
   hideCode1?: boolean;
   hideCode2?: boolean;
 }
@@ -41,6 +43,8 @@ export function DualView({
   onCodeChange2,
   onValidate1,
   onValidate2,
+  onTerminalChange1,
+  onTerminalChange2,
   hideCode1 = false,
   hideCode2 = false
 }: DualViewProps) {
@@ -85,6 +89,7 @@ export function DualView({
               stats={stats1}
               onChange={onCodeChange1}
               onValidation={onValidate1}
+              onTerminalChange={onTerminalChange1}
             />
           )}
         </motion.div>
@@ -109,6 +114,7 @@ export function DualView({
               stats={stats2}
               onChange={onCodeChange2}
               onValidation={onValidate2}
+              onTerminalChange={onTerminalChange2}
             />
           )}
         </motion.div>

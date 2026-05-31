@@ -84,9 +84,17 @@ export function useCodeStats(userId: string) {
     });
   }, []);
 
+  const handleTerminalChange = useCallback((updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => {
+    setStats(prev => ({
+      ...prev,
+      ...updates,
+    }));
+  }, []);
+
   return {
     stats,
     handleCodeChange,
     handleValidation,
+    handleTerminalChange,
   };
 }
