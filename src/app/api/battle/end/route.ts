@@ -1,6 +1,5 @@
 import { getRoom, saveRoom } from '@/lib/redis';
 import { triggerRoomEvent } from '@/lib/pusher-server';
-import { analyzeCodeErrors } from '@/lib/ai';
 import type { BattleResult, CodingStats } from '@/types';
 
 export async function POST(req: Request) {
@@ -45,52 +44,29 @@ export async function POST(req: Request) {
       ? (room.battleEndedAt - room.battleStartedAt - (room.totalPausedMs ?? 0)) / 1000
       : 0;
 
-    // Run AI Analysis for each contestant concurrently
-    const initialErrors = room.config.initialErrors || 0;
-    const evaluatedContestants = await Promise.all(
-      room.contestants.map(async (u) => {
-        const code = codes?.[u.id] || '';
-        let errorCount = 0;
-        
-        if (code.trim()) {
-          errorCount = await analyzeCodeErrors(code, room.config.language);
-        } else {
-          errorCount = initialErrors; // If no code, all initial errors remain
-        }
+    // Just map contestants and use provided stats or defaults
+    const evaluatedContestants = room.contestants.map((u) => {
+      const stats: CodingStats = finalStats?.[u.id] || {
+        userId: u.id,
+        typingSpeed: 0,
+        errorCount: 0,
+        compileCount: 0,
+        linesWritten: 0,
+        idleTime: 0,
+        lastActivity: Date.now(),
+        streak: 0,
+        momentum: 'low',
+        initialErrors: 0,
+        errorsSolved: 0,
+      };
 
-        const errorsSolved = Math.max(0, initialErrors - errorCount);
-        
-        // Use provided stats or defaults
-        const stats: CodingStats = finalStats?.[u.id] || {
-          userId: u.id,
-          typingSpeed: 0,
-          errorCount: 0,
-          compileCount: 0,
-          linesWritten: 0,
-          idleTime: 0,
-          lastActivity: Date.now(),
-          streak: 0,
-          momentum: 'low',
-          initialErrors,
-          errorsSolved: 0,
-        };
-
-        // Override with AI evaluated metrics
-        stats.initialErrors = initialErrors;
-        stats.errorCount = errorCount;
-        stats.errorsSolved = errorsSolved;
-
-        // Broadcast the final validated stats to all clients before ending battle
-        await triggerRoomEvent(room.id, 'stats-updated', stats);
-
-        return {
-          userId: u.id,
-          userName: u.name,
-          score: 50 + (errorsSolved * 10), // Example score based on errors solved
-          stats,
-        };
-      })
-    );
+      return {
+        userId: u.id,
+        userName: u.name,
+        score: 0,
+        stats,
+      };
+    });
 
     const result: BattleResult = {
       contestants: evaluatedContestants,

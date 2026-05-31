@@ -9,7 +9,6 @@ import { HostDashboard } from '@/components/battle/HostDashboard';
 import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
 import { BattleIntro } from '@/components/battle/BattleIntro';
-import { VictoryScreen } from '@/components/battle/VictoryScreen';
 import { FloatingReactions } from '@/components/battle/FloatingReactions';
 import { Button } from '@/components/ui/Button';
 import { usePusher } from '@/hooks/usePusher';
@@ -203,13 +202,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     // ── HOST DASHBOARD ──────────────────────────────────────────────────
     return (
       <Background>
-        {room.status === 'finished' && (
-          <VictoryScreen 
-            contestants={room.contestants} 
-            stats={remoteStats} 
-            onClose={handleExit} 
-          />
-        )}
         {showIntro && room.contestants.length >= 2 && (
           <BattleIntro
             contestant1={room.contestants[0]}
@@ -267,14 +259,6 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
           contestant2={room.contestants[1]}
           challenge={room.config.challenge}
           onComplete={handleIntroComplete}
-        />
-      )}
-
-      {room.status === 'finished' && (
-        <VictoryScreen 
-          contestants={room.contestants} 
-          stats={allStats} 
-          onClose={handleExit} 
         />
       )}
 

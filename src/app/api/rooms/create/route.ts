@@ -1,6 +1,5 @@
 import { saveRoom } from '@/lib/redis';
 import { generateId, generateRoomCode } from '@/lib/utils';
-import { analyzeCodeErrors } from '@/lib/ai';
 import type { Room, RoomConfig, User } from '@/types';
 
 export async function POST(req: Request) {
@@ -24,18 +23,7 @@ export async function POST(req: Request) {
       clientId,
     };
 
-    // AI Analysis for initial errors
-    let initialErrors = 0;
-    if (config.initialCode) {
-      initialErrors = await analyzeCodeErrors(config.initialCode, config.language);
-      if (initialErrors === -1) {
-        return Response.json(
-          { error: 'AI Error Analysis Failed. Please check your GEMINI_API_KEY in Vercel/Local Env and restart the server.' },
-          { status: 500 }
-        );
-      }
-    }
-    config.initialErrors = initialErrors;
+    config.initialErrors = 0;
 
     const room: Room = {
       id: generateId(),
