@@ -30,7 +30,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const clientId = typeof window !== 'undefined' ? getClientId() : '';
 
   const { pusher, isConnected } = usePusher();
-  const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
+  const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, broadcastClientEvent, error: roomError } = useRoom(pusher);
   const { reactions } = useReactions(roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
   const { playStart, playWarning, playAlarm } = useSoundEffects();
@@ -138,17 +138,24 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   // Sync local code & stats to server
   useEffect(() => {
     if (role === 'contestant' && room?.status === 'battle') {
-      // Broadcast Stats
-      updateStats(localStats);
-      
-      // Broadcast Code
-      fetch('/api/battle/code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomId: room.id, clientId, code: localCode }),
-      }).catch(err => console.error('Failed to sync code:', err));
+      // 1. Instant Client-Side Broadcast (feels like Screen Sharing)
+      broadcastClientEvent('client-stats-updated', localStats);
+      broadcastClientEvent('client-code-updated', { clientId, code: localCode });
+
+      // 2. Persistent Server Sync (for late joiners and DB persistence)
+      // Debounce the fetch calls to avoid Vercel rate limits and lag
+      const timer = setTimeout(() => {
+        updateStats(localStats);
+        fetch('/api/battle/code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId: room.id, clientId, code: localCode }),
+        }).catch(err => console.error('Failed to sync code:', err));
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
-  }, [localCode, localStats, role, room?.status, room?.id, clientId, updateStats]);
+  }, [localCode, localStats, role, room?.status, room?.id, clientId, updateStats, broadcastClientEvent]);
 
   const handleCodeChange = (value: string | undefined) => {
     if (value !== undefined) {

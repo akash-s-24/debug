@@ -26,6 +26,7 @@ interface UseRoomReturn {
   ) => Promise<Room | null>;
   leaveRoom: () => void;
   updateStats: (stats: Partial<CodingStats>) => void;
+  broadcastClientEvent: (eventName: string, data: any) => void;
   error: string | null;
 }
 
@@ -117,6 +118,10 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     channel.bind('room-closed', onRoomClosed);
     channel.bind('user-kicked', onUserKicked);
     channel.bind('code-updated', onCodeUpdated);
+    
+    // Bind to high-frequency client events (requires 'Enable client events' in Pusher Dashboard)
+    channel.bind('client-stats-updated', onStatsUpdated);
+    channel.bind('client-code-updated', onCodeUpdated);
 
     // Presence events — when a member drops unexpectedly (e.g. closes tab)
     // IMPORTANT: Use a delay to avoid the Pusher disconnect/reconnect race.
@@ -289,6 +294,18 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     });
   }, []);
 
+  const broadcastClientEvent = useCallback((eventName: string, data: any) => {
+    if (!pusher || !subscribedRoomId) return;
+    try {
+      const channel = pusher.channel(`presence-room-${subscribedRoomId}`);
+      if (channel) {
+        channel.trigger(eventName, data);
+      }
+    } catch (err) {
+      console.error('[useRoom] Failed to broadcast client event:', err);
+    }
+  }, [pusher, subscribedRoomId]);
+
   return {
     room,
     stats,
@@ -297,6 +314,7 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     joinRoom,
     leaveRoom,
     updateStats,
+    broadcastClientEvent,
     error,
   };
 }
