@@ -16,7 +16,7 @@ interface EditorPanelProps {
   language?: string;
   onChange?: (value: string | undefined) => void;
   onValidation?: (markers: any[]) => void;
-  onTerminalChange?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => void;
+  onTerminalChange?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => void;
 }
 
 export function EditorPanel({
@@ -37,19 +37,22 @@ export function EditorPanel({
   const [isExecuting, setIsExecuting] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
   const [activeTab, setActiveTab] = useState<'input' | 'output'>('output');
+  const [isError, setIsError] = useState(false);
 
   // Sync remote terminal state if not local
   const currentOutput = isLocal ? output : stats?.terminalOutput ?? null;
   const currentStdin = isLocal ? stdin : stats?.terminalInput ?? '';
   const currentShowTerminal = isLocal ? showTerminal : stats?.showTerminal ?? false;
   const currentActiveTab = isLocal ? activeTab : stats?.activeTab ?? 'output';
+  const currentIsError = isLocal ? isError : stats?.terminalIsError ?? false;
 
   // Broadcast terminal changes
-  const updateTerminal = (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => {
+  const updateTerminal = (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => {
     if (updates.terminalOutput !== undefined) setOutput(updates.terminalOutput);
     if (updates.terminalInput !== undefined) setStdin(updates.terminalInput);
     if (updates.showTerminal !== undefined) setShowTerminal(updates.showTerminal);
     if (updates.activeTab !== undefined) setActiveTab(updates.activeTab);
+    if (updates.terminalIsError !== undefined) setIsError(updates.terminalIsError);
     
     if (isLocal && onTerminalChange) {
       onTerminalChange(updates);
@@ -69,12 +72,15 @@ export function EditorPanel({
       });
       const data = await res.json();
       if (!res.ok) {
-        updateTerminal({ terminalOutput: data.error || 'Execution failed' });
+        updateTerminal({ terminalOutput: data.error || 'Execution failed', terminalIsError: true });
       } else {
-        updateTerminal({ terminalOutput: data.output || 'No output' });
+        // Simple heuristic: if the output contains "Error:" or "Exception:" it might be an unhandled rejection or script error.
+        const outputText = data.output || 'No output';
+        const hasErrorKeywords = /(Error|Exception|Failed|Traceback|SyntaxError|ReferenceError):/i.test(outputText);
+        updateTerminal({ terminalOutput: outputText, terminalIsError: hasErrorKeywords });
       }
     } catch (err) {
-      updateTerminal({ terminalOutput: 'Failed to run code. Network error.' });
+      updateTerminal({ terminalOutput: 'Failed to run code. Network error.', terminalIsError: true });
     } finally {
       setIsExecuting(false);
     }
@@ -231,7 +237,7 @@ export function EditorPanel({
                 spellCheck={false}
               />
             ) : (
-              <div className="w-full h-full p-4 font-mono text-sm overflow-y-auto text-white whitespace-pre-wrap bg-black/50">
+              <div className={`w-full h-full p-4 font-mono text-sm overflow-y-auto whitespace-pre-wrap bg-black/50 ${currentOutput ? (currentIsError ? 'text-neon-red' : 'text-neon-cyan') : 'text-white'}`}>
                 {currentOutput || <span className="text-white/30 italic">No output yet. Click RUN to execute.</span>}
               </div>
             )}

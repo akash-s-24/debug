@@ -84,7 +84,7 @@ export function useCodeStats(userId: string) {
     });
   }, []);
 
-  const handleTerminalChange = useCallback((updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => {
+  const handleTerminalChange = useCallback((updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => {
     setStats(prev => ({
       ...prev,
       ...updates,

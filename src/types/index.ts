@@ -61,6 +61,7 @@ export interface CodingStats {
   terminalInput?: string;
   showTerminal?: boolean;
   activeTab?: 'input' | 'output';
+  terminalIsError?: boolean;
 }
 
 export interface StreamStatus {

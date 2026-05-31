@@ -21,8 +21,8 @@ interface DualViewProps {
   onCodeChange2?: (val: string | undefined) => void;
   onValidate1?: (markers: any[]) => void;
   onValidate2?: (markers: any[]) => void;
-  onTerminalChange1?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => void;
-  onTerminalChange2?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab'>>) => void;
+  onTerminalChange1?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => void;
+  onTerminalChange2?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => void;
   hideCode1?: boolean;
   hideCode2?: boolean;
 }
