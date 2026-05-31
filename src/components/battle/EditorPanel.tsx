@@ -31,17 +31,21 @@ export function EditorPanel({
 }: EditorPanelProps) {
   const monaco = useMonaco();
   const [output, setOutput] = useState<string | null>(null);
+  const [stdin, setStdin] = useState<string>('');
   const [isExecuting, setIsExecuting] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'input' | 'output'>('output');
 
   const handleRunCode = async () => {
     if (!code) return;
     setIsExecuting(true);
-    setOutput('Executing...');
+    setShowTerminal(true);
+    setActiveTab('output');
     try {
       const res = await fetch('/api/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language }),
+        body: JSON.stringify({ code, language, stdin }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -93,14 +97,26 @@ export function EditorPanel({
         {stats && (
           <div className="flex items-center gap-4 font-mono text-xs text-text-muted">
             {isLocal && (
-              <button 
-                onClick={handleRunCode}
-                disabled={isExecuting}
-                className="flex items-center gap-1 bg-white/10 hover:bg-white/20 transition-colors px-2 py-1 rounded text-white border border-white/20"
-              >
-                <PlayIcon className="w-3 h-3" />
-                {isExecuting ? 'RUNNING...' : 'RUN'}
-              </button>
+              <div className="flex items-center gap-2 mr-2">
+                <button 
+                  onClick={() => {
+                    setShowTerminal(!showTerminal);
+                    setActiveTab('input');
+                  }}
+                  className="flex items-center gap-1 bg-white/5 hover:bg-white/10 transition-colors px-2 py-1 rounded text-text-secondary border border-white/10"
+                >
+                  <CommandLineIcon className="w-3 h-3" />
+                  STDIN
+                </button>
+                <button 
+                  onClick={handleRunCode}
+                  disabled={isExecuting}
+                  className="flex items-center gap-1 bg-neon-cyan/20 hover:bg-neon-cyan/30 transition-colors px-3 py-1 rounded text-neon-cyan border border-neon-cyan/40 font-bold"
+                >
+                  <PlayIcon className="w-3 h-3" />
+                  {isExecuting ? 'RUNNING' : 'RUN'}
+                </button>
+              </div>
             )}
             <span className={stats.typingSpeed > 100 ? 'text-white font-bold text-glow-white' : ''}>
               {stats.typingSpeed} CPM
@@ -113,7 +129,7 @@ export function EditorPanel({
       </div>
 
       {/* Monaco Editor Container */}
-      <div className={`flex-1 relative flex flex-col ${output !== null ? 'h-2/3' : 'h-full'}`}>
+      <div className={`flex-1 relative flex flex-col ${showTerminal ? 'h-1/2' : 'h-full'}`}>
         <Editor
           height="100%"
           language={language.toLowerCase()}
@@ -153,19 +169,49 @@ export function EditorPanel({
       </div>
 
       {/* Terminal UI */}
-      {output !== null && (
-        <div className="h-1/3 bg-black border-t border-white/10 flex flex-col relative z-10 overflow-hidden">
+      {showTerminal && (
+        <div className="h-1/2 bg-black border-t border-white/10 flex flex-col relative z-10 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-white/5">
-            <div className="flex items-center gap-2">
-              <CommandLineIcon className="w-4 h-4 text-text-secondary" />
-              <span className="text-xs font-display tracking-widest text-text-secondary uppercase">Terminal</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 mr-4">
+                <CommandLineIcon className="w-4 h-4 text-text-secondary" />
+                <span className="text-xs font-display tracking-widest text-text-secondary uppercase">Terminal</span>
+              </div>
+              
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setActiveTab('input')}
+                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${activeTab === 'input' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
+                >
+                  Input (stdin)
+                </button>
+                <button 
+                  onClick={() => setActiveTab('output')}
+                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${activeTab === 'output' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
+                >
+                  Output
+                </button>
+              </div>
             </div>
-            <button onClick={() => setOutput(null)} className="text-text-muted hover:text-white transition-colors">
+            <button onClick={() => setShowTerminal(false)} className="text-text-muted hover:text-white transition-colors">
               <XMarkIcon className="w-4 h-4" />
             </button>
           </div>
-          <div className="flex-1 p-4 font-mono text-sm overflow-y-auto text-white whitespace-pre-wrap">
-            {output}
+          
+          <div className="flex-1 overflow-hidden relative">
+            {activeTab === 'input' ? (
+              <textarea
+                value={stdin}
+                onChange={(e) => setStdin(e.target.value)}
+                placeholder="Enter input values here (one per line)..."
+                className="w-full h-full bg-transparent text-white font-mono text-sm p-4 resize-none focus:outline-none placeholder:text-white/20"
+                spellCheck={false}
+              />
+            ) : (
+              <div className="w-full h-full p-4 font-mono text-sm overflow-y-auto text-white whitespace-pre-wrap bg-black/50">
+                {output || <span className="text-white/30 italic">No output yet. Click RUN to execute.</span>}
+              </div>
+            )}
           </div>
         </div>
       )}

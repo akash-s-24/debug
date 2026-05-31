@@ -1,6 +1,6 @@
 export async function POST(req: Request) {
   try {
-    const { code, language } = (await req.json()) as { code: string; language: string };
+    const { code, language, stdin } = (await req.json()) as { code: string; language: string; stdin?: string };
 
     if (!code || !language) {
       return Response.json({ error: 'Code and language are required' }, { status: 400 });
@@ -32,6 +32,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         source_code: code,
         language_id: languageId,
+        stdin: stdin || '',
       }),
     });
 
