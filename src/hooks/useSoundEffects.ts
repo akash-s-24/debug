@@ -99,24 +99,24 @@ export function useSoundEffects() {
     if (!audioCtxRef.current) return;
     const ctx = audioCtxRef.current;
     
-    // Play a harsh buzzer/alarm sound 3 times
+    // Play a gentle bell/chime sound 3 times
     for (let i = 0; i < 3; i++) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(300, ctx.currentTime + i * 0.4);
-      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + i * 0.4 + 0.3);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime + i * 1.0); // A5 note
+      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + i * 1.0 + 1.5);
       
-      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.4);
-      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + i * 0.4 + 0.05);
-      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.4 + 0.3);
+      gain.gain.setValueAtTime(0, ctx.currentTime + i * 1.0);
+      gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + i * 1.0 + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 1.0 + 1.5);
       
       osc.connect(gain);
       gain.connect(ctx.destination);
       
-      osc.start(ctx.currentTime + i * 0.4);
-      osc.stop(ctx.currentTime + i * 0.4 + 0.3);
+      osc.start(ctx.currentTime + i * 1.0);
+      osc.stop(ctx.currentTime + i * 1.0 + 1.5);
     }
   }, []);
 

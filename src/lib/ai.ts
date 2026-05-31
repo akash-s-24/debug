@@ -9,7 +9,7 @@ export async function analyzeCodeErrors(code: string, language: string): Promise
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     
     const prompt = `
     You are an extremely strict, hardcore code analyzer. 

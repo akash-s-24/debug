@@ -111,12 +111,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   useEffect(() => {
     if (timeRemaining === 0 && isRunning && !isPaused && room?.status === 'battle') {
       playAlarm();
-      const isHost = room?.host.clientId === clientId;
-      if (isHost) {
-        handleHostAction('end');
-      }
     }
-  }, [timeRemaining, isRunning, isPaused, room?.status, room?.host.clientId, clientId, playAlarm, handleHostAction]);
+  }, [timeRemaining, isRunning, isPaused, room?.status, playAlarm]);
 
   useEffect(() => {
     if (isConnected && pusher) {
