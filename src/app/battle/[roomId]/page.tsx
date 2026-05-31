@@ -184,6 +184,13 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     // ── HOST DASHBOARD ──────────────────────────────────────────────────
     return (
       <Background>
+        {room.status === 'finished' && (
+          <VictoryScreen 
+            contestants={room.contestants} 
+            stats={remoteStats} 
+            onClose={handleExit} 
+          />
+        )}
         {showIntro && room.contestants.length >= 2 && (
           <BattleIntro
             contestant1={room.contestants[0]}
@@ -225,6 +232,11 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const myStats = myUser.role === 'contestant' ? localStats : remoteStats.get(myUser.id);
   const otherStats = otherUser ? remoteStats.get(otherUser.id) : undefined;
   
+  const allStats = new Map(remoteStats);
+  if (myStats) {
+    allStats.set(myUser.id, myStats);
+  }
+  
   const myCode = myUser.role === 'contestant' ? localCode : remoteCodes.get(myUser.id) || room?.config.initialCode || '// Waiting for code...';
   const otherCode = otherUser ? remoteCodes.get(otherUser.id) || room?.config.initialCode || '// Waiting for code...' : '// Waiting for code...';
 
@@ -242,7 +254,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       {room.status === 'finished' && (
         <VictoryScreen 
           contestants={room.contestants} 
-          stats={remoteStats} 
+          stats={allStats} 
           onClose={handleExit} 
         />
       )}

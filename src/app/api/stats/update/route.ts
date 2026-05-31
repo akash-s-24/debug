@@ -38,6 +38,8 @@ export async function POST(req: Request) {
       lastActivity: Date.now(),
       streak: 0,
       momentum: 'low',
+      initialErrors: -1,
+      errorsSolved: 0,
       ...partialStats,
     };
 

@@ -57,6 +57,8 @@ export async function POST(req: Request) {
           lastActivity: Date.now(),
           streak: 0,
           momentum: 'low',
+          initialErrors: 0,
+          errorsSolved: 0,
         },
       })),
       duration,

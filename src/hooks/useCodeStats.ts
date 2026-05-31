@@ -12,6 +12,8 @@ export function useCodeStats(userId: string) {
     lastActivity: Date.now(),
     streak: 0,
     momentum: 'low',
+    initialErrors: -1, // -1 means uninitialized
+    errorsSolved: 0,
   });
 
   const keystrokesRef = useRef<number[]>([]);
@@ -68,10 +70,18 @@ export function useCodeStats(userId: string) {
 
   const handleValidation = useCallback((markers: any[]) => {
     const errorCount = markers.filter(m => m.severity >= 8).length; // 8 is monaco.MarkerSeverity.Error
-    setStats(prev => ({
-      ...prev,
-      errorCount,
-    }));
+    setStats(prev => {
+      const isInitial = prev.initialErrors === -1;
+      const initialErrors = isInitial ? errorCount : prev.initialErrors;
+      const errorsSolved = Math.max(0, initialErrors - errorCount);
+      
+      return {
+        ...prev,
+        errorCount,
+        initialErrors,
+        errorsSolved,
+      };
+    });
   }, []);
 
   return {

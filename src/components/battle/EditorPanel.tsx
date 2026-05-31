@@ -147,6 +147,7 @@ export function EditorPanel({
             scrollBeyondLastLine: false,
             smoothScrolling: true,
             cursorBlinking: 'smooth',
+            renderValidationDecorations: 'off',
             cursorSmoothCaretAnimation: 'on',
             formatOnPaste: true,
           }}

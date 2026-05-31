@@ -13,6 +13,7 @@ interface VictoryScreenProps {
 
 export function VictoryScreen({ contestants, stats, onClose }: VictoryScreenProps) {
   const [winner, setWinner] = useState<User | null>(null);
+  const [isTie, setIsTie] = useState(false);
   const [particles, setParticles] = useState<{ id: number; x: number; color: string; delay: number; size: number }[]>([]);
 
   useEffect(() => {
@@ -29,20 +30,31 @@ export function VictoryScreen({ contestants, stats, onClose }: VictoryScreenProp
     // Calculate Winner
     if (contestants.length > 0) {
       let bestScore = -Infinity;
-      let currentWinner = contestants[0];
+      let winners: User[] = [];
 
       contestants.forEach(c => {
         const cStats = stats.get(c.id);
         if (cStats) {
-          // Simple heuristic: speed + lines - errors
-          const score = (cStats.typingSpeed * 2) + (cStats.linesWritten * 10) - (cStats.errorCount * 50);
+          // Primary: Errors Solved (1000 pts)
+          // Secondary: Fewest Errors Remaining (-100 pts)
+          // Tertiary: Typing speed (1 pt)
+          const score = (cStats.errorsSolved * 1000) - (cStats.errorCount * 100) + cStats.typingSpeed;
+          
           if (score > bestScore) {
             bestScore = score;
-            currentWinner = c;
+            winners = [c];
+          } else if (score === bestScore) {
+            winners.push(c);
           }
         }
       });
-      setWinner(currentWinner);
+      
+      if (winners.length > 1) {
+        setIsTie(true);
+        setWinner(winners[0]); // Display the first one, or we could handle showing both
+      } else if (winners.length === 1) {
+        setWinner(winners[0]);
+      }
     }
   }, [contestants, stats]);
 
@@ -84,33 +96,40 @@ export function VictoryScreen({ contestants, stats, onClose }: VictoryScreenProp
         </div>
 
         <h2 className="mt-12 text-neon-yellow font-display font-black text-4xl uppercase tracking-widest text-glow-yellow mb-2">
-          Victory
+          {isTie ? 'TIEBREAKER' : 'Victory'}
         </h2>
         
         <p className="text-text-secondary font-mono mb-6 uppercase text-sm tracking-wider">
-          The duel has concluded
+          {isTie ? 'Multiple players had identical bug fixes' : 'The duel has concluded'}
         </p>
 
         {winner && (
           <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
-            <h3 className="text-white font-display font-bold text-3xl mb-4">{winner.name}</h3>
+            <h3 className="text-white font-display font-bold text-3xl mb-4">
+              {isTie ? 'Tied Players' : winner.name}
+            </h3>
             
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col items-center">
-                <BoltIcon className="w-6 h-6 text-neon-cyan mb-2" />
-                <span className="text-2xl font-mono text-white font-bold">{stats.get(winner.id)?.typingSpeed || 0}</span>
-                <span className="text-[10px] text-text-muted uppercase">CPM</span>
+                <BugAntIcon className="w-6 h-6 text-neon-cyan mb-2" />
+                <span className="text-2xl font-mono text-white font-bold">{stats.get(winner.id)?.initialErrors || 0}</span>
+                <span className="text-[10px] text-text-muted uppercase text-center">Total Errors<br/>(Initial)</span>
               </div>
               <div className="flex flex-col items-center">
-                <BugAntIcon className="w-6 h-6 text-neon-magenta mb-2" />
-                <span className="text-2xl font-mono text-white font-bold">{stats.get(winner.id)?.errorCount || 0}</span>
-                <span className="text-[10px] text-text-muted uppercase">Errors</span>
+                <BoltIcon className="w-6 h-6 text-neon-magenta mb-2" />
+                <span className="text-2xl font-mono text-white font-bold">{stats.get(winner.id)?.errorsSolved || 0}</span>
+                <span className="text-[10px] text-text-muted uppercase text-center">Errors<br/>Solved</span>
               </div>
               <div className="flex flex-col items-center">
                 <CodeBracketIcon className="w-6 h-6 text-neon-violet mb-2" />
                 <span className="text-2xl font-mono text-white font-bold">{stats.get(winner.id)?.linesWritten || 0}</span>
-                <span className="text-[10px] text-text-muted uppercase">Lines</span>
+                <span className="text-[10px] text-text-muted uppercase text-center">Lines of<br/>Code</span>
               </div>
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-white/10 flex justify-center items-center gap-2 text-text-muted text-xs font-mono uppercase">
+              <BugAntIcon className="w-4 h-4 text-neon-red" />
+              Errors Remaining: <span className="text-white font-bold">{stats.get(winner.id)?.errorCount || 0}</span>
             </div>
           </div>
         )}

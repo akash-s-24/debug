@@ -54,6 +54,8 @@ export interface CodingStats {
   lastActivity: number;
   streak: number;
   momentum: 'low' | 'medium' | 'high' | 'extreme';
+  initialErrors: number;
+  errorsSolved: number;
 }
 
 export interface StreamStatus {
