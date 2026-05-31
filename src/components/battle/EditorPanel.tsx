@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Editor, { useMonaco, Monaco } from '@monaco-editor/react';
 import { CodingStats } from '@/types';
-import { CodeBracketIcon } from '@heroicons/react/24/outline';
+import { CodeBracketIcon, CommandLineIcon, XMarkIcon, PlayIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 
 interface EditorPanelProps {
@@ -30,7 +30,32 @@ export function EditorPanel({
   onValidation
 }: EditorPanelProps) {
   const monaco = useMonaco();
-  
+  const [output, setOutput] = useState<string | null>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+
+  const handleRunCode = async () => {
+    if (!code) return;
+    setIsExecuting(true);
+    setOutput('Executing...');
+    try {
+      const res = await fetch('/api/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setOutput(data.error || 'Execution failed');
+      } else {
+        setOutput(data.output || 'No output');
+      }
+    } catch (err) {
+      setOutput('Failed to run code. Network error.');
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
   useEffect(() => {
     if (monaco) {
       monaco.editor.defineTheme('neon-dark', {
@@ -67,6 +92,16 @@ export function EditorPanel({
         
         {stats && (
           <div className="flex items-center gap-4 font-mono text-xs text-text-muted">
+            {isLocal && (
+              <button 
+                onClick={handleRunCode}
+                disabled={isExecuting}
+                className="flex items-center gap-1 bg-white/10 hover:bg-white/20 transition-colors px-2 py-1 rounded text-white border border-white/20"
+              >
+                <PlayIcon className="w-3 h-3" />
+                {isExecuting ? 'RUNNING...' : 'RUN'}
+              </button>
+            )}
             <span className={stats.typingSpeed > 100 ? 'text-white font-bold text-glow-white' : ''}>
               {stats.typingSpeed} CPM
             </span>
@@ -78,7 +113,7 @@ export function EditorPanel({
       </div>
 
       {/* Monaco Editor Container */}
-      <div className="flex-1 relative">
+      <div className={`flex-1 relative flex flex-col ${output !== null ? 'h-2/3' : 'h-full'}`}>
         <Editor
           height="100%"
           language={language.toLowerCase()}
@@ -116,6 +151,24 @@ export function EditorPanel({
           />
         )}
       </div>
+
+      {/* Terminal UI */}
+      {output !== null && (
+        <div className="h-1/3 bg-black border-t border-white/10 flex flex-col relative z-10 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-white/5">
+            <div className="flex items-center gap-2">
+              <CommandLineIcon className="w-4 h-4 text-text-secondary" />
+              <span className="text-xs font-display tracking-widest text-text-secondary uppercase">Terminal</span>
+            </div>
+            <button onClick={() => setOutput(null)} className="text-text-muted hover:text-white transition-colors">
+              <XMarkIcon className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="flex-1 p-4 font-mono text-sm overflow-y-auto text-white whitespace-pre-wrap">
+            {output}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -128,6 +128,15 @@ export default function CreateRoomPage() {
                     onChange={(e) => setConfig({...config, challengeDescription: e.target.value})}
                   />
                 </div>
+                <div className="flex flex-col gap-1 mt-4">
+                  <label className="text-xs font-display uppercase text-text-secondary ml-1">Initial Debug Code (Optional)</label>
+                  <textarea
+                    className="bg-abyss border border-slate-dark text-text-primary px-4 py-3 focus:outline-none focus:border-neon-cyan transition-colors font-mono resize-y min-h-[150px] [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]"
+                    placeholder="Provide the buggy code that contestants need to fix..."
+                    value={config.initialCode || ''}
+                    onChange={(e) => setConfig({...config, initialCode: e.target.value})}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

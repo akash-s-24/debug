@@ -17,6 +17,7 @@ export interface RoomConfig {
   hostName: string;
   challenge: string;
   challengeDescription?: string;
+  initialCode?: string;
   timerSeconds: number;
   language: string;
   duelType: DuelType;

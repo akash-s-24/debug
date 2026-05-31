@@ -14,12 +14,15 @@ interface DualViewProps {
   stats2: CodingStats | null;
   layout: LayoutMode;
   challenge: string;
+  language?: string;
   isLocalUser1?: boolean;
   isLocalUser2?: boolean;
   onCodeChange1?: (val: string | undefined) => void;
   onCodeChange2?: (val: string | undefined) => void;
   onValidate1?: (markers: any[]) => void;
   onValidate2?: (markers: any[]) => void;
+  hideCode1?: boolean;
+  hideCode2?: boolean;
 }
 
 export function DualView({
@@ -31,12 +34,15 @@ export function DualView({
   stats2,
   layout,
   challenge,
+  language = 'javascript',
   isLocalUser1 = false,
   isLocalUser2 = false,
   onCodeChange1,
   onCodeChange2,
   onValidate1,
-  onValidate2
+  onValidate2,
+  hideCode1 = false,
+  hideCode2 = false
 }: DualViewProps) {
   
   const getLayoutClasses = () => {
@@ -60,29 +66,51 @@ export function DualView({
     <div className="relative w-full h-full flex-grow overflow-hidden bg-void">
       <div className={`w-full h-full grid ${getLayoutClasses()} gap-1 p-1`}>
         <motion.div layout transition={{ type: 'spring', damping: 25, stiffness: 120 }} className="relative h-full">
-          <EditorPanel 
-            code={code1}
-            userName={user1.name} 
-            isLocal={isLocalUser1} 
-            isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'} 
-            color="cyan" 
-            stats={stats1}
-            onChange={onCodeChange1}
-            onValidation={onValidate1}
-          />
+          {hideCode1 ? (
+            <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-xl border border-white/10 p-8 text-center">
+              <div>
+                <div className="text-4xl mb-4">🕵️</div>
+                <h3 className="text-xl font-display tracking-widest text-text-primary uppercase mb-2">Code Hidden</h3>
+                <p className="text-sm font-mono text-text-secondary">Opponent is coding...<br/>(Hidden to prevent cheating)</p>
+              </div>
+            </div>
+          ) : (
+            <EditorPanel 
+              code={code1}
+              language={language}
+              userName={user1.name} 
+              isLocal={isLocalUser1} 
+              isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'} 
+              color="cyan" 
+              stats={stats1}
+              onChange={onCodeChange1}
+              onValidation={onValidate1}
+            />
+          )}
         </motion.div>
         
         <motion.div layout transition={{ type: 'spring', damping: 25, stiffness: 120 }} className="relative h-full">
-          <EditorPanel 
-            code={code2}
-            userName={user2.name} 
-            isLocal={isLocalUser2} 
-            isActive={stats2?.momentum === 'high' || stats2?.momentum === 'extreme'} 
-            color="magenta" 
-            stats={stats2}
-            onChange={onCodeChange2}
-            onValidation={onValidate2}
-          />
+          {hideCode2 ? (
+            <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-xl border border-white/10 p-8 text-center">
+              <div>
+                <div className="text-4xl mb-4">🕵️</div>
+                <h3 className="text-xl font-display tracking-widest text-text-primary uppercase mb-2">Code Hidden</h3>
+                <p className="text-sm font-mono text-text-secondary">Opponent is coding...<br/>(Hidden to prevent cheating)</p>
+              </div>
+            </div>
+          ) : (
+            <EditorPanel 
+              code={code2}
+              language={language}
+              userName={user2.name} 
+              isLocal={isLocalUser2} 
+              isActive={stats2?.momentum === 'high' || stats2?.momentum === 'extreme'} 
+              color="magenta" 
+              stats={stats2}
+              onChange={onCodeChange2}
+              onValidation={onValidate2}
+            />
+          )}
         </motion.div>
       </div>
 

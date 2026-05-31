@@ -35,6 +35,16 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
   const { stats: localStats, handleCodeChange: onCodeChange, handleValidation } = useCodeStats(myUserId);
   const [localCode, setLocalCode] = useState('// Enter your code here...');
+  const initialCodeLoaded = useRef(false);
+
+  useEffect(() => {
+    if (room && !initialCodeLoaded.current) {
+      if (room.config.initialCode) {
+        setLocalCode(room.config.initialCode);
+      }
+      initialCodeLoaded.current = true;
+    }
+  }, [room]);
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
@@ -194,8 +204,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const myStats = myUser.role === 'contestant' ? localStats : remoteStats.get(myUser.id);
   const otherStats = otherUser ? remoteStats.get(otherUser.id) : undefined;
   
-  const myCode = myUser.role === 'contestant' ? localCode : remoteCodes.get(myUser.id) || '// Waiting for code...';
-  const otherCode = otherUser ? remoteCodes.get(otherUser.id) || '// Waiting for code...' : '// Waiting for code...';
+  const myCode = myUser.role === 'contestant' ? localCode : remoteCodes.get(myUser.id) || room?.config.initialCode || '// Waiting for code...';
+  const otherCode = otherUser ? remoteCodes.get(otherUser.id) || room?.config.initialCode || '// Waiting for code...' : '// Waiting for code...';
 
   return (
     <Background>
@@ -234,8 +244,10 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 stats2={otherStats || null}
                 layout={layout}
                 challenge={room.config.challenge}
+                language={room.config.language}
                 isLocalUser1={myUser.role === 'contestant'}
                 isLocalUser2={false}
+                hideCode2={myUser.role === 'contestant'}
                 onCodeChange1={myUser.role === 'contestant' ? handleCodeChange : undefined}
                 onValidate1={myUser.role === 'contestant' ? handleValidation : undefined}
               />
@@ -243,6 +255,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
               <div className="flex-1 relative h-full w-full p-2">
                 <EditorPanel
                   code={myUser.role === 'viewer' && otherUser ? otherCode : myCode}
+                  language={room.config.language}
                   userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
                   isLocal={myUser.role === 'contestant'}
                   isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}

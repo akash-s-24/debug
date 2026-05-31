@@ -101,8 +101,8 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const stats1 = c1 ? stats.get(c1.id) : null;
   const stats2 = c2 ? stats.get(c2.id) : null;
   
-  const code1 = c1 ? codes.get(c1.id) || '// Waiting for code...' : '// Waiting for code...';
-  const code2 = c2 ? codes.get(c2.id) || '// Waiting for code...' : '// Waiting for code...';
+  const code1 = c1 ? codes.get(c1.id) || room.config.initialCode || '// Waiting for code...' : '// Waiting for code...';
+  const code2 = c2 ? codes.get(c2.id) || room.config.initialCode || '// Waiting for code...' : '// Waiting for code...';
 
   return (
     <div className="bg-void text-white h-screen w-screen overflow-hidden flex font-body selection:bg-neon-cyan/30">
@@ -157,6 +157,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
               stats2={stats2 || null}
               layout={layout}
               challenge={room.config.challenge}
+              language={room.config.language}
             />
             <ArenaOverlay 
               room={room} 
