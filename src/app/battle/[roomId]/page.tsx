@@ -146,10 +146,23 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     };
 
     try {
+      const body: any = { roomId, clientId };
+      
+      if (action === 'end') {
+        body.codes = Object.fromEntries(remoteCodes.entries());
+        
+        // Merge local stats if host is also a contestant
+        const allStats = new Map(remoteStats);
+        if (myUserId !== 'temp' && localStats) {
+          allStats.set(myUserId, localStats);
+        }
+        body.finalStats = Object.fromEntries(allStats.entries());
+      }
+
       await fetch(endpoints[action], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomId, clientId }),
+        body: JSON.stringify(body),
       });
     } catch (err) {
       console.error(`[Battle] Failed to ${action}:`, err);
@@ -233,7 +246,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const otherStats = otherUser ? remoteStats.get(otherUser.id) : undefined;
   
   const allStats = new Map(remoteStats);
-  if (myStats) {
+  if (myStats && room.status !== 'finished') {
     allStats.set(myUser.id, myStats);
   }
   

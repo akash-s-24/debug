@@ -24,6 +24,7 @@ export interface RoomConfig {
   maxContestants: number;
   allowAudience: boolean;
   password?: string;
+  initialErrors?: number;
 }
 
 export interface Room {

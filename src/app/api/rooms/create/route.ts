@@ -1,5 +1,6 @@
 import { saveRoom } from '@/lib/redis';
 import { generateId, generateRoomCode } from '@/lib/utils';
+import { analyzeCodeErrors } from '@/lib/ai';
 import type { Room, RoomConfig, User } from '@/types';
 
 export async function POST(req: Request) {
@@ -22,6 +23,13 @@ export async function POST(req: Request) {
       role: 'host',
       clientId,
     };
+
+    // AI Analysis for initial errors
+    let initialErrors = 0;
+    if (config.initialCode) {
+      initialErrors = await analyzeCodeErrors(config.initialCode, config.language);
+    }
+    config.initialErrors = initialErrors;
 
     const room: Room = {
       id: generateId(),
