@@ -4,8 +4,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function analyzeCodeErrors(code: string, language: string): Promise<number> {
   if (!process.env.GEMINI_API_KEY) {
-    console.warn('[AI] GEMINI_API_KEY not set. Falling back to 0 errors.');
-    return 0;
+    console.warn('[AI] GEMINI_API_KEY not set.');
+    return -1;
   }
 
   try {
@@ -56,6 +56,6 @@ export async function analyzeCodeErrors(code: string, language: string): Promise
     return 0;
   } catch (error) {
     console.error('[AI Code Analysis Failed]:', error);
-    return 0; // Fallback to 0 if API fails
+    return -1; // Return -1 to indicate API failure
   }
 }
