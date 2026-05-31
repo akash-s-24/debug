@@ -34,7 +34,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, error: roomError } = useRoom(pusher);
   const { reactions } = useReactions(roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
-  const { playGong, playWarning, playVictory, playAlarm } = useSoundEffects();
+  const { playStart, playWarning, playAlarm } = useSoundEffects();
   
   // Local code and stats tracking
   const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
@@ -62,11 +62,9 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   useEffect(() => {
     if (!room) return;
     if (room.status === 'battle' && !isPaused) {
-      playGong();
-    } else if (room.status === 'finished') {
-      playVictory();
+      playStart();
     }
-  }, [room?.status, isPaused, playGong, playVictory]);
+  }, [room?.status, isPaused, playStart]);
 
   // Handle warning sound
   useEffect(() => {
