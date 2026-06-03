@@ -243,20 +243,26 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     );
   }
 
-  // ── PARTICIPANT ARENA ───────────────────────────────────────────────
+  // ── PARTICIPANT ARENA (Contestants & Viewers) ──────────────────────
   const myUser = room.contestants.find(c => c.clientId === clientId) || room.viewers.find(v => v.clientId === clientId) || { id: 'temp', name: name, role: 'viewer' as const, clientId };
-  const otherUser = room.contestants.find(c => c.id !== myUser.id);
   
-  const myStats = myUser.role === 'contestant' ? localStats : remoteStats.get(myUser.id);
-  const otherStats = otherUser ? remoteStats.get(otherUser.id) : undefined;
+  // For contestants, user1 is themselves and user2 is the opponent.
+  // For viewers, user1 is contestants[0] and user2 is contestants[1].
+  const user1 = myUser.role === 'contestant' ? myUser : room.contestants[0];
+  const user2 = myUser.role === 'contestant' 
+    ? room.contestants.find(c => c.id !== myUser.id) 
+    : room.contestants[1];
+  
+  const stats1 = user1 ? (user1.id === myUser.id ? localStats : remoteStats.get(user1.id)) : undefined;
+  const stats2 = user2 ? remoteStats.get(user2.id) : undefined;
   
   const allStats = new Map(remoteStats);
-  if (myStats && room.status !== 'finished') {
-    allStats.set(myUser.id, myStats);
+  if (myUser.role === 'contestant' && room.status !== 'finished') {
+    allStats.set(myUser.id, localStats);
   }
   
-  const myCode = myUser.role === 'contestant' ? localCode : remoteCodes.get(myUser.id) || room?.config.initialCode || '// Waiting for code...';
-  const otherCode = otherUser ? remoteCodes.get(otherUser.id) || room?.config.initialCode || '// Waiting for code...' : '// Waiting for code...';
+  const code1 = user1 ? (user1.id === myUser.id ? localCode : remoteCodes.get(user1.id) || room?.config.initialCode || '// Waiting for code...') : '// Waiting for code...';
+  const code2 = user2 ? (remoteCodes.get(user2.id) || room?.config.initialCode || '// Waiting for code...') : '// Waiting for code...';
 
   return (
     <Background>
@@ -289,24 +295,24 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
         <div className="flex flex-1 overflow-hidden p-2 gap-2">
           {/* Main Battle Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {layout === 'side-by-side' && otherUser ? (
+            {layout === 'side-by-side' && user2 ? (
               <DualView
-                code1={myCode}
-                code2={otherCode}
-                user1={myUser as any}
-                user2={otherUser}
-                stats1={myStats || null}
-                stats2={otherStats || null}
+                code1={code1}
+                code2={code2}
+                user1={user1}
+                user2={user2}
+                stats1={stats1 || null}
+                stats2={stats2 || null}
                 layout={layout}
                 challenge={room.config.challenge}
                 language={room.config.language}
-                isLocalUser1={myUser.role === 'contestant'}
+                isLocalUser1={user1?.id === myUser.id}
                 isLocalUser2={false}
-                hideCode1={myUser.role === 'contestant' && room.status !== 'battle'}
-                hideCode2={myUser.role === 'contestant'}
-                onCodeChange1={myUser.role === 'contestant' ? handleCodeChange : undefined}
-                onValidate1={myUser.role === 'contestant' ? handleValidation : undefined}
-                onTerminalChange1={myUser.role === 'contestant' ? handleTerminalChange : undefined}
+                hideCode1={user1?.id === myUser.id && room.status !== 'battle'}
+                hideCode2={myUser.role === 'contestant'} // Contestants can't see opponent's code
+                onCodeChange1={user1?.id === myUser.id ? handleCodeChange : undefined}
+                onValidate1={user1?.id === myUser.id ? handleValidation : undefined}
+                onTerminalChange1={user1?.id === myUser.id ? handleTerminalChange : undefined}
               />
             ) : (
               <div className="flex-1 relative h-full w-full p-2">
@@ -320,16 +326,16 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                   </div>
                 ) : (
                   <EditorPanel
-                    code={myUser.role === 'viewer' && otherUser ? otherCode : myCode}
+                    code={code1}
                     language={room.config.language}
-                    userName={myUser.role === 'viewer' && otherUser ? otherUser.name : myUser.name}
-                    isLocal={myUser.role === 'contestant'}
-                    isActive={myStats?.momentum === 'high' || myStats?.momentum === 'extreme'}
+                    userName={user1?.name || 'Player'}
+                    isLocal={user1?.id === myUser.id}
+                    isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'}
                     color="cyan"
-                    stats={myUser.role === 'viewer' && otherStats ? otherStats : myStats || null}
-                    onChange={myUser.role === 'contestant' ? handleCodeChange : undefined}
-                    onValidation={myUser.role === 'contestant' ? handleValidation : undefined}
-                    onTerminalChange={myUser.role === 'contestant' ? handleTerminalChange : undefined}
+                    stats={stats1 || null}
+                    onChange={user1?.id === myUser.id ? handleCodeChange : undefined}
+                    onValidation={user1?.id === myUser.id ? handleValidation : undefined}
+                    onTerminalChange={user1?.id === myUser.id ? handleTerminalChange : undefined}
                   />
                 )}
               </div>
@@ -338,9 +344,9 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
 
           {/* Sidebar */}
           <div className="w-80 flex flex-col gap-2 flex-shrink-0 h-full overflow-hidden">
-            {myStats && myUser.role === 'contestant' && (
+            {stats1 && user1?.id === myUser.id && (
               <div className="flex-shrink-0">
-                <LiveStats stats={myStats} color="cyan" compact />
+                <LiveStats stats={stats1} color="cyan" compact />
               </div>
             )}
             
