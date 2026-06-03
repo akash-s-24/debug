@@ -148,7 +148,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       const doBroadcast = () => {
         lastBroadcastRef.current = Date.now();
         broadcastClientEvent('client-stats-updated', localStats);
-        broadcastClientEvent('client-code-updated', { clientId, code: localCode });
+        broadcastClientEvent('client-code-updated', { userId: myUserId, code: localCode });
       };
 
       if (timeSinceLast >= 200) {
