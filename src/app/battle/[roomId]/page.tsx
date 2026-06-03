@@ -18,7 +18,7 @@ import { useReactions } from '@/hooks/useReactions';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useTimer } from '@/hooks/useTimer';
 import { getClientId } from '@/lib/client-id';
-import { LayoutMode, UserRole } from '@/types';
+import { LayoutMode, UserRole, CodingStats } from '@/types';
 
 export default function BattlePage({ params }: { params: Promise<{ roomId: string }> }) {
   const resolvedParams = use(params);
@@ -163,6 +163,12 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       onCodeChange(value);
     }
   };
+
+  const handleTerminalSync = useCallback((updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => {
+    handleTerminalChange(updates);
+    // Explicit bypass to ensure terminal UI is perfectly synced immediately without waiting for React batching
+    broadcastClientEvent('client-terminal-updated', { userId: myUserId, ...updates });
+  }, [handleTerminalChange, broadcastClientEvent, myUserId]);
 
   const handleIntroComplete = useCallback(async () => {
     setShowIntro(false);
@@ -312,7 +318,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 hideCode2={false} // Contestants do not render this DualView anymore
                 onCodeChange1={user1?.id === myUser.id ? handleCodeChange : undefined}
                 onValidate1={user1?.id === myUser.id ? handleValidation : undefined}
-                onTerminalChange1={user1?.id === myUser.id ? handleTerminalChange : undefined}
+                onTerminalChange1={user1?.id === myUser.id ? handleTerminalSync : undefined}
               />
             ) : (
               <div className="flex-1 relative h-full w-full p-2">
@@ -335,7 +341,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                     stats={stats1 || null}
                     onChange={user1?.id === myUser.id ? handleCodeChange : undefined}
                     onValidation={user1?.id === myUser.id ? handleValidation : undefined}
-                    onTerminalChange={user1?.id === myUser.id ? handleTerminalChange : undefined}
+                    onTerminalChange={user1?.id === myUser.id ? handleTerminalSync : undefined}
                   />
                 )}
               </div>

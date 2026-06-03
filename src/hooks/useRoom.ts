@@ -122,6 +122,33 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     // Bind to high-frequency client events (requires 'Enable client events' in Pusher Dashboard)
     channel.bind('client-stats-updated', onStatsUpdated);
     channel.bind('client-code-updated', onCodeUpdated);
+    
+    // Explicit Terminal Sync bypass
+    channel.bind('client-terminal-updated', (data: { userId: string } & Partial<CodingStats>) => {
+      setStats((prev) => {
+        const next = new Map(prev);
+        const existing = next.get(data.userId);
+        if (existing) {
+          next.set(data.userId, { ...existing, ...data });
+        } else {
+          // If no existing stats, create a minimal baseline
+          next.set(data.userId, {
+            typingSpeed: 0,
+            errorCount: 0,
+            compileCount: 0,
+            linesWritten: 0,
+            idleTime: 0,
+            lastActivity: Date.now(),
+            streak: 0,
+            momentum: 'low',
+            initialErrors: -1,
+            errorsSolved: 0,
+            ...data
+          });
+        }
+        return next;
+      });
+    });
 
     // Presence events — when a member drops unexpectedly (e.g. closes tab)
     // IMPORTANT: Use a delay to avoid the Pusher disconnect/reconnect race.
