@@ -295,7 +295,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
         <div className="flex flex-1 overflow-hidden p-2 gap-2">
           {/* Main Battle Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {layout === 'side-by-side' && user2 ? (
+            {layout === 'side-by-side' && user2 && myUser.role !== 'contestant' ? (
               <DualView
                 code1={code1}
                 code2={code2}
@@ -309,7 +309,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 isLocalUser1={user1?.id === myUser.id}
                 isLocalUser2={false}
                 hideCode1={user1?.id === myUser.id && room.status !== 'battle'}
-                hideCode2={myUser.role === 'contestant'} // Contestants can't see opponent's code
+                hideCode2={false} // Contestants do not render this DualView anymore
                 onCodeChange1={user1?.id === myUser.id ? handleCodeChange : undefined}
                 onValidate1={user1?.id === myUser.id ? handleValidation : undefined}
                 onTerminalChange1={user1?.id === myUser.id ? handleTerminalChange : undefined}
