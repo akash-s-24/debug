@@ -364,8 +364,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="w-80 flex flex-col gap-2 flex-shrink-0 h-full overflow-hidden">
+          {/* Sidebar - Hidden on mobile to prioritize code editors */}
+          <div className="hidden lg:flex w-80 flex-col gap-2 flex-shrink-0 h-full overflow-hidden">
             {stats1 && user1?.id === myUser.id && (
               <div className="flex-shrink-0">
                 <LiveStats stats={stats1} color="cyan" compact />
