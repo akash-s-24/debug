@@ -135,25 +135,41 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     }
   }, [room?.status, room?.host.clientId, clientId, roomId, room?.contestants.length, role, router]);
 
+  const lastBroadcastRef = useRef<number>(0);
+  const throttleTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Sync local code & stats to server
   useEffect(() => {
     if (role === 'contestant' && room?.status === 'battle') {
-      // 1. Instant Client-Side Broadcast (feels like Screen Sharing)
-      broadcastClientEvent('client-stats-updated', localStats);
-      broadcastClientEvent('client-code-updated', { clientId, code: localCode });
+      const now = Date.now();
+      const timeSinceLast = now - lastBroadcastRef.current;
+
+      // 1. Throttle Client-Side Broadcasts (max 5 per second) to strictly avoid Pusher rate limits
+      const doBroadcast = () => {
+        lastBroadcastRef.current = Date.now();
+        broadcastClientEvent('client-stats-updated', localStats);
+        broadcastClientEvent('client-code-updated', { clientId, code: localCode });
+      };
+
+      if (timeSinceLast >= 200) {
+        doBroadcast();
+      } else {
+        if (throttleTimerRef.current) clearTimeout(throttleTimerRef.current);
+        throttleTimerRef.current = setTimeout(doBroadcast, 200 - timeSinceLast);
+      }
 
       // 2. Persistent Server Sync (for late joiners and DB persistence)
-      // Debounce the fetch calls to avoid Vercel rate limits and lag
-      const timer = setTimeout(() => {
+      // Debounce the fetch calls to avoid Vercel rate limits
+      const fetchTimer = setTimeout(() => {
         updateStats(localStats);
         fetch('/api/battle/code', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roomId: room.id, clientId, code: localCode }),
         }).catch(err => console.error('Failed to sync code:', err));
-      }, 500);
+      }, 1000); // 1 second debounce for fetch
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(fetchTimer);
     }
   }, [localCode, localStats, role, room?.status, room?.id, clientId, updateStats, broadcastClientEvent]);
 
