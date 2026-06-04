@@ -16,6 +16,7 @@ export const LANGUAGES = [
   { value: 'go', label: 'Go', extension: '.go' },
   { value: 'cpp', label: 'C++', extension: '.cpp' },
   { value: 'java', label: 'Java', extension: '.java' },
+  { value: 'c', label: 'C', extension: '.c' },
   { value: 'csharp', label: 'C#', extension: '.cs' },
   { value: 'ruby', label: 'Ruby', extension: '.rb' },
   { value: 'swift', label: 'Swift', extension: '.swift' },

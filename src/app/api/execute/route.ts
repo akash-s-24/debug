@@ -13,6 +13,7 @@ export async function POST(req: Request) {
       python: 71,
       java: 62,
       cpp: 54,
+      c: 50,
       go: 60,
       rust: 73,
       php: 68,
