@@ -74,8 +74,13 @@ export async function POST(req: Request) {
     // Extract output
     let output = '';
     const compileOut = decodeBase64(data.compile_output);
-    const stderrOut = decodeBase64(data.stderr);
+    let stderrOut = decodeBase64(data.stderr);
     const stdoutOut = decodeBase64(data.stdout);
+
+    // Clean up ugly bash wrapper segfault messages for C/C++
+    if (stderrOut && stderrOut.includes('Segmentation fault')) {
+      stderrOut = stderrOut.replace(/run\.sh: line \d+:.*Segmentation fault.*/g, '[Segmentation Fault]\nYour program crashed because it tried to access an invalid memory location.\nCommon causes: array out-of-bounds, uninitialized or null pointers, or infinite recursion.');
+    }
 
     if (compileOut) {
       output += `[Compiler Output]\n${compileOut}\n`;
