@@ -23,6 +23,23 @@ export async function POST(req: Request) {
       return Response.json({ error: `Unsupported language: ${language}` }, { status: 400 });
     }
 
+    // Judge0 saves Java code as Main.java and executes `java Main`. 
+    // We must ensure the user has a class named Main.
+    if (languageId === 62) {
+      const hasMainClass = /\bclass\s+Main\b/.test(code);
+      const publicClassMatch = code.match(/public\s+class\s+([A-Za-z0-9_]+)/);
+      
+      if (publicClassMatch && publicClassMatch[1] !== 'Main') {
+        return Response.json({ 
+          output: `[Java Execution Error]\nYour public class is named '${publicClassMatch[1]}'.\nIn this environment, your main class must be named 'Main' (e.g., public class Main).`
+        }, { status: 200 }); // Return 200 so it displays nicely in the terminal as output
+      } else if (!hasMainClass) {
+        return Response.json({ 
+          output: `[Java Execution Error]\nCould not find 'class Main'.\nIn this environment, your code must contain a class named 'Main' with the 'public static void main' method.`
+        }, { status: 200 });
+      }
+    }
+
     // Encode payload to Base64 to prevent JSON parsing errors with special chars
     const encodedCode = Buffer.from(code).toString('base64');
     const encodedStdin = stdin ? Buffer.from(stdin).toString('base64') : '';
