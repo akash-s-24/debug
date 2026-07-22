@@ -341,7 +341,7 @@ export default function CreateRoomPage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                <Button onClick={copyToClipboard} className="w-full sm:w-1/2" variant="outline">
+                <Button onClick={copyToClipboard} className="w-full sm:w-1/2" variant="secondary">
                   COPY_TOKEN
                 </Button>
                 <Button onClick={joinCreatedRoom} className="w-full sm:w-1/2">

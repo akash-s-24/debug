@@ -55,7 +55,7 @@ export default function LandingPage() {
                 <Button variant="primary" size="lg">START_BATTLE</Button>
               </Link>
               <Button 
-                variant="outline" 
+                variant="secondary" 
                 size="lg" 
                 className="transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:text-neon-cyan"
                 onClick={() => setShowJoinModal(true)}
@@ -166,7 +166,7 @@ export default function LandingPage() {
               <Button variant="primary" size="lg">START_BATTLE --ROLE=HOST</Button>
             </Link>
             <Button 
-              variant="outline" 
+              variant="secondary" 
               size="lg" 
               className="transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:text-neon-cyan"
               onClick={() => setShowJoinModal(true)}

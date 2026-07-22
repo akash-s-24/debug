@@ -55,7 +55,7 @@ export function BattleControls({
 
         {status === 'battle' && (
           <Button 
-            variant="outline"
+            variant="secondary"
             onClick={onPauseBattle}
           >
             PAUSE_BATTLE
