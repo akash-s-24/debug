@@ -1,204 +1,153 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ParticleField } from './ParticleField';
 import { Button } from '@/components/ui/Button';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.3 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
   },
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: 'spring', stiffness: 100, damping: 15 },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
-function GlitchTitle() {
-  return (
-    <div className="relative select-none">
-      <h1
-        className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white"
-        style={{ fontFamily: "'Orbitron', sans-serif" }}
-      >
-        <span className="relative inline-block">
-          {/* Glitch layers */}
-          <span
-            className="absolute inset-0 text-[#00F0FF] animate-pulse"
-            style={{
-              clipPath: 'polygon(0 0, 100% 0, 100% 45%, 0 45%)',
-              transform: 'translate(-2px, -1px)',
-              opacity: 0.7,
-            }}
-            aria-hidden="true"
-          >
-            DEBUG DUEL
-          </span>
-          <span
-            className="absolute inset-0 text-[#FF006E] animate-pulse"
-            style={{
-              clipPath: 'polygon(0 55%, 100% 55%, 100% 100%, 0 100%)',
-              transform: 'translate(2px, 1px)',
-              opacity: 0.7,
-              animationDelay: '0.1s',
-            }}
-            aria-hidden="true"
-          >
-            DEBUG DUEL
-          </span>
-          DEBUG DUEL
-        </span>
-        <br />
-        <span
-          className="bg-gradient-to-r from-[#00F0FF] via-[#7B2FF7] to-[#FF006E] bg-clip-text text-transparent"
-        >
-          ARENA
-        </span>
-      </h1>
-    </div>
-  );
-}
-
-function TypewriterText({ text }: { text: string }) {
-  const [displayed, setDisplayed] = useState('');
-
-  useEffect(() => {
-    let i = 0;
-    const timer = setInterval(() => {
-      if (i <= text.length) {
-        setDisplayed(text.slice(0, i));
-        i++;
-      } else {
-        clearInterval(timer);
-      }
-    }, 50);
-    return () => clearInterval(timer);
-  }, [text]);
-
-  return (
-    <span className="text-white/60 text-lg sm:text-xl font-light">
-      {displayed}
-      <span className="inline-block w-0.5 h-5 bg-[#00F0FF] ml-1 animate-pulse" />
-    </span>
-  );
-}
-
-function CountUpStat({ value, label }: { value: string; label: string }) {
-  const numericPart = parseInt(value.replace(/\D/g, ''));
-  const suffix = value.replace(/[0-9]/g, '');
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const duration = 2000;
-    const startTime = performance.now();
-
-    const tick = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      start = Math.floor(eased * numericPart);
-      setCount(start);
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [numericPart]);
-
-  return (
-    <div className="text-center px-4 sm:px-8">
-      <div
-        className="text-2xl sm:text-3xl font-black text-white font-mono"
-        style={{ textShadow: '0 0 15px rgba(0,240,255,0.4)' }}
-      >
-        {count}
-        {suffix}
-      </div>
-      <div className="text-xs text-white/40 uppercase tracking-widest mt-1">{label}</div>
-    </div>
-  );
-}
-
-function FloatingCodeCard({ code, position }: { code: string; position: string }) {
-  return (
-    <motion.div
-      className={`absolute ${position} hidden lg:block`}
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-    >
-      <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg p-4 text-xs font-mono text-[#00F0FF]/60 max-w-[200px] shadow-[0_0_20px_rgba(0,240,255,0.05)]">
-        <pre className="whitespace-pre-wrap">{code}</pre>
-      </div>
-    </motion.div>
-  );
-}
-
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <ParticleField />
+    <section className="relative min-h-screen pt-32 pb-20 overflow-hidden bg-[#0A0A0A] flex flex-col items-center">
+      
+      {/* Background Glows (Subtle) */}
+      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] left-[20%] w-[500px] h-[400px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Floating code decorations */}
-      <FloatingCodeCard
-        position="top-32 left-8 xl:left-24"
-        code={`fn solve(n: i32) {\n  let mut dp = vec!;\n  for i in 0..n {\n    dp[i] = dp[i-1];\n  }\n}`}
-      />
-      <FloatingCodeCard
-        position="top-48 right-8 xl:right-24"
-        code={`async function\n  debug(code) {\n  const ast =\n    parse(code);\n  return fix(ast);\n}`}
-      />
-      <FloatingCodeCard
-        position="bottom-40 left-16 xl:left-32"
-        code={`class Arena:\n  def battle(self):\n    while True:\n      self.round()`}
-      />
-
+      {/* Hero Content */}
       <motion.div
-        className="relative z-10 flex flex-col items-center text-center px-4 max-w-5xl mx-auto"
+        className="relative z-10 flex flex-col items-center text-center px-4 max-w-5xl mx-auto w-full"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants}>
-          <GlitchTitle />
+        <motion.div variants={itemVariants} className="mb-8 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-sm text-gray-300 backdrop-blur-md shadow-sm">
+          <span className="flex h-2 w-2 rounded-full bg-[#8B5CF6] mr-2"></span>
+          Arena Engine 2.0 is now live <span className="ml-2 text-gray-500">→</span>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="mt-6">
-          <TypewriterText text="The Ultimate Live Coding Battle Platform" />
+        <motion.div variants={itemVariants} className="max-w-4xl">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-medium tracking-tighter text-white leading-[1.1]">
+            Code faster.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-600">Battle smarter.</span>
+          </h1>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="mt-8 max-w-2xl">
+          <p className="text-lg sm:text-xl text-gray-400 leading-relaxed font-light">
+            Debug Duel Arena is the ultimate live coding battle platform. Compete head-to-head in real-time, stream your battles, and prove your skills in a secure sandboxed environment.
+          </p>
         </motion.div>
 
         <motion.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-center gap-4 mt-10"
         >
-          <Button variant="primary" size="lg" icon="⚔️">
-            Create Battle
+          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+            Create a Battle
           </Button>
-          <Button variant="neon" size="lg" icon="🏟️">
-            Join Arena
+          <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border-white/10 hover:bg-white/5">
+            Join the Arena
           </Button>
         </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center justify-center mt-16 divide-x divide-white/10"
+        {/* Dashboard/Product Mockup Preview (Linear Style) */}
+        <motion.div 
+          variants={itemVariants} 
+          className="mt-20 w-full relative perspective-[2000px]"
         >
-          <CountUpStat value="500+" label="Battles" />
-          <CountUpStat value="10K+" label="Coders" />
-          <CountUpStat value="50+" label="Languages" />
-        </motion.div>
-      </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent z-20 top-1/2" />
+          
+          <motion.div 
+            initial={{ rotateX: 20, y: 50, opacity: 0 }}
+            animate={{ rotateX: 0, y: 0, opacity: 1 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="w-full rounded-2xl border border-white/[0.08] bg-[#09090B] shadow-2xl overflow-hidden shadow-purple-900/20"
+            style={{ transformStyle: "preserve-3d" }}
+          >
+            {/* Mockup Header */}
+            <div className="h-10 border-b border-white/[0.05] flex items-center px-4 gap-2 bg-white/[0.02]">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                <div className="w-3 h-3 rounded-full bg-green-500/80" />
+              </div>
+              <div className="mx-auto bg-black/40 rounded px-4 py-1 text-xs text-gray-500 font-mono">
+                arena.debugduel.com/battle/dev-123
+              </div>
+            </div>
+            
+            {/* Mockup Body (Split View like the actual app) */}
+            <div className="flex h-[400px] sm:h-[600px] bg-[#0A0A0B]">
+              {/* Left Panel - Code Editor Mock */}
+              <div className="flex-1 border-r border-white/[0.05] p-4 font-mono text-sm">
+                <div className="flex text-gray-500 mb-4 gap-4 text-xs">
+                  <span className="text-gray-300">main.ts</span>
+                  <span>utils.ts</span>
+                </div>
+                <div className="text-purple-400">export function <span className="text-blue-400">calculateScore</span><span className="text-gray-300">(</span></div>
+                <div className="pl-4 text-gray-300">timeMs: <span className="text-yellow-300">number</span>,</div>
+                <div className="pl-4 text-gray-300">complexity: <span className="text-yellow-300">number</span></div>
+                <div className="text-gray-300">) {'{'}</div>
+                <div className="pl-4 text-gray-500">{'// Linear scoring algorithm'}</div>
+                <div className="pl-4 text-purple-400">const <span className="text-blue-200">baseScore</span> = <span className="text-orange-400">10000</span>;</div>
+                <div className="pl-4 text-purple-400">return <span className="text-blue-200">baseScore</span> - (timeMs * complexity);</div>
+                <div className="text-gray-300">{'}'}</div>
+                
+                {/* Simulated cursor */}
+                <div className="inline-block w-2 h-4 bg-purple-500 animate-pulse mt-2" />
+              </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#080810] to-transparent z-10" />
+              {/* Right Panel - Stats Mock */}
+              <div className="w-1/3 hidden md:flex flex-col p-4 gap-4 bg-black/20">
+                <div className="rounded-lg border border-white/[0.05] p-4 bg-white/[0.02]">
+                  <div className="text-xs text-gray-500 uppercase tracking-widest mb-2">Opponent</div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500" />
+                    <div>
+                      <div className="text-sm text-gray-200">Alex Hacker</div>
+                      <div className="text-xs text-red-400">3 Errors • 120 WPM</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="rounded-lg border border-white/[0.05] p-4 bg-white/[0.02] flex-1">
+                  <div className="text-xs text-gray-500 uppercase tracking-widest mb-4">Live Execution</div>
+                  <div className="font-mono text-xs text-green-400 leading-relaxed">
+                    {'>'} Compiling...<br/>
+                    {'>'} Build successful (42ms)<br/>
+                    {'>'} Running test suite...<br/>
+                    {'>'} ✓ Test 1 passed<br/>
+                    {'>'} ✓ Test 2 passed<br/>
+                    {'>'} ✓ Test 3 passed<br/>
+                    <br/>
+                    <span className="text-blue-400">All tests passing. Ready to submit.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+      </motion.div>
     </section>
   );
 }
 
 export default Hero;
+

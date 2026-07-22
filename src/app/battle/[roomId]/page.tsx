@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Background } from '@/components/layout/Background';
 import { ChallengeBar } from '@/components/battle/ChallengeBar';
 import { EditorPanel } from '@/components/battle/EditorPanel';
 import { HostDashboard } from '@/components/battle/HostDashboard';
@@ -205,23 +204,23 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
 
   if (roomError) {
     return (
-      <Background>
-        <div className="min-h-screen flex flex-col items-center justify-center">
-          <div className="text-neon-red font-display text-2xl tracking-[0.2em] mb-4">CONNECTION ERROR</div>
-          <div className="text-white font-mono mb-8">{roomError}</div>
-          <Button variant="neon" size="lg" onClick={() => router.push('/')}>Return to Arena</Button>
+      <div className="relative min-h-screen bg-background">
+        <div className="min-h-screen flex flex-col items-center justify-center relative z-10">
+          <div className="text-error font-code-md text-code-md tracking-[0.2em] mb-4">CONNECTION ERROR</div>
+          <div className="text-on-surface font-mono mb-8">{roomError}</div>
+          <Button variant="primary" size="lg" onClick={() => router.push('/')}>Return to Arena</Button>
         </div>
-      </Background>
+      </div>
     );
   }
 
   if (!room) {
     return (
-      <Background>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-neon-cyan animate-pulse font-display text-xl tracking-[0.5em]">CONNECTING...</div>
+      <div className="relative min-h-screen bg-background">
+        <div className="min-h-screen flex items-center justify-center relative z-10">
+          <div className="text-primary animate-pulse font-code-md text-code-md tracking-[0.5em]">CONNECTING...</div>
         </div>
-      </Background>
+      </div>
     );
   }
 
@@ -230,38 +229,40 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   if (isHost) {
     // ── HOST DASHBOARD ──────────────────────────────────────────────────
     return (
-      <Background>
-        {showIntro && room.contestants.length >= 2 && (
-          <BattleIntro
-            contestant1={room.contestants[0]}
-            contestant2={room.contestants[1]}
-            challenge={room.config.challenge}
-            onComplete={handleIntroComplete}
-          />
-        )}
-        <div className="flex flex-col h-screen overflow-hidden">
-          <ChallengeBar 
-            title={room.config.challenge}
-            description={room.config.challengeDescription}
-            language={room.config.language}
-            duelType={room.config.duelType}
-            timeRemaining={timeRemaining}
-            isRunning={isRunning}
-            isPaused={isPaused}
-            onExit={handleExit}
-            isHost={true}
-          />
-          <HostDashboard 
-            room={room}
-            stats={remoteStats}
-            remoteCodes={remoteCodes}
-            timeRemaining={timeRemaining}
-            isRunning={isRunning}
-            isPaused={isPaused}
-            onAction={handleHostAction}
-          />
+      <div className="relative min-h-screen bg-background">
+        <div className="relative z-10 h-full">
+          {showIntro && room.contestants.length >= 2 && (
+            <BattleIntro
+              contestant1={room.contestants[0]}
+              contestant2={room.contestants[1]}
+              challenge={room.config.challenge}
+              onComplete={handleIntroComplete}
+            />
+          )}
+          <div className="flex flex-col h-screen overflow-hidden">
+            <ChallengeBar 
+              title={room.config.challenge}
+              description={room.config.challengeDescription}
+              language={room.config.language}
+              duelType={room.config.duelType}
+              timeRemaining={timeRemaining}
+              isRunning={isRunning}
+              isPaused={isPaused}
+              onExit={handleExit}
+              isHost={true}
+            />
+            <HostDashboard 
+              room={room}
+              stats={remoteStats}
+              remoteCodes={remoteCodes}
+              timeRemaining={timeRemaining}
+              isRunning={isRunning}
+              isPaused={isPaused}
+              onAction={handleHostAction}
+            />
+          </div>
         </div>
-      </Background>
+      </div>
     );
   }
 
@@ -287,104 +288,107 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const code2 = user2 ? (remoteCodes.get(user2.id) || room?.config.initialCode || '// Waiting for code...') : '// Waiting for code...';
 
   return (
-    <Background>
-      {showIntro && room.contestants.length >= 2 && (
-        <BattleIntro
-          contestant1={room.contestants[0]}
-          contestant2={room.contestants[1]}
-          challenge={room.config.challenge}
-          onComplete={handleIntroComplete}
-        />
-      )}
+    <div className="relative min-h-screen bg-background">
+      <div className="relative z-10 h-full">
+        {showIntro && room.contestants.length >= 2 && (
+          <BattleIntro
+            contestant1={room.contestants[0]}
+            contestant2={room.contestants[1]}
+            challenge={room.config.challenge}
+            onComplete={handleIntroComplete}
+          />
+        )}
 
-      <FloatingReactions reactions={reactions} />
-      
-      <div className="flex flex-col h-screen overflow-hidden">
-        <ChallengeBar 
-          title={room.config.challenge}
-          description={room.config.challengeDescription}
-          language={room.config.language}
-          duelType={room.config.duelType}
-          timeRemaining={timeRemaining}
-          isRunning={isRunning}
-          isPaused={isPaused}
-          onExit={handleExit}
-          isHost={false}
-          roomId={room.id}
-          userName={myUser.name}
-        />
+        <FloatingReactions reactions={reactions} />
+        
+        <div className="flex flex-col h-screen overflow-hidden">
+          <ChallengeBar 
+            title={room.config.challenge}
+            description={room.config.challengeDescription}
+            language={room.config.language}
+            duelType={room.config.duelType}
+            timeRemaining={timeRemaining}
+            isRunning={isRunning}
+            isPaused={isPaused}
+            onExit={handleExit}
+            isHost={false}
+            roomId={room.id}
+            userName={myUser.name}
+          />
 
-        <div className="flex flex-1 overflow-hidden p-2 gap-2">
-          {/* Main Battle Area */}
-          <div className="flex-1 flex flex-col min-w-0">
-            {layout === 'side-by-side' && user2 && myUser.role !== 'contestant' ? (
-              <DualView
-                code1={code1}
-                code2={code2}
-                user1={user1}
-                user2={user2}
-                stats1={stats1 || null}
-                stats2={stats2 || null}
-                layout={layout}
-                challenge={room.config.challenge}
-                language={room.config.language}
-                isLocalUser1={user1?.id === myUser.id}
-                isLocalUser2={false}
-                hideCode1={user1?.id === myUser.id && room.status !== 'battle'}
-                hideCode2={false} // Contestants do not render this DualView anymore
-                onCodeChange1={user1?.id === myUser.id ? handleCodeChange : undefined}
-                onValidate1={user1?.id === myUser.id ? handleValidation : undefined}
-                onTerminalChange1={user1?.id === myUser.id ? handleTerminalSync : undefined}
-              />
-            ) : (
-              <div className="flex-1 relative h-full w-full p-2">
-                {myUser.role === 'contestant' && room.status !== 'battle' ? (
-                  <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-xl border border-white/10 p-8 text-center">
-                    <div>
-                      <div className="text-4xl mb-4">🔒</div>
-                      <h3 className="text-xl font-display tracking-widest text-text-primary uppercase mb-2">Battle Not Started</h3>
-                      <p className="text-sm font-mono text-text-secondary">Code is locked until the host starts the battle.</p>
+          <div className="flex flex-1 overflow-hidden p-2 gap-2">
+            {/* Main Battle Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+              {layout === 'side-by-side' && user2 && myUser.role !== 'contestant' ? (
+                <DualView
+                  code1={code1}
+                  code2={code2}
+                  user1={user1}
+                  user2={user2}
+                  stats1={stats1 || null}
+                  stats2={stats2 || null}
+                  layout={layout}
+                  challenge={room.config.challenge}
+                  language={room.config.language}
+                  isLocalUser1={user1?.id === myUser.id}
+                  isLocalUser2={false}
+                  hideCode1={user1?.id === myUser.id && room.status !== 'battle'}
+                  hideCode2={false} // Contestants do not render this DualView anymore
+                  onCodeChange1={user1?.id === myUser.id ? handleCodeChange : undefined}
+                  onValidate1={user1?.id === myUser.id ? handleValidation : undefined}
+                  onTerminalChange1={user1?.id === myUser.id ? handleTerminalSync : undefined}
+                />
+              ) : (
+                <div className="flex-1 relative h-full w-full p-2">
+                  {myUser.role === 'contestant' && room.status !== 'battle' ? (
+                    <div className="w-full h-full flex items-center justify-center bg-void border border-border-subtle shadow-inner p-8 text-center hud-bracket">
+                      <div>
+                        <div className="text-4xl mb-4 text-neon-cyan animate-pulse">[ 🔒 ]</div>
+                        <h3 className="font-display tracking-tight text-3xl text-text-primary mb-2">Battle Not Started</h3>
+                        <p className="font-mono text-[11px] text-text-secondary uppercase tracking-widest">Code is locked until the host starts the battle.</p>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <EditorPanel
-                    code={code1}
-                    language={room.config.language}
-                    userName={user1?.name || 'Player'}
-                    isLocal={user1?.id === myUser.id}
-                    isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'}
-                    color="cyan"
-                    stats={stats1 || null}
-                    onChange={user1?.id === myUser.id ? handleCodeChange : undefined}
-                    onValidation={user1?.id === myUser.id ? handleValidation : undefined}
-                    onTerminalChange={user1?.id === myUser.id ? handleTerminalSync : undefined}
-                  />
-                )}
-              </div>
-            )}
-          </div>
+                  ) : (
+                    <EditorPanel
+                      code={code1}
+                      language={room.config.language}
+                      userName={user1?.name || 'Player'}
+                      isLocal={user1?.id === myUser.id}
+                      isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'}
+                      color="cyan"
+                      stats={stats1 || null}
+                      onChange={user1?.id === myUser.id ? handleCodeChange : undefined}
+                      onValidation={user1?.id === myUser.id ? handleValidation : undefined}
+                      onTerminalChange={user1?.id === myUser.id ? handleTerminalSync : undefined}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
 
-          {/* Sidebar - Hidden on mobile to prioritize code editors */}
-          <div className="hidden lg:flex w-80 flex-col gap-2 flex-shrink-0 h-full overflow-hidden">
-            {stats1 && user1?.id === myUser.id && (
-              <div className="flex-shrink-0">
-                <LiveStats stats={stats1} color="cyan" compact />
-              </div>
-            )}
-            
-            <div className="flex-1 min-h-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col items-center text-center">
-              <div className="text-4xl mb-6">🏆</div>
-              <h3 className="text-2xl font-display text-text-primary tracking-widest mb-4">BATTLE ARENA</h3>
-              <p className="text-text-secondary text-sm font-body mb-8">Focus on the code. Outperform your opponent.</p>
+            {/* Sidebar - Hidden on mobile to prioritize code editors */}
+            <div className="hidden lg:flex w-80 flex-col gap-2 flex-shrink-0 h-full overflow-hidden">
+              {stats1 && user1?.id === myUser.id && (
+                <div className="flex-shrink-0">
+                  <LiveStats stats={stats1} color="cyan" compact />
+                </div>
+              )}
               
-              <div className="w-full bg-black/40 rounded-lg p-4 border border-white/5 mt-auto">
-                <div className="text-xs text-text-muted uppercase tracking-widest mb-2">Room Code</div>
-                <div className="text-xl font-mono text-white tracking-widest">{room.code}</div>
+              <div className="flex-1 min-h-0 bg-void border border-border-subtle shadow-md p-6 flex flex-col items-center text-center hud-bracket">
+                <div className="text-4xl mb-6">🏆</div>
+                <h3 className="font-display text-3xl tracking-tight text-text-primary mb-2">Battle Arena</h3>
+                <p className="text-text-secondary text-xs font-mono mb-8 before:content-['//'] before:mr-2 before:text-text-muted">Focus on the code. Outperform your opponent.</p>
+                
+                <div className="w-full bg-abyss p-4 border border-border-subtle mt-auto relative overflow-hidden shadow-inner">
+                  <div className="scanline-overlay"></div>
+                  <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest mb-2 relative z-10">Room Code</div>
+                  <div className="text-2xl font-mono text-neon-cyan tracking-widest relative z-10">{room.code}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </Background>
+    </div>
   );
 }

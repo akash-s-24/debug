@@ -67,14 +67,14 @@ export function DualView({
   };
 
   return (
-    <div className="relative w-full h-full flex-grow overflow-hidden bg-void">
-      <div className={`w-full h-full grid ${getLayoutClasses()} gap-1 p-1`}>
+    <div className="relative w-full h-full flex-grow overflow-hidden bg-void p-2">
+      <div className={`w-full h-full grid ${getLayoutClasses()} gap-4`}>
         <motion.div layout transition={{ type: 'spring', damping: 25, stiffness: 120 }} className="relative h-full">
           {hideCode1 ? (
-            <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-xl border border-white/10 p-8 text-center">
+            <div className="w-full h-full flex items-center justify-center glass-surface rounded-lg border border-border-subtle p-8 text-center hud-bracket">
               <div>
-                <div className="text-4xl mb-4">🕵️</div>
-                <h3 className="text-xl font-display tracking-widest text-text-primary uppercase mb-2">Code Hidden</h3>
+                <div className="text-4xl mb-4 opacity-70 hover:opacity-100 transition-opacity">🕵️</div>
+                <h3 className="text-xl font-heading tracking-widest text-text-primary uppercase mb-2">Code Hidden</h3>
                 <p className="text-sm font-mono text-text-secondary">Opponent is coding...<br/>(Hidden to prevent cheating)</p>
               </div>
             </div>
@@ -96,10 +96,10 @@ export function DualView({
         
         <motion.div layout transition={{ type: 'spring', damping: 25, stiffness: 120 }} className="relative h-full">
           {hideCode2 ? (
-            <div className="w-full h-full flex items-center justify-center bg-black/80 rounded-xl border border-white/10 p-8 text-center">
+            <div className="w-full h-full flex items-center justify-center glass-surface rounded-lg border border-border-subtle p-8 text-center hud-bracket">
               <div>
-                <div className="text-4xl mb-4">🕵️</div>
-                <h3 className="text-xl font-display tracking-widest text-text-primary uppercase mb-2">Code Hidden</h3>
+                <div className="text-4xl mb-4 opacity-70 hover:opacity-100 transition-opacity">🕵️</div>
+                <h3 className="text-xl font-heading tracking-widest text-text-primary uppercase mb-2">Code Hidden</h3>
                 <p className="text-sm font-mono text-text-secondary">Opponent is coding...<br/>(Hidden to prevent cheating)</p>
               </div>
             </div>
@@ -123,9 +123,9 @@ export function DualView({
       {/* VS Badge / Divider Overlay */}
       {layout === 'side-by-side' && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col items-center pointer-events-none">
-          <div className="w-16 h-16 rounded-full bg-void border-2 border-slate-dark flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+          <div className="w-16 h-16 rounded-full bg-abyss border-2 border-border-subtle flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)]">
             <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/20 to-neon-magenta/20" />
-            <span className="font-display font-black text-2xl italic text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-magenta">VS</span>
+            <span className="font-heading font-black text-2xl italic text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-magenta">VS</span>
           </div>
         </div>
       )}

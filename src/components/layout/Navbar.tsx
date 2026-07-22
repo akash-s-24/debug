@@ -1,139 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
-
-const navLinks = [
-  { label: 'Arena', href: '/' },
-  { label: 'Features', href: '/#features' },
-  { label: 'Leaderboard', href: '/leaderboard' },
-];
 
 export function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [time, setTime] = useState<string>('--:--:--');
+
+  useEffect(() => {
+    const tick = () => {
+      const d = new Date();
+      const z = (n: number) => String(n).padStart(2, '0');
+      setTime(`${z(d.getUTCHours())}:${z(d.getUTCMinutes())}:${z(d.getUTCSeconds())}Z`);
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.1 }}
-      className="fixed top-0 left-0 right-0 z-50"
-    >
-      <div className="bg-black/40 backdrop-blur-lg border-b border-white/5">
-        {/* Gradient bottom border */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-[#00F0FF]/40 via-[#7B2FF7]/20 to-[#FF006E]/40" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-2xl">⚔️</span>
-              <span
-                className="text-xl font-black uppercase tracking-wider text-white group-hover:text-[#00F0FF] transition-colors duration-300"
-                style={{
-                  fontFamily: "'Orbitron', sans-serif",
-                  textShadow: '0 0 15px rgba(0,240,255,0.3)',
-                }}
-              >
-                Debug Duel
-              </span>
-            </Link>
-
-            {/* Desktop nav */}
-            <div className="hidden md:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm text-white/50 hover:text-white uppercase tracking-wider font-medium transition-colors duration-200"
-                >
-                  {link.label}
-                </Link>
-              ))}
-
-              {/* Connection indicator */}
-              <div className="flex items-center gap-2 text-xs text-white/40 mr-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-[#00FF88] opacity-75 animate-ping" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00FF88]" />
-                </span>
-                ONLINE
-              </div>
-
-              <Link href="/?join=true">
-                <Button variant="ghost" size="sm">
-                  Join
-                </Button>
-              </Link>
-              <Link href="/create">
-                <Button variant="primary" size="sm">
-                  Create Battle
-                </Button>
-              </Link>
-            </div>
-
-            {/* Mobile hamburger */}
-            <button
-              className="md:hidden flex flex-col gap-1.5 p-2"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              <motion.span
-                className="block w-6 h-0.5 bg-white/70"
-                animate={mobileOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-              />
-              <motion.span
-                className="block w-6 h-0.5 bg-white/70"
-                animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              />
-              <motion.span
-                className="block w-6 h-0.5 bg-white/70"
-                animate={mobileOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-              />
-            </button>
-          </div>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-50 grid grid-cols-[auto_1fr_auto] items-center px-6 py-3 bg-void/90 backdrop-blur border-b border-border-subtle text-xs tracking-wider">
+        <Link href="/" className="font-mono font-bold text-base tracking-widest flex items-center gap-2 text-text-primary">
+          <div className="w-2.5 h-2.5 bg-neon-green shadow-[0_0_12px_rgba(82,255,138,1)] animate-pulse rounded-sm" />
+          DEBUG_DUEL_ARENA
+        </Link>
+        
+        <div className="hidden md:flex gap-6 justify-self-center text-text-muted font-mono">
+          <Link className="hover:text-neon-cyan transition-colors before:content-['['] after:content-[']']" href="/">arena</Link>
+          <Link className="hover:text-neon-cyan transition-colors before:content-['['] after:content-[']']" href="/leaderboard">leaderboard</Link>
+          <Link className="hover:text-neon-cyan transition-colors before:content-['['] after:content-[']']" href="/create">create_battle</Link>
         </div>
-      </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-black/80 backdrop-blur-xl border-b border-white/5 overflow-hidden"
-          >
-            <div className="px-4 py-4 flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm text-white/60 hover:text-white uppercase tracking-wider font-medium py-2"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="flex gap-3 mt-2">
-                <Link href="/?join=true" onClick={() => setMobileOpen(false)} className="flex-1">
-                  <Button variant="ghost" size="sm" className="w-full">
-                    Join
-                  </Button>
-                </Link>
-                <Link href="/create" onClick={() => setMobileOpen(false)} className="flex-1">
-                  <Button variant="primary" size="sm" className="w-full">
-                    Create Battle
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+        <div className="text-text-muted text-[11px] font-mono">
+          SYS · <b className="text-neon-cyan font-normal">{time}</b>
+        </div>
+      </nav>
+      
+      <div className="fixed top-[48px] left-0 right-0 z-40 flex justify-between items-center px-6 py-1.5 text-[10px] tracking-[0.08em] uppercase text-text-muted border-b border-[rgba(255,184,74,0.12)] bg-void/90 backdrop-blur font-mono">
+        <span>BUILD: <b className="text-neon-green font-normal">0.7.2-rc4</b></span>
+        <span>UPTIME: <b className="text-neon-green font-normal">71d 04h 22m</b></span>
+        <span>NODE: <b className="text-neon-green font-normal">SF-04 · NOMINAL</b></span>
+        <span>LOAD: <b className="text-neon-green font-normal">38%</b></span>
+        <span className="flex items-center gap-1">CTRL: <b className="text-danger-red font-normal animate-pulse">OPEN INTAKE WAVE 03</b></span>
+      </div>
+    </>
   );
 }
 

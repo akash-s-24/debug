@@ -3,7 +3,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Editor, { useMonaco, Monaco } from '@monaco-editor/react';
 import { CodingStats } from '@/types';
-import { CodeBracketIcon, CommandLineIcon, XMarkIcon, PlayIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 
 interface EditorPanelProps {
@@ -46,7 +45,6 @@ export function EditorPanel({
   const currentActiveTab = isLocal ? activeTab : stats?.activeTab ?? 'output';
   const currentIsError = isLocal ? isError : stats?.terminalIsError ?? false;
 
-  // Broadcast terminal changes
   const updateTerminal = (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => {
     if (updates.terminalOutput !== undefined) setOutput(updates.terminalOutput);
     if (updates.terminalInput !== undefined) setStdin(updates.terminalInput);
@@ -74,7 +72,6 @@ export function EditorPanel({
       if (!res.ok) {
         updateTerminal({ terminalOutput: data.error || 'Execution failed', terminalIsError: true });
       } else {
-        // Simple heuristic: if the output contains "Error:" or "Exception:" it might be an unhandled rejection or script error.
         const outputText = data.output || 'No output';
         const hasErrorKeywords = /(Error|Exception|Failed|Traceback|SyntaxError|ReferenceError):/i.test(outputText);
         updateTerminal({ terminalOutput: outputText, terminalIsError: hasErrorKeywords });
@@ -93,8 +90,8 @@ export function EditorPanel({
         inherit: true,
         rules: [],
         colors: {
-          'editor.background': '#080810', // Deep void background
-          'editor.lineHighlightBackground': '#ffffff0a',
+          'editor.background': '#0D0F17', // Match abyss
+          'editor.lineHighlightBackground': '#22E9E10a', // Slight cyan tint
         },
       });
       monaco.editor.setTheme('neon-dark');
@@ -105,18 +102,18 @@ export function EditorPanel({
   const bgGlow = color === 'cyan' ? 'bg-neon-cyan/5' : 'bg-neon-magenta/5';
 
   return (
-    <div className={`relative w-full h-full flex flex-col bg-black/80 rounded-xl border overflow-hidden ${
-      isActive ? `border-${color} shadow-[0_0_30px_rgba(var(--${color}-rgb),0.3)]` : 'border-white/10'
+    <div className={`relative w-full h-full flex flex-col glass-surface rounded-lg overflow-hidden hud-bracket ${
+      isActive ? `border-${color === 'cyan' ? 'neon-cyan' : 'neon-magenta'} shadow-[0_0_30px_rgba(${color === 'cyan' ? '34,233,225' : '247,37,133'},0.2)]` : 'border-border-subtle'
     }`}>
       {/* Header Bar */}
-      <div className={`h-10 border-b border-white/10 flex items-center justify-between px-4 ${bgGlow}`}>
-        <div className="flex items-center gap-2">
-          <CodeBracketIcon className={`w-4 h-4 ${colorClass}`} />
-          <span className={`font-display font-bold uppercase tracking-wider text-sm ${colorClass}`}>
+      <div className={`h-12 border-b border-border-subtle flex items-center justify-between px-4 ${bgGlow}`}>
+        <div className="flex items-center gap-3">
+          <span className="material-symbols-outlined text-[18px] text-text-muted">data_object</span>
+          <span className={`font-heading font-bold uppercase tracking-widest text-sm ${colorClass}`}>
             {userName}
           </span>
           {isLocal && (
-            <span className="text-[10px] bg-white/10 text-white/70 px-1.5 py-0.5 rounded font-mono">YOU</span>
+            <span className="text-[10px] bg-neon-cyan/10 text-neon-cyan px-2 py-0.5 rounded border border-neon-cyan/30 font-mono">YOU</span>
           )}
         </div>
         
@@ -125,28 +122,26 @@ export function EditorPanel({
             {isLocal && (
               <div className="flex items-center gap-2 mr-2">
                 <button 
-                  onClick={() => {
-                    updateTerminal({ showTerminal: !showTerminal, activeTab: 'input' });
-                  }}
-                  className="flex items-center gap-1 bg-white/5 hover:bg-white/10 transition-colors px-2 py-1 rounded text-text-secondary border border-white/10"
+                  onClick={() => updateTerminal({ showTerminal: !showTerminal, activeTab: 'input' })}
+                  className="flex items-center gap-1 bg-surface hover:bg-abyss transition-colors px-2 py-1 rounded text-text-secondary hover:text-text-primary border border-border-subtle"
                 >
-                  <CommandLineIcon className="w-3 h-3" />
+                  <span className="material-symbols-outlined text-[14px]">terminal</span>
                   STDIN
                 </button>
                 <button 
                   onClick={handleRunCode}
                   disabled={isExecuting}
-                  className="flex items-center gap-1 bg-neon-cyan/20 hover:bg-neon-cyan/30 transition-colors px-3 py-1 rounded text-neon-cyan border border-neon-cyan/40 font-bold"
+                  className="flex items-center gap-1 bg-neon-cyan text-void transition-colors px-3 py-1 rounded font-bold uppercase disabled:opacity-50"
                 >
-                  <PlayIcon className="w-3 h-3" />
+                  <span className="material-symbols-outlined text-[14px]">play_arrow</span>
                   {isExecuting ? 'RUNNING' : 'RUN'}
                 </button>
               </div>
             )}
-            <span className={stats.typingSpeed > 100 ? 'text-white font-bold text-glow-white' : ''}>
+            <span className={stats.typingSpeed > 100 ? 'text-neon-cyan font-bold' : ''}>
               {stats.typingSpeed} CPM
             </span>
-            <span className={stats.errorCount > 0 ? 'text-neon-red font-bold' : 'text-neon-cyan'}>
+            <span className={stats.errorCount > 0 ? 'text-danger-red font-bold' : 'text-neon-cyan'}>
               {stats.errorCount} ERR
             </span>
           </div>
@@ -166,7 +161,7 @@ export function EditorPanel({
             readOnly: !isLocal,
             minimap: { enabled: false },
             fontSize: 14,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             wordWrap: 'on',
             padding: { top: 16 },
             scrollBeyondLastLine: false,
@@ -183,12 +178,15 @@ export function EditorPanel({
           }
         />
         
+        {/* Subtle scanline overlay for the editor */}
+        <div className="scanline-overlay opacity-30 pointer-events-none"></div>
+
         {/* Momentum Overlay (When typing fast) */}
         {isActive && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`absolute inset-0 pointer-events-none border-2 ${colorClass} opacity-20`}
+            className={`absolute inset-0 pointer-events-none border-2 ${colorClass} opacity-10`}
             style={{ mixBlendMode: 'screen' }}
           />
         )}
@@ -196,32 +194,32 @@ export function EditorPanel({
 
       {/* Terminal UI */}
       {currentShowTerminal && (
-        <div className="h-1/2 bg-black border-t border-white/10 flex flex-col relative z-10 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-white/5">
+        <div className="h-1/2 bg-void border-t border-border-subtle flex flex-col relative z-10 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-subtle bg-abyss/80">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 mr-4">
-                <CommandLineIcon className="w-4 h-4 text-text-secondary" />
-                <span className="text-xs font-display tracking-widest text-text-secondary uppercase">Terminal</span>
+              <div className="flex items-center gap-2 mr-4 text-text-secondary">
+                <span className="material-symbols-outlined text-[14px]">terminal</span>
+                <span className="text-xs font-mono tracking-widest uppercase">Console</span>
               </div>
               
               <div className="flex gap-2">
                 <button 
                   onClick={() => isLocal && updateTerminal({ activeTab: 'input' })}
-                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${currentActiveTab === 'input' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
+                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${currentActiveTab === 'input' ? 'bg-border-subtle text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
                 >
-                  Input (stdin)
+                  STDIN
                 </button>
                 <button 
                   onClick={() => isLocal && updateTerminal({ activeTab: 'output' })}
-                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${currentActiveTab === 'output' ? 'bg-white/10 text-white' : 'text-text-muted hover:text-white'}`}
+                  className={`text-xs font-mono uppercase px-2 py-1 rounded transition-colors ${currentActiveTab === 'output' ? 'bg-border-subtle text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
                 >
-                  Output
+                  STDOUT
                 </button>
               </div>
             </div>
             {isLocal && (
-              <button onClick={() => updateTerminal({ showTerminal: false })} className="text-text-muted hover:text-white transition-colors">
-                <XMarkIcon className="w-4 h-4" />
+              <button onClick={() => updateTerminal({ showTerminal: false })} className="text-text-muted hover:text-danger-red transition-colors">
+                <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
             )}
           </div>
@@ -233,12 +231,12 @@ export function EditorPanel({
                 onChange={(e) => updateTerminal({ terminalInput: e.target.value })}
                 readOnly={!isLocal}
                 placeholder={isLocal ? "Enter input values here (one per line)..." : "Player has not entered any input."}
-                className="w-full h-full bg-transparent text-white font-mono text-sm p-4 resize-none focus:outline-none placeholder:text-white/20"
+                className="w-full h-full bg-transparent text-text-primary font-mono text-sm p-4 resize-none focus:outline-none placeholder:text-text-muted/50"
                 spellCheck={false}
               />
             ) : (
-              <div className={`w-full h-full p-4 font-mono text-sm overflow-y-auto whitespace-pre-wrap bg-black/50 ${currentOutput ? (currentIsError ? 'text-neon-red' : 'text-neon-cyan') : 'text-white'}`}>
-                {currentOutput || <span className="text-white/30 italic">No output yet. Click RUN to execute.</span>}
+              <div className={`w-full h-full p-4 font-mono text-sm overflow-y-auto whitespace-pre-wrap ${currentOutput ? (currentIsError ? 'text-danger-red' : 'text-neon-cyan') : 'text-text-primary'}`}>
+                {currentOutput || <span className="text-text-muted/50 italic">No output yet. Click RUN to execute.</span>}
               </div>
             )}
           </div>

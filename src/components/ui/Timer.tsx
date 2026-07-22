@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TimerProps {
@@ -56,7 +56,6 @@ export function Timer({
     }
 
     if (timeRemaining === 60 && isRunning && !isPaused) {
-      // 1-minute warning alarm
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContext) {
@@ -96,29 +95,16 @@ export function Timer({
   const isUrgent = time <= 10;
   const isWarning = time <= 60 && time > 10;
 
-  const color = isUrgent ? '#ff3333' : isWarning ? '#EEFF00' : '#ffffff';
+  const color = isUrgent ? '#FF4D5E' : isWarning ? '#FFB84D' : '#F4F6FF';
   const { fontSize, gap, colonSize } = sizeStyles[size];
-
-  const glowStyle: React.CSSProperties = isUrgent
-    ? {
-        textShadow: `0 0 20px rgba(255,51,51,0.8), 0 0 40px rgba(255,51,51,0.4), 0 0 80px rgba(255,51,51,0.2)`,
-      }
-    : isWarning
-      ? {
-          textShadow: `0 0 15px rgba(238,255,0,0.5), 0 0 30px rgba(238,255,0,0.2)`,
-        }
-      : {
-          textShadow: `0 0 10px rgba(0,240,255,0.3)`,
-        };
 
   return (
     <motion.div
       className={`inline-flex items-center ${gap} font-mono select-none ${fontSize}`}
-      style={glowStyle}
       animate={
         isUrgent
           ? {
-              scale: [1, 1.05, 1],
+              scale: [1, 1.03, 1],
               opacity: [1, 0.7, 1],
             }
           : {}

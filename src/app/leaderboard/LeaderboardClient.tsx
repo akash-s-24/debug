@@ -21,61 +21,60 @@ export function LeaderboardClient({ initialPlayers }: Props) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
       >
-        <span className="px-4 py-1.5 rounded-full glass neon-border-violet text-xs font-mono text-neon-violet tracking-wider uppercase mb-6 inline-block">
-          Global Rankings
-        </span>
-        <h1 className="text-4xl md:text-5xl font-display font-bold text-text-primary mb-4">
-          ARENA <span className="text-neon-cyan text-glow-cyan">LEADERBOARD</span>
+        <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-abyss border border-border-subtle text-[11px] uppercase tracking-widest font-mono text-neon-cyan shadow-inner">
+          [ Global Rankings ]
+        </div>
+        <h1 className="text-4xl md:text-5xl font-display text-text-primary tracking-tight mb-4">
+          Arena Leaderboard
         </h1>
-        <p className="font-body text-text-secondary">
+        <p className="text-text-secondary font-mono text-sm before:content-['//'] before:mr-2 before:text-text-muted">
           The most ruthless debuggers and fastest coders in the duel arena.
         </p>
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="glass-strong rounded-2xl border border-white/10 overflow-hidden"
+        transition={{ delay: 0.1 }}
+        className="bg-void border border-border-subtle shadow-md hud-bracket p-1"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/10 bg-black/40">
-                <th className="py-4 px-6 font-mono text-text-muted text-xs uppercase tracking-widest w-20 text-center">Rank</th>
-                <th className="py-4 px-6 font-mono text-text-muted text-xs uppercase tracking-widest">Hacker</th>
-                <th className="py-4 px-6 font-mono text-text-muted text-xs uppercase tracking-widest">Main Lang</th>
-                <th className="py-4 px-6 font-mono text-text-muted text-xs uppercase tracking-widest text-right">Wins</th>
-                <th className="py-4 px-6 font-mono text-text-muted text-xs uppercase tracking-widest text-right">Points</th>
+              <tr className="border-b border-border-subtle bg-abyss">
+                <th className="py-4 px-6 text-[10px] font-mono text-text-muted uppercase tracking-widest w-20 text-center">Rank</th>
+                <th className="py-4 px-6 text-[10px] font-mono text-text-muted uppercase tracking-widest">Hacker</th>
+                <th className="py-4 px-6 text-[10px] font-mono text-text-muted uppercase tracking-widest">Main Lang</th>
+                <th className="py-4 px-6 text-[10px] font-mono text-text-muted uppercase tracking-widest text-right">Wins</th>
+                <th className="py-4 px-6 text-[10px] font-mono text-text-muted uppercase tracking-widest text-right">Points</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border-subtle">
               {players.map((user, i) => (
                 <motion.tr
                   key={user.id}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * i + 0.3 }}
-                  className="border-b border-white/5 hover:bg-white/5 transition-colors group"
+                  transition={{ delay: 0.05 * i + 0.2 }}
+                  className="hover:bg-abyss transition-colors group"
                 >
                   <td className="py-4 px-6 text-center">
-                    {user.rank === 1 ? <span className="text-2xl">🥇</span> : 
-                     user.rank === 2 ? <span className="text-2xl">🥈</span> : 
-                     user.rank === 3 ? <span className="text-2xl">🥉</span> : 
-                     <span className="font-mono text-text-muted font-bold">{user.rank}</span>}
+                    <span className={`text-sm font-mono tracking-widest ${user.rank <= 3 ? 'text-neon-magenta' : 'text-text-secondary'}`}>
+                      #{user.rank}
+                    </span>
                   </td>
-                  <td className="py-4 px-6 font-display font-bold text-lg text-white group-hover:text-neon-cyan transition-colors">
+                  <td className="py-4 px-6 text-sm font-mono text-text-primary group-hover:text-neon-cyan transition-colors">
                     {user.name}
                   </td>
                   <td className="py-4 px-6">
-                    <span className="px-3 py-1 rounded bg-white/5 text-xs font-mono text-text-secondary border border-white/10">
+                    <span className="px-2.5 py-1 bg-transparent font-mono tracking-widest text-[10px] text-text-secondary border border-border-subtle">
                       {user.language}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-right font-mono text-text-secondary">
+                  <td className="py-4 px-6 text-right text-sm font-mono text-text-secondary">
                     {user.wins}
                   </td>
-                  <td className="py-4 px-6 text-right font-mono font-bold text-neon-cyan">
+                  <td className="py-4 px-6 text-right text-sm font-mono font-bold text-neon-cyan">
                     {user.points.toLocaleString()}
                   </td>
                 </motion.tr>

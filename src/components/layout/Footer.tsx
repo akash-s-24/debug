@@ -1,0 +1,44 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+
+export function Footer() {
+  return (
+    <footer className="w-full mt-auto bg-abyss border-t border-border-subtle grid grid-cols-1 md:grid-cols-4 gap-8 px-gutter py-16 max-w-container-max mx-auto">
+      <div className="col-span-1 md:col-span-1 flex flex-col justify-between">
+        <div className="text-text-primary font-black font-display text-2xl tracking-tighter mb-4">
+          DEBUG_ARENA
+        </div>
+        <div className="font-mono text-xs text-text-muted uppercase">
+          © {new Date().getFullYear()} DEBUG_ARENA // SYSTEM_OPERATIONAL
+        </div>
+      </div>
+      
+      <div className="col-span-1 md:col-span-3 flex flex-wrap gap-8 md:justify-end items-end">
+        <Link className="font-mono text-sm text-text-secondary hover:text-neon-cyan transition-colors uppercase" href="/#features">
+          Features
+        </Link>
+        <Link className="font-mono text-sm text-text-secondary hover:text-neon-cyan transition-colors uppercase" href="/#how-it-works">
+          How It Works
+        </Link>
+        <Link className="font-mono text-sm text-text-secondary hover:text-neon-cyan transition-colors uppercase" href="/create">
+          Create
+        </Link>
+        <Link className="font-mono text-sm text-text-secondary hover:text-neon-cyan transition-colors uppercase" href="/">
+          Join
+        </Link>
+        <a 
+          className="font-mono text-sm text-text-secondary hover:text-neon-cyan transition-colors uppercase" 
+          href="https://github.com/akash-s-24"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Report Issue
+        </a>
+      </div>
+    </footer>
+  );
+}
+
+export default Footer;

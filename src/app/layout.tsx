@@ -1,30 +1,5 @@
 import type { Metadata } from "next";
-import { Orbitron, Rajdhani, Exo_2, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const orbitron = Orbitron({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-
-const rajdhani = Rajdhani({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const exo2 = Exo_2({
-  variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Debug Duel Arena — The Ultimate Live Coding Battle Platform",
@@ -58,9 +33,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${orbitron.variable} ${rajdhani.variable} ${exo2.variable} ${jetbrainsMono.variable} antialiased`}
+      className="antialiased scroll-smooth"
     >
-      <body className="min-h-screen flex flex-col bg-void text-text-primary">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      </head>
+      <body className="bg-void min-h-screen flex flex-col font-body text-text-primary">
+        <div className="scan"></div>
+        <div className="grain"></div>
+        <div className="vignette"></div>
         <main className="flex-grow flex flex-col">{children}</main>
       </body>
     </html>

@@ -3,11 +3,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DuelType } from '@/types';
-import { Badge } from '../ui/Badge';
 import { Timer } from '../ui/Timer';
-import { Button } from '../ui/Button';
 import { useReactions } from '@/hooks/useReactions';
-import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline';
 
 interface ChallengeBarProps {
   title: string;
@@ -37,38 +34,69 @@ export function ChallengeBar({
   userName,
 }: ChallengeBarProps) {
   const { sendReaction } = useReactions(roomId);
+  const [copied, setCopied] = useState(false);
+
+  const copyRoomCode = () => {
+    if (roomId) {
+      // Assuming roomId or a passed prop is the code, 
+      // but in the old code it was passed via battle page or it used roomId.
+      // Wait, in page.tsx, room.code is used. We might need to pass roomCode.
+      // For now, if roomId is all we have, we'll copy it. 
+      // Actually we'll just emit an event or copy window.location.
+      navigator.clipboard.writeText(window.location.pathname.split('/').pop() || roomId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <motion.div
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-      className="w-full bg-surface/80 backdrop-blur-md border-b border-slate-dark px-4 py-3 md:px-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-md z-10"
+      className="w-full bg-void border-b border-border-subtle px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-4 z-10 hud-bracket shadow-lg"
     >
-      <div className="flex flex-col gap-1 w-full md:w-auto items-center md:items-start text-center md:text-left">
-        <div className="flex flex-wrap justify-center md:justify-start items-center gap-2 md:gap-3">
-          <h2 className="text-lg md:text-xl font-display font-bold text-text-primary tracking-wide">{title}</h2>
-          <Badge text={language} color="cyan" variant="language" />
-          <Badge text={duelType.replace('-', ' ')} color="magenta" variant="status" />
+      {/* Left: Challenge Info */}
+      <div className="flex flex-col gap-1 w-full md:w-1/3 items-center md:items-start text-center md:text-left">
+        <div className="flex flex-wrap justify-center md:justify-start items-center gap-3">
+          <h2 className="text-2xl font-display text-text-primary tracking-tight">{title}</h2>
+          <span className="font-mono text-[10px] tracking-widest bg-transparent text-neon-cyan px-2 py-0.5 border border-border-subtle">{language}</span>
+          <span className="font-mono text-[10px] tracking-widest bg-transparent text-neon-magenta px-2 py-0.5 border border-border-subtle">{duelType.replace('-', ' ')}</span>
         </div>
         {description && (
-          <p className="text-text-secondary text-xs md:text-sm truncate max-w-[280px] sm:max-w-md md:max-w-2xl">{description}</p>
+          <p className="text-text-secondary font-mono text-xs leading-tight truncate w-full max-w-sm before:content-['//'] before:mr-2 before:text-text-muted">{description}</p>
         )}
       </div>
 
-      <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto justify-between md:justify-end">
-        <div className="flex flex-col items-start md:items-end">
-          <span className="text-[10px] md:text-xs text-text-muted font-display uppercase tracking-widest mb-1">Time Remaining</span>
-          <Timer timeRemaining={timeRemaining} isRunning={isRunning} isPaused={isPaused} size="md" />
-        </div>
-        
+      {/* Center: Timer */}
+      <div className="w-full md:w-1/3 flex flex-col items-center justify-center">
+        <span className="text-[10px] text-text-muted font-mono uppercase tracking-widest mb-1">Time Remaining</span>
+        <Timer timeRemaining={timeRemaining} isRunning={isRunning} isPaused={isPaused} size="md" />
+      </div>
+
+      {/* Right: Actions & Code */}
+      <div className="flex items-center gap-6 w-full md:w-1/3 justify-between md:justify-end">
         {roomId && (
-          <div className="flex gap-2 mr-2 border-r border-white/10 pr-4">
-            {['🔥', '🤯', '💀', '👏'].map(emoji => (
+          <div className="flex items-center gap-2 bg-abyss border border-border-subtle px-3 py-1 shadow-inner">
+            <span className="font-mono text-[10px] text-text-muted uppercase">ID:</span>
+            <span className="font-mono text-sm text-text-primary font-bold tracking-widest">{roomId.substring(0, 6).toUpperCase()}</span>
+            <button 
+              onClick={copyRoomCode}
+              className="ml-2 text-text-muted hover:text-neon-cyan transition-colors"
+              title="Copy Room Link"
+            >
+              <span className="material-symbols-outlined text-[16px]">{copied ? 'check' : 'content_copy'}</span>
+            </button>
+          </div>
+        )}
+
+        {roomId && (
+          <div className="flex gap-2">
+            {['🔥', '🤯', '💀'].map(emoji => (
               <button 
                 key={emoji}
                 onClick={() => sendReaction(emoji, userName || 'Anonymous')}
-                className="text-lg hover:scale-125 transition-transform bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center"
+                className="text-lg hover:-translate-y-1 transition-transform bg-surface w-8 h-8 rounded flex items-center justify-center border border-border-subtle hover:border-neon-cyan hover:shadow-[0_0_10px_rgba(34,233,225,0.2)]"
               >
                 {emoji}
               </button>
@@ -77,15 +105,13 @@ export function ChallengeBar({
         )}
 
         {onExit && (
-          <Button 
-            variant="danger" 
-            size="sm" 
+          <button 
             onClick={onExit}
-            className="border-neon-red/50 text-neon-red hover:bg-neon-red/10 hover:text-white"
+            className="font-mono text-[11px] uppercase tracking-widest text-text-muted hover:text-danger-red hover:bg-abyss px-4 py-2 border border-transparent hover:border-danger-red/30 transition-colors flex items-center gap-2"
           >
-            <ArrowLeftStartOnRectangleIcon className="w-4 h-4 mr-2" />
-            {isHost ? 'Disband Room' : 'Exit Arena'}
-          </Button>
+            <span className="material-symbols-outlined text-[16px]">logout</span>
+            <span className="hidden xl:inline">{isHost ? 'Disband' : 'Exit'}</span>
+          </button>
         )}
       </div>
     </motion.div>

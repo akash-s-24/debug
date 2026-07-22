@@ -3,7 +3,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CodingStats } from '@/types';
-import { Card } from '../ui/Card';
 
 interface LiveStatsProps {
   stats: CodingStats;
@@ -21,8 +20,8 @@ interface StatItemProps {
 
 function StatItem({ label, value, icon, compact, textClass }: StatItemProps) {
   return (
-    <div className={`flex flex-col ${compact ? 'items-center' : 'items-start'} p-2 bg-black/20 rounded border border-white/5`}>
-      <div className="flex items-center gap-1.5 text-text-secondary text-xs font-display uppercase tracking-wider mb-1">
+    <div className={`flex flex-col ${compact ? 'items-center' : 'items-start'} p-2 bg-abyss shadow-inner border border-border-subtle hover:border-border transition-colors`}>
+      <div className="flex items-center gap-1.5 text-text-muted text-[10px] md:text-[11px] font-mono uppercase tracking-widest mb-1">
         <span>{icon}</span> {!compact && <span>{label}</span>}
       </div>
       <div className={`font-mono text-xl font-bold ${textClass}`}>
@@ -49,11 +48,11 @@ export const LiveStats = React.memo(function LiveStats({ stats, color, compact =
   
   const getMomentumColor = (momentum: string) => {
     switch (momentum) {
-      case 'low': return 'bg-text-muted';
-      case 'medium': return 'bg-neon-yellow';
+      case 'low': return 'bg-border-subtle';
+      case 'medium': return 'bg-warn-amber';
       case 'high': return 'bg-neon-green';
-      case 'extreme': return isCyan ? 'bg-neon-cyan' : 'bg-neon-magenta';
-      default: return 'bg-text-muted';
+      case 'extreme': return isCyan ? 'bg-neon-cyan shadow-[0_0_10px_rgba(34,233,225,0.5)]' : 'bg-neon-magenta shadow-[0_0_10px_rgba(247,37,133,0.5)]';
+      default: return 'bg-border-subtle';
     }
   };
 
@@ -68,8 +67,8 @@ export const LiveStats = React.memo(function LiveStats({ stats, color, compact =
   };
 
   return (
-    <Card variant="solid" className="w-full flex flex-col gap-3 p-3">
-      {!compact && <h3 className="text-sm font-display uppercase text-text-primary border-b border-slate-dark pb-2">Live Performance</h3>}
+    <div className="w-full flex flex-col gap-3 p-4 bg-void shadow-md hud-bracket border border-border-subtle">
+      {!compact && <h3 className="text-xl font-display text-text-primary border-b border-border-subtle pb-2 tracking-tight">Live Performance</h3>}
       
       <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-2'}`}>
         <StatItem label="Speed (CPM)" value={stats.typingSpeed} icon="⚡" compact={compact} textClass={textClass} />
@@ -79,19 +78,19 @@ export const LiveStats = React.memo(function LiveStats({ stats, color, compact =
       </div>
 
       <div className="mt-2">
-        <div className="flex justify-between items-center mb-1 text-xs font-display uppercase text-text-secondary">
+        <div className="flex justify-between items-center mb-1 text-xs font-mono uppercase text-text-muted tracking-widest">
           <span>Momentum</span>
           <span className={textClass}>{stats.momentum}</span>
         </div>
-        <div className="h-1.5 w-full bg-surface rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-abyss rounded-full overflow-hidden border border-border-subtle">
           <motion.div 
-            className={`h-full ${getMomentumColor(stats.momentum)} shadow-[0_0_8px_currentColor]`}
+            className={`h-full ${getMomentumColor(stats.momentum)}`}
             initial={{ width: 0 }}
             animate={{ width: getMomentumWidth(stats.momentum) }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
           />
         </div>
       </div>
-    </Card>
+    </div>
   );
 });

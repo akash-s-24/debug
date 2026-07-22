@@ -14,7 +14,7 @@ interface ContestantCardProps {
 
 export function ContestantCard({ user, color, stats, isActive, score }: ContestantCardProps) {
   const isCyan = color === 'cyan';
-  const glowClass = isCyan ? 'shadow-[0_0_15px_rgba(0,240,255,0.5)]' : 'shadow-[0_0_15px_rgba(255,0,110,0.5)]';
+  const glowClass = isCyan ? 'shadow-[0_0_15px_rgba(34,233,225,0.5)]' : 'shadow-[0_0_15px_rgba(247,37,133,0.5)]';
   const borderClass = isCyan ? 'border-neon-cyan' : 'border-neon-magenta';
   const textClass = isCyan ? 'text-neon-cyan' : 'text-neon-magenta';
 
@@ -37,7 +37,7 @@ export function ContestantCard({ user, color, stats, isActive, score }: Contesta
 
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
-          <span className="font-display font-bold text-lg text-text-primary tracking-wide">{user.name}</span>
+          <span className="font-heading font-bold text-lg text-text-primary tracking-wide">{user.name}</span>
           <span className={`text-xs font-mono px-1.5 py-0.5 rounded bg-surface border ${borderClass} ${textClass}`}>
             {score} PT
           </span>
@@ -54,7 +54,7 @@ export function ContestantCard({ user, color, stats, isActive, score }: Contesta
       </div>
       
       {isActive && (
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-transparent via-current to-transparent opacity-50" style={{ color: isCyan ? '#00f0ff' : '#ff006e' }} />
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-transparent via-current to-transparent opacity-50" style={{ color: isCyan ? 'var(--neon-cyan)' : 'var(--neon-magenta)' }} />
       )}
     </div>
   );

@@ -4,14 +4,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
-import { Background } from '@/components/layout/Background';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
+import { Footer } from '@/components/layout/Footer';
 import { getClientId } from '@/lib/client-id';
 import { RoomConfig, DuelType } from '@/types';
 import { LANGUAGES, TIMER_PRESETS, DUEL_TYPES } from '@/lib/constants';
+import { Button } from '@/components/ui/Button';
 
 export default function CreateRoomPage() {
   const router = useRouter();
@@ -77,208 +74,284 @@ export default function CreateRoomPage() {
     }
   };
 
+  // Helper for summary bar
+  const selectedLang = LANGUAGES.find(l => l.value === config.language)?.label || config.language;
+  const selectedType = DUEL_TYPES.find(d => d.value === config.duelType)?.label || config.duelType;
+  const timeDisplay = config.timerSeconds >= 60 ? `${Math.floor(config.timerSeconds / 60)} min` : `${config.timerSeconds} sec`;
+
   return (
-    <Background>
+    <>
       <Navbar />
       
-      <main className="container mx-auto px-4 pt-24 pb-12 min-h-screen flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-3xl"
-        >
-          <Card variant="glass" className="p-8">
-            <h1 className="text-3xl font-display text-neon-cyan mb-8 uppercase tracking-widest text-glow-cyan text-center">
-              Configure Arena
-            </h1>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                  label="Host Name"
-                  placeholder="Your hacker alias"
-                  value={config.hostName}
-                  onChange={(e) => setConfig({...config, hostName: e.target.value})}
-                  required
-                />
-                <Input
-                  label="Room Name"
-                  placeholder="e.g. Midnight Showdown"
-                  value={config.roomName}
-                  onChange={(e) => setConfig({...config, roomName: e.target.value})}
-                  required
-                />
+      <main className="flex-grow pt-24 pb-12 relative min-h-screen flex items-center justify-center overflow-hidden">
+        
+        <div className="container mx-auto px-gutter max-w-[1200px] relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full"
+          >
+            <div className="bg-void border border-border-subtle p-8 hud-bracket relative shadow-[0_0_60px_rgba(255,184,74,0.06)]">
+              <div className="flex items-center gap-4 mb-8">
+                <span className="material-symbols-outlined text-neon-cyan text-4xl">terminal</span>
+                <h1 className="font-display text-4xl md:text-5xl text-text-primary tracking-tight">
+                  Initialize <em className="italic text-neon-cyan">Loadout.</em>
+                </h1>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-text-secondary font-display uppercase tracking-wider text-sm border-b border-white/10 pb-2">Challenge Details</h3>
-                <Input
-                  label="Challenge Title"
-                  placeholder="e.g. Fix the Memory Leak"
-                  value={config.challenge}
-                  onChange={(e) => setConfig({...config, challenge: e.target.value})}
-                  required
-                />
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-display uppercase text-text-secondary ml-1">Description (Optional)</label>
-                  <textarea
-                    className="bg-abyss border border-slate-dark text-text-primary px-4 py-3 focus:outline-none focus:border-neon-cyan transition-colors font-mono resize-y min-h-[100px] [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]"
-                    placeholder="Describe the task..."
-                    value={config.challengeDescription}
-                    onChange={(e) => setConfig({...config, challengeDescription: e.target.value})}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 mt-4">
-                  <label className="text-xs font-display uppercase text-text-secondary ml-1">Initial Debug Code (Optional)</label>
-                  <textarea
-                    className="bg-abyss border border-slate-dark text-text-primary px-4 py-3 focus:outline-none focus:border-neon-cyan transition-colors font-mono resize-y min-h-[150px] [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]"
-                    placeholder="Provide the buggy code that contestants need to fix..."
-                    value={config.initialCode || ''}
-                    onChange={(e) => setConfig({...config, initialCode: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h3 className="text-text-secondary font-display uppercase tracking-wider text-sm border-b border-white/10 pb-2">Configuration</h3>
+              <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-display uppercase text-text-secondary ml-1">Language</label>
-                    <select
-                      className="bg-abyss border border-slate-dark text-text-primary px-4 py-3 focus:outline-none focus:border-neon-cyan transition-colors font-mono appearance-none"
-                      value={config.language}
-                      onChange={(e) => setConfig({...config, language: e.target.value})}
-                    >
-                      {LANGUAGES.map(lang => <option key={lang.value} value={lang.value}>{lang.label}</option>)}
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-display uppercase text-text-secondary ml-1">Timer Limit</label>
-                    <div className="flex flex-wrap gap-2">
-                      {TIMER_PRESETS.map(preset => (
-                        <button
-                          key={preset.value}
-                          type="button"
-                          onClick={() => {
-                            setIsCustomTimeMode(false);
-                            setConfig({...config, timerSeconds: preset.value});
-                          }}
-                          className={`px-3 py-1.5 text-sm font-mono border transition-colors ${!isCustomTimeMode && config.timerSeconds === preset.value ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
-                        >
-                          {preset.shortLabel}
-                        </button>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsCustomTimeMode(true);
-                          if (TIMER_PRESETS.some(p => p.value === config.timerSeconds)) {
-                            setConfig({...config, timerSeconds: 1200}); // default 20 min if switching from preset
-                          }
-                        }}
-                        className={`px-3 py-1.5 text-sm font-mono border transition-colors ${isCustomTimeMode ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan' : 'border-slate-dark bg-abyss text-text-secondary hover:border-white/30'}`}
-                      >
-                        Custom
-                      </button>
-                    </div>
+                  {/* Left Column: Configuration */}
+                  <div className="space-y-8">
                     
-                    {isCustomTimeMode && (
-                      <div className="mt-3 animate-in fade-in slide-in-from-top-1">
-                        <label className="text-xs font-display uppercase text-text-secondary ml-1">Custom Minutes</label>
-                        <div className="flex items-center gap-2 mt-1">
+                    {/* Identity Group */}
+                    <div className="space-y-4">
+                      <h3 className="font-display text-2xl text-text-primary tracking-tight border-b border-border-subtle pb-2">Identity</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Host Name *</label>
                           <input
-                            type="number"
-                            min="1"
-                            max="300"
-                            value={Math.floor(config.timerSeconds / 60) || ''}
-                            onChange={(e) => {
-                              const mins = parseInt(e.target.value);
-                              if (!isNaN(mins)) {
-                                setConfig({...config, timerSeconds: mins * 60});
-                              } else {
-                                setConfig({...config, timerSeconds: 0});
+                            type="text"
+                            placeholder="Your alias"
+                            value={config.hostName}
+                            onChange={(e) => setConfig({...config, hostName: e.target.value})}
+                            required
+                            className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Room Name *</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Midnight Showdown"
+                            value={config.roomName}
+                            onChange={(e) => setConfig({...config, roomName: e.target.value})}
+                            required
+                            className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Challenge Group */}
+                    <div className="space-y-4">
+                      <h3 className="font-display text-2xl text-text-primary tracking-tight border-b border-border-subtle pb-2">Challenge Parameters</h3>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Challenge Title *</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Fix the Memory Leak"
+                          value={config.challenge}
+                          onChange={(e) => setConfig({...config, challenge: e.target.value})}
+                          required
+                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Description (Optional)</label>
+                        <textarea
+                          placeholder="Describe the task..."
+                          value={config.challengeDescription}
+                          onChange={(e) => setConfig({...config, challengeDescription: e.target.value})}
+                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors min-h-[80px]"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Initial Debug Code (Optional)</label>
+                        <textarea
+                          placeholder="Provide the buggy code..."
+                          value={config.initialCode || ''}
+                          onChange={(e) => setConfig({...config, initialCode: e.target.value})}
+                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors min-h-[120px]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Environment Group */}
+                    <div className="space-y-4">
+                      <h3 className="font-display text-2xl text-text-primary tracking-tight border-b border-border-subtle pb-2">Environment</h3>
+                      <div className="flex flex-col gap-1.5 relative">
+                        <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Language</label>
+                        <select
+                          value={config.language}
+                          onChange={(e) => setConfig({...config, language: e.target.value})}
+                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary focus:border-neon-cyan focus:outline-none transition-colors appearance-none"
+                        >
+                          {LANGUAGES.map(lang => <option key={lang.value} value={lang.value}>{lang.label}</option>)}
+                        </select>
+                        <span className="material-symbols-outlined absolute right-4 top-9 pointer-events-none text-text-muted">expand_more</span>
+                      </div>
+
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Timer Limit</label>
+                        <div className="flex flex-wrap gap-2">
+                          {TIMER_PRESETS.map(preset => (
+                            <button
+                              key={preset.value}
+                              type="button"
+                              onClick={() => {
+                                setIsCustomTimeMode(false);
+                                setConfig({...config, timerSeconds: preset.value});
+                              }}
+                              className={`px-4 py-2 font-mono text-xs uppercase rounded transition-colors ${!isCustomTimeMode && config.timerSeconds === preset.value ? 'bg-neon-cyan/10 border border-neon-cyan text-neon-cyan' : 'bg-surface border border-border-subtle text-text-secondary hover:border-text-muted'}`}
+                            >
+                              {preset.shortLabel}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsCustomTimeMode(true);
+                              if (TIMER_PRESETS.some(p => p.value === config.timerSeconds)) {
+                                setConfig({...config, timerSeconds: 1200});
                               }
                             }}
-                            className="bg-abyss border border-slate-dark text-text-primary px-3 py-2 focus:outline-none focus:border-neon-cyan transition-colors font-mono w-24 text-center"
-                          />
-                          <span className="text-sm font-mono text-text-secondary">min</span>
+                            className={`px-4 py-2 font-mono text-xs uppercase rounded transition-colors ${isCustomTimeMode ? 'bg-neon-cyan/10 border border-neon-cyan text-neon-cyan' : 'bg-surface border border-border-subtle text-text-secondary hover:border-text-muted'}`}
+                          >
+                            Custom
+                          </button>
                         </div>
+                        
+                        {isCustomTimeMode && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <input
+                              type="number"
+                              min="1"
+                              max="300"
+                              value={Math.floor(config.timerSeconds / 60) || ''}
+                              onChange={(e) => {
+                                const mins = parseInt(e.target.value);
+                                if (!isNaN(mins)) {
+                                  setConfig({...config, timerSeconds: mins * 60});
+                                } else {
+                                  setConfig({...config, timerSeconds: 0});
+                                }
+                              }}
+                              className="w-24 bg-surface border border-border-subtle rounded px-4 py-2 font-mono text-sm text-text-primary focus:border-neon-cyan focus:outline-none text-center"
+                            />
+                            <span className="font-mono text-xs text-text-muted">minutes</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Right Column: Duel Type */}
+                  <div className="space-y-4">
+                    <h3 className="font-display text-2xl text-text-primary tracking-tight border-b border-border-subtle pb-2">Duel Type</h3>
+                    <div className="flex flex-col gap-4">
+                      {DUEL_TYPES.map(type => {
+                        const isSelected = config.duelType === type.value;
+                        return (
+                          <div
+                            key={type.value}
+                            onClick={() => setConfig({...config, duelType: type.value as DuelType})}
+                            className={`p-4 rounded border cursor-pointer flex items-center gap-4 group transition-all duration-300 ${isSelected ? 'border-neon-cyan bg-neon-cyan/5 scale-[1.02]' : 'border-border-subtle bg-surface hover:border-text-muted hover:scale-[1.01]'}`}
+                          >
+                            <div className={`w-12 h-12 rounded flex items-center justify-center shrink-0 border ${isSelected ? 'bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan' : 'bg-abyss border-border-subtle text-text-muted group-hover:text-text-secondary'}`}>
+                              <span className="material-symbols-outlined">{type.icon}</span>
+                            </div>
+                            <div className="flex-1">
+                              <div className={`font-display tracking-tight text-2xl ${isSelected ? 'text-neon-cyan' : 'text-text-primary'}`}>
+                                {type.label}
+                              </div>
+                              <div className="font-mono text-[11px] leading-tight text-text-secondary mt-1">
+                                {type.description}
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <div className="text-neon-cyan">
+                                <span className="material-symbols-outlined">check_circle</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                </div>
+
+                {/* Bottom Summary Bar */}
+                <div className="mt-12 p-4 border border-border-subtle bg-abyss rounded flex flex-col md:flex-row items-center justify-between gap-6 relative">
+                  {/* Subtle scanline overlay for the bar */}
+                  <div className="scanline-overlay rounded"></div>
+                  
+                  <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-neon-cyan relative z-10">
+                    <span className="bg-neon-cyan/10 px-2 py-1 rounded border border-neon-cyan/20">{selectedType}</span>
+                    <span className="text-text-muted">•</span>
+                    <span className="text-text-primary">{selectedLang}</span>
+                    <span className="text-text-muted">•</span>
+                    <span className="text-text-primary">{timeDisplay}</span>
+                    <span className="text-text-muted">•</span>
+                    <span className="text-text-primary">Up to 8 Players</span>
+                  </div>
+
+                  <div className="flex items-center gap-4 relative z-10 w-full md:w-auto">
+                    {formError && (
+                      <div className="font-mono text-xs text-danger-red border border-danger-red/30 bg-danger-red/10 px-3 py-1 rounded">
+                        {formError}
                       </div>
                     )}
+                    <Button
+                      type="submit" 
+                      disabled={loading || !config.hostName.trim() || !config.roomName.trim() || !config.challenge.trim()}
+                      className="w-full md:w-auto"
+                      size="lg"
+                    >
+                      {loading ? 'INITIALIZING...' : 'CREATE_ROOM'}
+                    </Button>
                   </div>
                 </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-text-secondary font-display uppercase tracking-wider text-sm border-b border-white/10 pb-2">Duel Type</h3>
-                  <div className="grid grid-cols-1 gap-2">
-                    {DUEL_TYPES.map(type => (
-                      <div
-                        key={type.value}
-                        onClick={() => setConfig({...config, duelType: type.value as DuelType})}
-                        className={`p-3 border cursor-pointer transition-all flex items-center gap-3 ${config.duelType === type.value ? 'border-neon-magenta bg-neon-magenta/10 shadow-[0_0_10px_rgba(255,0,110,0.2)]' : 'border-slate-dark bg-abyss hover:border-white/30'}`}
-                      >
-                        <span className="text-2xl">{type.icon}</span>
-                        <div>
-                          <div className={`font-display uppercase text-sm ${config.duelType === type.value ? 'text-neon-magenta' : 'text-text-primary'}`}>{type.label}</div>
-                          <div className="text-xs text-text-muted">{type.description}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-white/10 flex justify-end">
-                {formError && (
-                  <div className="mr-auto max-w-md rounded border border-neon-red/40 bg-neon-red/10 px-4 py-3 text-sm text-neon-red font-mono">
-                    {formError}
-                  </div>
-                )}
-                <Button 
-                  type="submit" 
-                  variant="primary" 
-                  size="lg" 
-                  disabled={
-                    loading || 
-                    !config.hostName.trim() || 
-                    !config.roomName.trim() || 
-                    !config.challenge.trim()
-                  }
-                  loading={loading}
-                >
-                  INITIALIZE ARENA
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </motion.div>
+              </form>
+            </div>
+          </motion.div>
+        </div>
       </main>
 
-      <Modal 
-        isOpen={!!createdRoomCode} 
-        onClose={() => setCreatedRoomCode(null)}
-        title="Arena Initialized"
-      >
-        <div className="flex flex-col items-center py-6 space-y-6">
-          <div className="text-center">
-            <p className="text-text-secondary mb-2 uppercase tracking-widest text-sm font-display">Your Room Code</p>
-            <div className="text-3xl md:text-5xl font-mono text-neon-cyan text-glow-cyan bg-abyss border-2 border-neon-cyan p-4 md:p-6 rounded-lg tracking-[0.2em]">
-              {createdRoomCode}
+      <Footer />
+
+      {/* Success Modal - Reusing the global Modal styling concept */}
+      {createdRoomCode && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-void/80 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="w-full max-w-md glass-surface rounded-lg p-6 relative hud-bracket"
+          >
+            <div className="flex items-center justify-between mb-6 border-b border-border-subtle pb-4">
+              <h2 className="font-display text-3xl text-text-primary tracking-tight">Arena Deployed</h2>
+              <button
+                onClick={() => setCreatedRoomCode(null)}
+                className="text-text-muted hover:text-neon-cyan transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
             </div>
-          </div>
-          
-          <div className="flex gap-4 w-full justify-center">
-            <Button variant="ghost" onClick={copyToClipboard}>
-              Copy Code
-            </Button>
-            <Button variant="neon" onClick={joinCreatedRoom}>
-              Enter Arena
-            </Button>
-          </div>
+            
+            <div className="flex flex-col items-center py-4 space-y-6">
+              <div className="text-center w-full">
+                <p className="font-mono text-xs text-text-muted uppercase tracking-widest mb-2">Access Token</p>
+                <div className="text-4xl font-display text-neon-cyan bg-neon-cyan/5 border border-neon-cyan/30 px-6 py-4 rounded tracking-[0.2em] relative overflow-hidden">
+                  <div className="relative z-10">{createdRoomCode}</div>
+                  <div className="scanline-overlay"></div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                <Button onClick={copyToClipboard} className="w-full sm:w-1/2" variant="outline">
+                  COPY_TOKEN
+                </Button>
+                <Button onClick={joinCreatedRoom} className="w-full sm:w-1/2">
+                  ENTER_ARENA
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </Modal>
-    </Background>
+      )}
+    </>
   );
 }

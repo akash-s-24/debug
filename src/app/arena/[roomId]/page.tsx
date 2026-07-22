@@ -77,7 +77,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
     return (
       <Background>
         <div className="min-h-screen flex items-center justify-center flex-col gap-4">
-          <div className="text-neon-red font-display text-2xl tracking-[0.2em]">CONNECTION ERROR</div>
+          <div className="text-red-500 font-display text-2xl tracking-[0.2em]">CONNECTION ERROR</div>
           <div className="text-white font-mono mb-4">{roomError}</div>
           <Button variant="ghost" onClick={() => router.push('/')}>Return to Arena</Button>
         </div>
@@ -89,7 +89,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
     return (
       <Background>
         <div className="min-h-screen flex items-center justify-center flex-col gap-4">
-          <div className="text-neon-cyan animate-pulse font-display text-xl tracking-[0.5em]">TUNING INTO ARENA...</div>
+          <div className="text-blue-500 animate-pulse font-display text-xl tracking-[0.5em]">TUNING INTO ARENA...</div>
           <div className="text-text-muted font-mono">Connecting to room {roomId}</div>
         </div>
       </Background>
@@ -105,7 +105,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   const code2 = c2 ? codes.get(c2.id) || room.config.initialCode || '// Waiting for code...' : '// Waiting for code...';
 
   return (
-    <div className="bg-void text-white h-screen w-screen overflow-hidden flex font-body selection:bg-neon-cyan/30">
+    <div className="bg-void text-white h-screen w-screen overflow-hidden flex font-body selection:bg-blue-500/30">
       {/* Background patterns */}
       <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(0,240,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,rgba(8,8,16,0)_0%,rgba(8,8,16,1)_100%)] pointer-events-none" />
@@ -128,7 +128,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
             <select 
               value={layout} 
               onChange={(e) => setLayout(e.target.value as LayoutMode)}
-              className="bg-black/50 backdrop-blur border border-white/10 text-white px-3 py-1 rounded text-sm font-mono focus:outline-none focus:border-neon-cyan"
+              className="bg-black/50 backdrop-blur border border-white/10 text-white px-3 py-1 rounded text-sm font-mono focus:outline-none focus:border-blue-500"
             >
               <option value="side-by-side">Side by Side</option>
               <option value="focus-left">Focus P1</option>
@@ -173,10 +173,10 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
             <p className="text-text-secondary font-mono text-sm sm:text-base">Arena requires two challengers to begin.</p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:gap-8">
               <div className="w-full sm:w-64 h-24 sm:h-40 border border-dashed border-white/20 rounded flex items-center justify-center bg-white/5 p-4">
-                {c1 ? <span className="text-neon-cyan font-bold truncate">{c1.name} (Ready)</span> : <span className="text-text-muted">Player 1 Empty</span>}
+                {c1 ? <span className="text-blue-500 font-bold truncate">{c1.name} (Ready)</span> : <span className="text-text-muted">Player 1 Empty</span>}
               </div>
               <div className="w-full sm:w-64 h-24 sm:h-40 border border-dashed border-white/20 rounded flex items-center justify-center bg-white/5 p-4">
-                {c2 ? <span className="text-neon-magenta font-bold truncate">{c2.name} (Ready)</span> : <span className="text-text-muted">Player 2 Empty</span>}
+                {c2 ? <span className="text-purple-500 font-bold truncate">{c2.name} (Ready)</span> : <span className="text-text-muted">Player 2 Empty</span>}
               </div>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
       {showSidebar && (
         <div className="absolute right-0 xl:relative w-[300px] sm:w-[350px] flex-shrink-0 h-full border-l border-white/10 bg-black/80 xl:bg-black/40 backdrop-blur-xl flex flex-col z-40 xl:z-20 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] xl:shadow-none">
           <div className="p-4 border-b border-white/10 shrink-0">
-            <div className="text-center font-display uppercase tracking-widest text-glow-cyan text-neon-cyan mb-2">DEBUG DUEL ARENA</div>
+            <div className="text-center font-display uppercase tracking-widest text-blue-500 mb-2">DEBUG DUEL ARENA</div>
             <div className="text-xs text-text-muted text-center font-mono uppercase tracking-wider">Live Spectator Mode</div>
           </div>
           
