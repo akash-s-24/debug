@@ -15,10 +15,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const base = 'inline-flex items-center justify-center font-heading uppercase transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none cursor-pointer relative rounded-DEFAULT';
 
     const variants: Record<string, string> = {
-      primary: 'border border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-void hover:shadow-[0_0_24px_rgba(255,184,74,0.4)] before:content-["$"] before:mr-2 before:text-inherit',
-      secondary: 'bg-transparent text-text-secondary border border-border-subtle hover:border-text-primary hover:text-text-primary hover:bg-abyss',
-      ghost: 'bg-transparent text-text-muted hover:text-neon-cyan hover:bg-neon-cyan/5',
-      danger: 'border border-danger-red text-danger-red hover:bg-danger-red hover:text-void hover:shadow-[0_0_24px_rgba(255,82,82,0.4)] before:content-["!"] before:mr-2 before:text-inherit',
+      primary: 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] border border-[#3B82F6] font-mono font-bold tracking-wider shadow-none transition-all duration-200 hover:-translate-y-0.5',
+      secondary: 'bg-transparent text-[#38BDF8] border border-[#38BDF8]/60 hover:bg-[#38BDF8]/10 hover:border-[#38BDF8] font-mono font-bold tracking-wider shadow-none transition-all duration-200 hover:-translate-y-0.5',
+      ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-white/5 font-mono font-bold',
+      danger: 'bg-red-600 text-white hover:bg-red-500 border border-red-400 font-mono font-bold tracking-wider shadow-none transition-all duration-200',
     };
 
     const sizes: Record<string, string> = {

@@ -117,7 +117,7 @@ export default function CreateRoomPage() {
                             value={config.hostName}
                             onChange={(e) => setConfig({...config, hostName: e.target.value})}
                             required
-                            className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors"
+                            className="w-full bg-[#10131B] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#38BDF8] focus:outline-none transition-colors shadow-none"
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
@@ -128,7 +128,7 @@ export default function CreateRoomPage() {
                             value={config.roomName}
                             onChange={(e) => setConfig({...config, roomName: e.target.value})}
                             required
-                            className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors"
+                            className="w-full bg-[#10131B] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#38BDF8] focus:outline-none transition-colors shadow-none"
                           />
                         </div>
                       </div>
@@ -145,7 +145,7 @@ export default function CreateRoomPage() {
                           value={config.challenge}
                           onChange={(e) => setConfig({...config, challenge: e.target.value})}
                           required
-                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors"
+                          className="w-full bg-[#10131B] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#38BDF8] focus:outline-none transition-colors shadow-none"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -154,7 +154,7 @@ export default function CreateRoomPage() {
                           placeholder="Describe the task..."
                           value={config.challengeDescription}
                           onChange={(e) => setConfig({...config, challengeDescription: e.target.value})}
-                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors min-h-[80px]"
+                          className="w-full bg-[#10131B] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#38BDF8] focus:outline-none transition-colors min-h-[80px] shadow-none"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -163,7 +163,7 @@ export default function CreateRoomPage() {
                           placeholder="Provide the buggy code..."
                           value={config.initialCode || ''}
                           onChange={(e) => setConfig({...config, initialCode: e.target.value})}
-                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary placeholder:text-text-muted focus:border-neon-cyan focus:outline-none transition-colors min-h-[120px]"
+                          className="w-full bg-[#10131B] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#38BDF8] focus:outline-none transition-colors min-h-[120px] shadow-none"
                         />
                       </div>
                     </div>
@@ -176,7 +176,7 @@ export default function CreateRoomPage() {
                         <select
                           value={config.language}
                           onChange={(e) => setConfig({...config, language: e.target.value})}
-                          className="w-full bg-surface border border-border-subtle rounded px-4 py-3 font-mono text-sm text-text-primary focus:border-neon-cyan focus:outline-none transition-colors appearance-none"
+                          className="w-full bg-[#10131B] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white focus:border-[#38BDF8] focus:outline-none transition-colors appearance-none shadow-none"
                         >
                           {LANGUAGES.map(lang => <option key={lang.value} value={lang.value}>{lang.label}</option>)}
                         </select>
@@ -228,7 +228,7 @@ export default function CreateRoomPage() {
                                   setConfig({...config, timerSeconds: 0});
                                 }
                               }}
-                              className="w-24 bg-surface border border-border-subtle rounded px-4 py-2 font-mono text-sm text-text-primary focus:border-neon-cyan focus:outline-none text-center"
+                              className="w-24 bg-[#10131B] border border-white/[0.12] rounded px-4 py-2 font-mono text-sm text-white focus:border-[#38BDF8] focus:outline-none text-center shadow-none"
                             />
                             <span className="font-mono text-xs text-text-muted">minutes</span>
                           </div>

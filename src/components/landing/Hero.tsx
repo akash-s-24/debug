@@ -59,10 +59,10 @@ export function Hero() {
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-center gap-4 mt-10"
         >
-          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 bg-[#10B981] text-black hover:bg-[#00DF89] font-mono font-bold tracking-wider shadow-[0_0_25px_rgba(16,185,129,0.5)] border-0">
+          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12">
             START_BATTLE
           </Button>
-          <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent">
+          <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent shadow-none">
             JOIN_BATTLE
           </Button>
         </motion.div>

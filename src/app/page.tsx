@@ -52,12 +52,12 @@ export default function LandingPage() {
             
             <div className="flex flex-wrap items-center gap-4">
               <Link href="/create">
-                <Button variant="primary" size="lg" className="bg-[#10B981] text-black hover:bg-[#00DF89] font-mono font-bold tracking-wider shadow-[0_0_20px_rgba(16,185,129,0.5)] border-0">START_BATTLE</Button>
+                <Button variant="primary" size="lg">START_BATTLE</Button>
               </Link>
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(56,189,248,0.4)]"
+                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 shadow-none"
                 onClick={() => setShowJoinModal(true)}
               >
                 JOIN_BATTLE
@@ -167,12 +167,12 @@ export default function LandingPage() {
             </p>
             <div className="flex justify-center gap-4">
               <Link href="/create">
-                <Button variant="primary" size="lg" className="bg-[#10B981] text-black hover:bg-[#00DF89] font-mono font-bold tracking-wider shadow-[0_0_25px_rgba(16,185,129,0.5)] border-0">START_BATTLE --ROLE=HOST</Button>
+                <Button variant="primary" size="lg">START_BATTLE --ROLE=HOST</Button>
               </Link>
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(56,189,248,0.4)]"
+                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 shadow-none"
                 onClick={() => setShowJoinModal(true)}
               >
                 JOIN_BATTLE
@@ -253,7 +253,7 @@ export default function LandingPage() {
                 <Button type="button" variant="ghost" className="flex-1 text-slate-400 hover:text-white" onClick={() => setShowJoinModal(false)}>
                   CANCEL
                 </Button>
-                <Button type="submit" variant="primary" className="flex-1 bg-[#10B981] text-black hover:bg-[#00DF89] font-bold border-0">
+                <Button type="submit" variant="primary" className="flex-1 font-bold">
                   JOIN_ROOM
                 </Button>
               </div>
