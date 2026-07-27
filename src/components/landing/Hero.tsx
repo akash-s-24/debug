@@ -43,14 +43,14 @@ export function Hero() {
         </motion.div>
 
         <motion.div variants={itemVariants} className="max-w-4xl">
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-medium tracking-tighter text-white leading-[1.1]">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-medium tracking-tighter text-[#F8FAFC] leading-[1.1]">
             Code faster.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#38BDF8] via-[#8B5CF6] to-[#EC4899]">Battle smarter.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#38BDF8] via-[#8B5CF6] to-[#EC4899] italic font-normal">Competitive Debugging.</span>
           </h1>
         </motion.div>
 
         <motion.div variants={itemVariants} className="mt-8 max-w-2xl">
-          <p className="text-lg sm:text-xl text-gray-400 leading-relaxed font-light">
+          <p className="text-lg sm:text-xl text-slate-400 leading-relaxed font-light">
             Debug Duel Arena is the ultimate live coding battle platform. Compete head-to-head in real-time, stream your battles, and prove your skills in a secure sandboxed environment.
           </p>
         </motion.div>
@@ -59,90 +59,60 @@ export function Hero() {
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-center gap-4 mt-10"
         >
-          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 shadow-[0_0_25px_rgba(56,189,248,0.3)]">
-            Create a Battle
+          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 bg-[#10B981] text-black hover:bg-[#00DF89] font-mono font-bold tracking-wider shadow-[0_0_25px_rgba(16,185,129,0.5)] border-0">
+            START_BATTLE
           </Button>
-          <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border-white/10 hover:bg-white/5">
-            Join the Arena
+          <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent">
+            JOIN_BATTLE
           </Button>
         </motion.div>
 
-        {/* Dashboard/Product Mockup Preview (Linear Style) */}
+        {/* Terminal/boot-sequence block */}
         <motion.div 
           variants={itemVariants} 
-          className="mt-20 w-full relative perspective-[2000px]"
+          className="mt-16 w-full relative max-w-4xl mx-auto"
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent z-20 top-1/2" />
-          
-          <motion.div 
-            initial={{ rotateX: 20, y: 50, opacity: 0 }}
-            animate={{ rotateX: 0, y: 0, opacity: 1 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="w-full rounded-2xl border border-white/[0.08] bg-abyss shadow-2xl overflow-hidden shadow-sky-900/20"
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            {/* Mockup Header */}
-            <div className="h-10 border-b border-white/[0.05] flex items-center px-4 gap-2 bg-white/[0.02]">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-3 h-3 rounded-full bg-green-500/80" />
+          <div className="w-full rounded-xl border border-[#1E293B] bg-[#10131B] shadow-2xl overflow-hidden font-mono text-left shadow-emerald-950/20">
+            {/* Terminal Header */}
+            <div className="h-10 border-b border-[#1E293B] flex items-center justify-between px-4 bg-black/40 text-xs">
+              <div className="flex gap-2 items-center">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                <span className="ml-2 text-slate-500">arena-boot-sequence.sh</span>
               </div>
-              <div className="mx-auto bg-black/40 rounded px-4 py-1 text-xs text-gray-500 font-mono">
-                arena.debugduel.com/battle/dev-123
-              </div>
+              <div className="text-slate-600 text-[11px]">SYS_EXEC · v2.0</div>
             </div>
             
-            {/* Mockup Body (Split View like the actual app) */}
-            <div className="flex h-[400px] sm:h-[600px] bg-void">
-              {/* Left Panel - Code Editor Mock */}
-              <div className="flex-1 border-r border-white/[0.05] p-4 font-mono text-sm">
-                <div className="flex text-gray-500 mb-4 gap-4 text-xs">
-                  <span className="text-gray-300">main.ts</span>
-                  <span>utils.ts</span>
-                </div>
-                <div className="text-purple-400">export function <span className="text-blue-400">calculateScore</span><span className="text-gray-300">(</span></div>
-                <div className="pl-4 text-gray-300">timeMs: <span className="text-yellow-300">number</span>,</div>
-                <div className="pl-4 text-gray-300">complexity: <span className="text-yellow-300">number</span></div>
-                <div className="text-gray-300">) {'{'}</div>
-                <div className="pl-4 text-gray-500">{'// Linear scoring algorithm'}</div>
-                <div className="pl-4 text-purple-400">const <span className="text-blue-200">baseScore</span> = <span className="text-orange-400">10000</span>;</div>
-                <div className="pl-4 text-purple-400">return <span className="text-blue-200">baseScore</span> - (timeMs * complexity);</div>
-                <div className="text-gray-300">{'}'}</div>
-                
-                {/* Simulated cursor */}
-                <div className="inline-block w-2 h-4 bg-purple-500 animate-pulse mt-2" />
+            {/* Terminal Body */}
+            <div className="p-6 text-xs sm:text-sm space-y-2.5 leading-relaxed overflow-x-auto">
+              <div className="flex items-center gap-2">
+                <span className="text-[#10B981]">ok ·</span>
+                <span className="text-slate-400">Initializing sandboxed Docker container...</span>
+                <span className="text-[#38BDF8] ml-auto font-semibold">[mod_docker_v2]</span>
               </div>
-
-              {/* Right Panel - Stats Mock */}
-              <div className="w-1/3 hidden md:flex flex-col p-4 gap-4 bg-black/20">
-                <div className="rounded-lg border border-white/[0.05] p-4 bg-white/[0.02]">
-                  <div className="text-xs text-gray-500 uppercase tracking-widest mb-2">Opponent</div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500" />
-                    <div>
-                      <div className="text-sm text-gray-200">Alex Hacker</div>
-                      <div className="text-xs text-red-400">3 Errors • 120 WPM</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="rounded-lg border border-white/[0.05] p-4 bg-white/[0.02] flex-1">
-                  <div className="text-xs text-gray-500 uppercase tracking-widest mb-4">Live Execution</div>
-                  <div className="font-mono text-xs text-green-400 leading-relaxed">
-                    {'>'} Compiling...<br/>
-                    {'>'} Build successful (42ms)<br/>
-                    {'>'} Running test suite...<br/>
-                    {'>'} ✓ Test 1 passed<br/>
-                    {'>'} ✓ Test 2 passed<br/>
-                    {'>'} ✓ Test 3 passed<br/>
-                    <br/>
-                    <span className="text-blue-400">All tests passing. Ready to submit.</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#10B981]">ok ·</span>
+                <span className="text-slate-400">Loading Babel AST Error Injector & Hint Engine...</span>
+                <span className="text-[#38BDF8] ml-auto font-semibold">[mod_ast_mutator]</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#10B981]">ok ·</span>
+                <span className="text-slate-400">Pusher presence-room signaling established (2ms latency)...</span>
+                <span className="text-[#38BDF8] ml-auto font-semibold">[mod_pusher_ws]</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#10B981]">ok ·</span>
+                <span className="text-slate-400">Upstash Redis session state synchronized...</span>
+                <span className="text-[#38BDF8] ml-auto font-semibold">[mod_redis_store]</span>
+              </div>
+              <div className="pt-2 border-t border-[#1E293B]/60 flex items-center gap-2">
+                <span className="text-[#F59E0B] font-bold">open —</span>
+                <span className="text-[#F59E0B] animate-pulse">waiting for opponent in room #DEV-779...</span>
+                <span className="text-slate-500 ml-auto text-xs">[STATUS: READY]</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
 
       </motion.div>

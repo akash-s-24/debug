@@ -40,24 +40,24 @@ export default function LandingPage() {
        ██║    ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗`}
             </div>
             
-            <h1 className="font-display text-5xl md:text-[76px] leading-[0.95] tracking-[-0.03em] font-normal text-text-primary mb-8 text-balance">
+            <h1 className="font-display text-5xl md:text-[76px] leading-[0.95] tracking-[-0.03em] font-normal text-slate-100 mb-8 text-balance">
               The Ultimate Arena for<br />
-              <em className="italic text-neon-cyan">Competitive Debugging.</em>
-              <span className="inline-block w-[0.4em] h-[0.8em] bg-neon-cyan ml-1 mb-[-0.06em] animate-pulse"></span>
+              <em className="italic text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-pink-500">Competitive Debugging.</em>
+              <span className="inline-block w-[0.4em] h-[0.8em] bg-emerald-400 ml-1 mb-[-0.06em] animate-pulse"></span>
             </h1>
             
-            <p className="font-mono text-[15px] leading-[1.7] text-text-secondary max-w-[520px] mb-9 relative pl-6 before:content-['//'] before:absolute before:left-0 before:text-text-muted">
+            <p className="font-mono text-[15px] leading-[1.7] text-slate-300 max-w-[520px] mb-9 relative pl-6 before:content-['//'] before:absolute before:left-0 before:text-slate-500">
               Take on live coding challenges, solve real-world bugs under pressure, and prove your skills in a modern developer arena.
             </p>
             
             <div className="flex flex-wrap items-center gap-4">
               <Link href="/create">
-                <Button variant="primary" size="lg">START_BATTLE</Button>
+                <Button variant="primary" size="lg" className="bg-[#10B981] text-black hover:bg-[#00DF89] font-mono font-bold tracking-wider shadow-[0_0_20px_rgba(16,185,129,0.5)] border-0">START_BATTLE</Button>
               </Link>
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:text-neon-cyan"
+                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(56,189,248,0.4)]"
                 onClick={() => setShowJoinModal(true)}
               >
                 JOIN_BATTLE
@@ -66,87 +66,87 @@ export default function LandingPage() {
           </div>
 
           {/* Right: Terminal Mock */}
-          <div className="bg-abyss border border-border-subtle rounded-md overflow-hidden shadow-[0_0_60px_rgba(255,184,74,0.06)]">
-            <div className="flex items-center gap-1.5 px-3.5 py-2.5 bg-[rgba(255,184,74,0.06)] border-b border-[rgba(255,184,74,0.18)] text-[11px] text-text-muted tracking-wide font-mono">
+          <div className="bg-[#10131B] border border-[#1E293B] rounded-md overflow-hidden shadow-[0_0_60px_rgba(16,185,129,0.08)] font-mono">
+            <div className="flex items-center gap-1.5 px-3.5 py-2.5 bg-black/40 border-b border-[#1E293B] text-[11px] text-slate-500 tracking-wide">
               <div className="flex gap-[5px] mr-3">
-                <i className="w-2 h-2 rounded-full bg-danger-red"></i>
-                <i className="w-2 h-2 rounded-full bg-neon-cyan"></i>
-                <i className="w-2 h-2 rounded-full bg-neon-green"></i>
+                <i className="w-2 h-2 rounded-full bg-red-500"></i>
+                <i className="w-2 h-2 rounded-full bg-amber-500"></i>
+                <i className="w-2 h-2 rounded-full bg-emerald-500"></i>
               </div>
               ~/terminal-7/duel-arena — 80×24 — bash
             </div>
-            <div className="p-4 text-xs leading-[1.65] text-text-secondary font-mono min-h-[380px]">
-              <div><span className="text-text-muted"># Duel Arena boot sequence — June 2026</span></div>
-              <div><span className="text-neon-green before:content-['$'] before:mr-2"></span>./bin/init --mode=battle</div>
-              <div><span className="text-neon-green">→ ok</span> · loaded <span className="text-neon-green">webrtc/v0.7.2</span></div>
-              <div><span className="text-neon-green">→ ok</span> · loaded <span className="text-neon-green">arena/deterministic</span></div>
-              <div><span className="text-neon-green">→ ok</span> · loaded <span className="text-neon-green">metrics/honest</span></div>
-              <div><span className="text-text-muted"># 3 modules online · 1.2s cold start</span></div>
+            <div className="p-4 text-xs leading-[1.65] text-slate-300 min-h-[380px]">
+              <div><span className="text-slate-500"># Duel Arena boot sequence — June 2026</span></div>
+              <div><span className="text-emerald-400 before:content-['$'] before:mr-2"></span>./bin/init --mode=battle</div>
+              <div><span className="text-emerald-400">→ ok</span> · loaded <span className="text-sky-400">[webrtc/v0.7.2]</span></div>
+              <div><span className="text-emerald-400">→ ok</span> · loaded <span className="text-sky-400">[arena/deterministic]</span></div>
+              <div><span className="text-emerald-400">→ ok</span> · loaded <span className="text-sky-400">[metrics/honest]</span></div>
+              <div><span className="text-slate-500"># 3 modules online · 1.2s cold start</span></div>
               <br />
-              <div><span className="text-neon-green before:content-['$'] before:mr-2"></span>arena --list --status=active</div>
-              <div>  · <span className="text-neon-green">[0028]</span> phase-consistent debugging head</div>
-              <div>  · <span className="text-neon-green">[0029]</span> deterministic tool-use under noise</div>
-              <div>  · <span className="text-neon-green">[0030]</span> the dishonesty of leaderboards</div>
-              <div>  · <span className="text-danger-red">[0031]</span> open — waiting for opponent...</div>
+              <div><span className="text-emerald-400 before:content-['$'] before:mr-2"></span>arena --list --status=active</div>
+              <div>  · <span className="text-emerald-400">[0028]</span> phase-consistent debugging head <span className="text-sky-400">[active]</span></div>
+              <div>  · <span className="text-emerald-400">[0029]</span> deterministic tool-use under noise <span className="text-sky-400">[active]</span></div>
+              <div>  · <span className="text-emerald-400">[0030]</span> the dishonesty of leaderboards <span className="text-sky-400">[active]</span></div>
+              <div>  · <span className="text-amber-400 animate-pulse">[0031] open — waiting for opponent...</span></div>
               <br />
-              <div><span className="text-neon-green before:content-['$'] before:mr-2"></span><span className="inline-block w-[0.5em] h-[0.9em] bg-neon-cyan animate-pulse align-baseline"></span></div>
+              <div><span className="text-emerald-400 before:content-['$'] before:mr-2"></span><span className="inline-block w-[0.5em] h-[0.9em] bg-emerald-400 animate-pulse align-baseline"></span></div>
             </div>
           </div>
         </section>
 
         {/* How it Works / Steps */}
-        <section className="max-w-[1440px] mx-auto px-6 pb-20 border-b border-border-subtle mb-20">
-          <div className="text-[11px] tracking-[0.18em] uppercase text-text-muted mb-6 flex items-center gap-3 before:content-['╋'] before:text-neon-cyan font-mono">
+        <section className="max-w-[1440px] mx-auto px-6 pb-20 border-b border-white/[0.08] mb-20">
+          <div className="text-[11px] tracking-[0.18em] uppercase text-slate-500 mb-6 flex items-center gap-3 before:content-['╋'] before:text-emerald-400 font-mono">
             // Engagement Protocols
           </div>
-          <h2 className="font-display text-[40px] md:text-[72px] leading-[0.95] tracking-[-0.025em] text-text-primary mb-12 max-w-[900px] text-balance">
-            Three steps to enter the <em>Arena.</em> Prove your worth in real-time.
+          <h2 className="font-display text-[40px] md:text-[72px] leading-[0.95] tracking-[-0.025em] text-slate-100 mb-12 max-w-[900px] text-balance">
+            Three steps to enter the <em className="italic text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-pink-500 font-normal">Arena.</em> Prove your worth in real-time.
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-border-subtle border border-border-subtle">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <div className="bg-void p-7 relative transition-colors duration-300 hover:bg-abyss group">
-              <div className="text-[10px] tracking-[0.18em] text-text-muted mb-3.5 flex justify-between font-mono">
-                <span>// STEP 01</span><b className="text-neon-cyan font-normal">init</b>
+            <div className="bg-[#10131B] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-sky-400/50 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] group">
+              <div className="text-[10px] tracking-[0.18em] text-slate-500 mb-3.5 flex justify-between font-mono">
+                <span>// STEP 01</span><b className="text-[#38BDF8] font-bold">[init]</b>
               </div>
-              <h3 className="font-display text-2xl tracking-[-0.01em] text-text-primary mb-2">
-                Configure <em>Loadout</em>
+              <h3 className="font-display text-2xl tracking-[-0.01em] text-slate-100 mb-2">
+                Configure <em className="italic text-[#38BDF8] font-normal">Loadout</em>
               </h3>
-              <p className="text-[13px] leading-[1.55] text-text-secondary mb-4 font-mono">
+              <p className="text-[13px] leading-[1.55] text-slate-400 mb-4 font-mono">
                 Host a room, select a coding challenge, and configure the battle rules (language, timer, audience). Generate a secure 6-character room code to invite your opponent.
               </p>
-              <div className="flex justify-between pt-3 border-t border-border-subtle text-[11px] text-text-muted tracking-[0.04em] font-mono">
-                <span>Phase</span><b className="text-neon-green font-normal">Setup</b>
+              <div className="flex justify-between pt-3 border-t border-white/[0.08] text-[11px] text-slate-500 tracking-[0.04em] font-mono">
+                <span>Phase</span><b className="text-[#38BDF8] font-normal">Setup</b>
               </div>
             </div>
 
-            <div className="bg-void p-7 relative transition-colors duration-300 hover:bg-abyss group">
-              <div className="text-[10px] tracking-[0.18em] text-text-muted mb-3.5 flex justify-between font-mono">
-                <span>// STEP 02</span><b className="text-neon-cyan font-normal">sync</b>
+            <div className="bg-[#10131B] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-pink-500/50 hover:shadow-[0_0_30px_rgba(236,72,153,0.15)] group">
+              <div className="text-[10px] tracking-[0.18em] text-slate-500 mb-3.5 flex justify-between font-mono">
+                <span>// STEP 02</span><b className="text-[#EC4899] font-bold">[sync]</b>
               </div>
-              <h3 className="font-display text-2xl tracking-[-0.01em] text-text-primary mb-2">
-                Connect <em>Terminals</em>
+              <h3 className="font-display text-2xl tracking-[-0.01em] text-slate-100 mb-2">
+                Connect <em className="italic text-[#EC4899] font-normal">Terminals</em>
               </h3>
-              <p className="text-[13px] leading-[1.55] text-text-secondary mb-4 font-mono">
+              <p className="text-[13px] leading-[1.55] text-slate-400 mb-4 font-mono">
                 Join as a contestant or spectator. Our Pusher + Redis architecture securely locks you into a low-latency socket room. Wait for the countdown sequence to conclude.
               </p>
-              <div className="flex justify-between pt-3 border-t border-border-subtle text-[11px] text-text-muted tracking-[0.04em] font-mono">
-                <span>Phase</span><b className="text-neon-green font-normal">Connect</b>
+              <div className="flex justify-between pt-3 border-t border-white/[0.08] text-[11px] text-slate-500 tracking-[0.04em] font-mono">
+                <span>Phase</span><b className="text-[#EC4899] font-normal">Connect</b>
               </div>
             </div>
 
-            <div className="bg-void p-7 relative transition-colors duration-300 hover:bg-abyss group">
-              <div className="text-[10px] tracking-[0.18em] text-text-muted mb-3.5 flex justify-between font-mono">
-                <span>// STEP 03</span><b className="text-neon-cyan font-normal">exec</b>
+            <div className="bg-[#10131B] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-amber-400/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] group">
+              <div className="text-[10px] tracking-[0.18em] text-slate-500 mb-3.5 flex justify-between font-mono">
+                <span>// STEP 03</span><b className="text-[#F59E0B] font-bold">[exec]</b>
               </div>
-              <h3 className="font-display text-2xl tracking-[-0.01em] text-text-primary mb-2">
-                Execute <em>Battle</em>
+              <h3 className="font-display text-2xl tracking-[-0.01em] text-slate-100 mb-2">
+                Execute <em className="italic text-[#F59E0B] font-normal">Battle</em>
               </h3>
-              <p className="text-[13px] leading-[1.55] text-text-secondary mb-4 font-mono">
+              <p className="text-[13px] leading-[1.55] text-slate-400 mb-4 font-mono">
                 Code against the clock. Every keystroke is broadcasted live to spectators while deterministic algorithms instantly evaluate your typing speed, error count, and momentum.
               </p>
-              <div className="flex justify-between pt-3 border-t border-border-subtle text-[11px] text-text-muted tracking-[0.04em] font-mono">
-                <span>Phase</span><b className="text-neon-green font-normal">Combat</b>
+              <div className="flex justify-between pt-3 border-t border-white/[0.08] text-[11px] text-slate-500 tracking-[0.04em] font-mono">
+                <span>Phase</span><b className="text-[#F59E0B] font-normal">Combat</b>
               </div>
             </div>
 
@@ -154,25 +154,30 @@ export default function LandingPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 px-6 text-center border-b border-border-subtle mb-10">
-          <h2 className="font-display text-[40px] md:text-[88px] leading-[0.95] tracking-[-0.03em] text-text-primary mb-6 text-balance">
-            We're waiting for <em>one challenger.</em>
-          </h2>
-          <p className="font-mono text-[15px] text-text-secondary max-w-[560px] mx-auto mb-8 leading-[1.7] relative pl-6 before:content-['//'] before:absolute before:left-0 before:text-text-muted">
-            An applied engineer in deterministic systems. Strong typing. Stronger judgment. Quiet enough to share a virtual duel for a long time.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link href="/create">
-              <Button variant="primary" size="lg">START_BATTLE --ROLE=HOST</Button>
-            </Link>
-            <Button 
-              variant="secondary" 
-              size="lg" 
-              className="transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:text-neon-cyan"
-              onClick={() => setShowJoinModal(true)}
-            >
-              JOIN_BATTLE
-            </Button>
+        <section className="relative py-24 px-6 text-center border-b border-white/[0.08] mb-10 overflow-hidden bg-[#070709]">
+          {/* Radial gradient glow of Blue + Magenta at low opacity behind Void Black */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-[#38BDF8]/15 to-[#EC4899]/15 rounded-full blur-[120px] pointer-events-none" />
+          
+          <div className="relative z-10">
+            <h2 className="font-display text-[40px] md:text-[88px] leading-[0.95] tracking-[-0.03em] text-slate-100 mb-6 text-balance">
+              We're waiting for <em className="italic text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-pink-500 font-normal">one challenger.</em>
+            </h2>
+            <p className="font-mono text-[15px] text-slate-400 max-w-[560px] mx-auto mb-8 leading-[1.7] relative pl-6 before:content-['//'] before:absolute before:left-0 before:text-slate-600">
+              An applied engineer in deterministic systems. Strong typing. Stronger judgment. Quiet enough to share a virtual duel for a long time.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Link href="/create">
+                <Button variant="primary" size="lg" className="bg-[#10B981] text-black hover:bg-[#00DF89] font-mono font-bold tracking-wider shadow-[0_0_25px_rgba(16,185,129,0.5)] border-0">START_BATTLE --ROLE=HOST</Button>
+              </Link>
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(56,189,248,0.4)]"
+                onClick={() => setShowJoinModal(true)}
+              >
+                JOIN_BATTLE
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -183,20 +188,20 @@ export default function LandingPage() {
       {/* Join Battle Modal */}
       {showJoinModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-void border border-border-subtle shadow-[0_0_60px_rgba(255,184,74,0.06)] w-full max-w-md p-6 relative hud-bracket">
+          <div className="bg-[#10131B] border border-white/[0.08] shadow-[0_0_60px_rgba(56,189,248,0.15)] w-full max-w-md p-6 relative hud-bracket rounded-xl">
             <button 
               onClick={() => setShowJoinModal(false)}
-              className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
             
-            <h2 className="font-display text-3xl mb-2 tracking-tight text-text-primary">Join Battle</h2>
-            <p className="text-text-secondary text-xs font-mono mb-6">Enter a room code to jump into the arena.</p>
+            <h2 className="font-display text-3xl mb-2 tracking-tight text-slate-100">Join Battle</h2>
+            <p className="text-slate-400 text-xs font-mono mb-6">Enter a room code to jump into the arena.</p>
 
             <form onSubmit={handleJoin} className="flex flex-col gap-4">
               <div>
-                <label className="block text-[11px] font-mono text-text-muted uppercase tracking-widest mb-2">Room Code</label>
+                <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-widest mb-2">Room Code</label>
                 <Input 
                   value={joinCode}
                   onChange={(e) => setJoinCode(e.target.value)}
@@ -207,7 +212,7 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-text-muted uppercase tracking-widest mb-2">Your Name</label>
+                <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-widest mb-2">Your Name</label>
                 <Input 
                   value={joinName}
                   onChange={(e) => setJoinName(e.target.value)}
@@ -217,15 +222,15 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-text-muted uppercase tracking-widest mb-2">Role</label>
+                <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-widest mb-2">Role</label>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setJoinRole('contestant')}
                     className={`flex-1 py-2 font-mono text-xs uppercase tracking-widest border transition-colors ${
                       joinRole === 'contestant' 
-                        ? 'bg-neon-cyan text-void border-neon-cyan' 
-                        : 'bg-transparent text-text-secondary border-border-subtle hover:border-text-secondary'
+                        ? 'bg-[#38BDF8] text-black font-bold border-[#38BDF8]' 
+                        : 'bg-transparent text-slate-400 border-white/[0.08] hover:border-slate-400'
                     }`}
                   >
                     Contestant
@@ -235,8 +240,8 @@ export default function LandingPage() {
                     onClick={() => setJoinRole('spectator')}
                     className={`flex-1 py-2 font-mono text-xs uppercase tracking-widest border transition-colors ${
                       joinRole === 'spectator' 
-                        ? 'bg-neon-cyan text-void border-neon-cyan' 
-                        : 'bg-transparent text-text-secondary border-border-subtle hover:border-text-secondary'
+                        ? 'bg-[#38BDF8] text-black font-bold border-[#38BDF8]' 
+                        : 'bg-transparent text-slate-400 border-white/[0.08] hover:border-slate-400'
                     }`}
                   >
                     Spectator
@@ -245,10 +250,10 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-4 flex gap-2">
-                <Button type="button" variant="ghost" className="flex-1" onClick={() => setShowJoinModal(false)}>
+                <Button type="button" variant="ghost" className="flex-1 text-slate-400 hover:text-white" onClick={() => setShowJoinModal(false)}>
                   CANCEL
                 </Button>
-                <Button type="submit" variant="primary" className="flex-1">
+                <Button type="submit" variant="primary" className="flex-1 bg-[#10B981] text-black hover:bg-[#00DF89] font-bold border-0">
                   JOIN_ROOM
                 </Button>
               </div>
