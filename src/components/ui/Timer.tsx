@@ -95,7 +95,7 @@ export function Timer({
   const isUrgent = time <= 10;
   const isWarning = time <= 60 && time > 10;
 
-  const color = isUrgent ? '#f87171' : isWarning ? '#fbbf24' : '#38bdf8';
+  const color = isUrgent ? '#E24B4A' : isWarning ? '#EF9F27' : '#378ADD';
   const { fontSize, gap, colonSize } = sizeStyles[size];
 
   return (

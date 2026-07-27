@@ -93,8 +93,8 @@ export function EditorPanel({
         inherit: true,
         rules: [],
         colors: {
-          'editor.background': '#0f172a', // Match abyss
-          'editor.lineHighlightBackground': '#38bdf815', // Sky blue tint
+          'editor.background': '#0C447C', // Match Deep Arena
+          'editor.lineHighlightBackground': '#378ADD20', // Signal Blue tint
         },
       });
       monaco.editor.setTheme('neon-dark');
@@ -115,7 +115,7 @@ export function EditorPanel({
 
   return (
     <div className={`relative w-full h-full flex flex-col glass-surface rounded-lg overflow-hidden hud-bracket ${
-      isActive ? `border-${color === 'cyan' ? 'neon-cyan' : 'neon-magenta'} shadow-[0_0_30px_rgba(${color === 'cyan' ? '34,233,225' : '247,37,133'},0.2)]` : 'border-border-subtle'
+      isActive ? `border-${color === 'cyan' ? 'neon-cyan' : 'neon-magenta'} shadow-[0_0_30px_rgba(55,138,221,0.25)]` : 'border-border-subtle'
     }`}>
       {/* Header Bar */}
       <div className={`h-12 border-b border-border-subtle flex items-center justify-between px-4 ${bgGlow}`}>

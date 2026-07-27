@@ -26,8 +26,8 @@ export function Hero() {
     <section className="relative min-h-screen pt-32 pb-20 overflow-hidden bg-void flex flex-col items-center">
       
       {/* Background Glows (Subtle) */}
-      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-sky-900/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[20%] left-[20%] w-[500px] h-[400px] bg-indigo-900/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#0C447C]/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] left-[20%] w-[500px] h-[400px] bg-[#185FA5]/20 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Hero Content */}
       <motion.div
@@ -44,7 +44,7 @@ export function Hero() {
         <motion.div variants={itemVariants} className="max-w-4xl">
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-medium tracking-tighter text-white leading-[1.1]">
             Code faster.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-300 to-purple-400">Battle smarter.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#85B7EB] via-[#E6F1FB] to-[#378ADD]">Battle smarter.</span>
           </h1>
         </motion.div>
 
@@ -58,7 +58,7 @@ export function Hero() {
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-center gap-4 mt-10"
         >
-          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 shadow-[0_0_20px_rgba(55,138,221,0.35)]">
             Create a Battle
           </Button>
           <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border-white/10 hover:bg-white/5">
