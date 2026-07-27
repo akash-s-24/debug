@@ -118,6 +118,14 @@ export function useRoom(pusher: PusherClient | null): UseRoomReturn {
     channel.bind('room-closed', onRoomClosed);
     channel.bind('user-kicked', onUserKicked);
     channel.bind('code-updated', onCodeUpdated);
+    channel.bind('player-submitted', (data: any) => {
+      // Temporary toast/alert. In a real app we'd dispatch a toast
+      if (data.isFullyFixed) {
+        alert(`Player ${data.player} fixed all bugs and finished!`);
+      } else {
+        alert(`Player ${data.player} submitted and fixed ${data.fixedCount} bugs!`);
+      }
+    });
     
     // Bind to high-frequency client events (requires 'Enable client events' in Pusher Dashboard)
     channel.bind('client-stats-updated', onStatsUpdated);

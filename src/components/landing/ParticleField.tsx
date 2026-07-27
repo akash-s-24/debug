@@ -12,7 +12,7 @@ interface Particle {
   alpha: number;
 }
 
-const COLORS = ['#00F0FF', '#7B2FF7', '#FF006E', '#00FF88'];
+const COLORS = ['#38BDF8', '#818CF8', '#C084FC', '#60A5FA'];
 const PARTICLE_COUNT = 120;
 const CONNECTION_DISTANCE = 120;
 const MOUSE_REPEL_DISTANCE = 100;

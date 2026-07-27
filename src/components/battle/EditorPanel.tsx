@@ -13,6 +13,7 @@ interface EditorPanelProps {
   stats: CodingStats | null;
   code: string;
   language?: string;
+  markers?: any[]; // Monaco marker data for hints
   onChange?: (value: string | undefined) => void;
   onValidation?: (markers: any[]) => void;
   onTerminalChange?: (updates: Partial<Pick<CodingStats, 'terminalOutput' | 'terminalInput' | 'showTerminal' | 'activeTab' | 'terminalIsError'>>) => void;
@@ -26,10 +27,12 @@ export function EditorPanel({
   stats,
   code,
   language = 'typescript',
+  markers,
   onChange,
   onValidation,
   onTerminalChange
 }: EditorPanelProps) {
+  const editorRef = useRef<any>(null);
   const monaco = useMonaco();
   const [output, setOutput] = useState<string | null>(null);
   const [stdin, setStdin] = useState<string>('');
@@ -90,13 +93,22 @@ export function EditorPanel({
         inherit: true,
         rules: [],
         colors: {
-          'editor.background': '#0D0F17', // Match abyss
-          'editor.lineHighlightBackground': '#22E9E10a', // Slight cyan tint
+          'editor.background': '#0f172a', // Match abyss
+          'editor.lineHighlightBackground': '#38bdf815', // Sky blue tint
         },
       });
       monaco.editor.setTheme('neon-dark');
     }
   }, [monaco]);
+
+  useEffect(() => {
+    if (monaco && editorRef.current) {
+      const model = editorRef.current.getModel();
+      if (model) {
+        monaco.editor.setModelMarkers(model, 'ai-hint', markers || []);
+      }
+    }
+  }, [monaco, markers, code]); // Re-apply when code changes or markers change
 
   const colorClass = color === 'cyan' ? 'text-neon-cyan border-neon-cyan/50' : 'text-neon-magenta border-neon-magenta/50';
   const bgGlow = color === 'cyan' ? 'bg-neon-cyan/5' : 'bg-neon-magenta/5';
@@ -155,6 +167,7 @@ export function EditorPanel({
           language={language.toLowerCase()}
           theme="neon-dark"
           value={code}
+          onMount={(editor) => { editorRef.current = editor; }}
           onChange={onChange}
           onValidate={onValidation}
           options={{

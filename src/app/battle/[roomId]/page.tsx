@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChallengeBar } from '@/components/battle/ChallengeBar';
 import { EditorPanel } from '@/components/battle/EditorPanel';
+import { HintEngine } from '@/components/battle/HintEngine';
 import { HostDashboard } from '@/components/battle/HostDashboard';
 import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
@@ -40,6 +41,14 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const [localCode, setLocalCode] = useState('// Enter your code here...');
   const initialCodeLoaded = useRef(false);
 
+  // AI Battle Mode State
+  const [aiErrors, setAiErrors] = useState<any[]>([]);
+  const [monacoMarkers, setMonacoMarkers] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const aiModeInitialized = useRef(false);
+  const playerIndex = room?.contestants.findIndex(c => c.id === myUserId);
+  const playerLetter = playerIndex === 0 ? 'A' : playerIndex === 1 ? 'B' : null;
+
   useEffect(() => {
     if (room && !initialCodeLoaded.current) {
       if (room.config.initialCode) {
@@ -48,6 +57,51 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
       initialCodeLoaded.current = true;
     }
   }, [room]);
+
+  useEffect(() => {
+    if (room?.status === 'battle' && playerLetter && !aiModeInitialized.current) {
+      aiModeInitialized.current = true;
+      fetch('/api/ai-error', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId, player: playerLetter })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.code) {
+          setLocalCode(data.code);
+          onCodeChange(data.code);
+        }
+        if (data.errors) setAiErrors(data.errors);
+      })
+      .catch(console.error);
+    }
+  }, [room?.status, playerLetter, roomId, onCodeChange]);
+
+  const handleShowHint = useCallback((marker: any) => {
+    setMonacoMarkers(prev => [...prev, marker]);
+  }, []);
+
+  const handleAISubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/battle/submit-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId, player: playerLetter, submittedCode: localCode })
+      });
+      const data = await res.json();
+      if (data.isFullyFixed) {
+        alert('All bugs fixed! You win!');
+      } else {
+        alert(`You fixed ${data.fixedCount} out of ${data.total} bugs.`);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const [layout, setLayout] = useState<LayoutMode>('side-by-side');
   const [showIntro, setShowIntro] = useState(false);
@@ -357,6 +411,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                       isActive={stats1?.momentum === 'high' || stats1?.momentum === 'extreme'}
                       color="cyan"
                       stats={stats1 || null}
+                      markers={monacoMarkers}
                       onChange={user1?.id === myUser.id ? handleCodeChange : undefined}
                       onValidation={user1?.id === myUser.id ? handleValidation : undefined}
                       onTerminalChange={user1?.id === myUser.id ? handleTerminalSync : undefined}
@@ -374,12 +429,28 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 </div>
               )}
               
-              <div className="flex-1 min-h-0 bg-void border border-border-subtle shadow-md p-6 flex flex-col items-center text-center hud-bracket">
-                <div className="text-4xl mb-6">🏆</div>
-                <h3 className="font-display text-3xl tracking-tight text-text-primary mb-2">Battle Arena</h3>
-                <p className="text-text-secondary text-xs font-mono mb-8 before:content-['//'] before:mr-2 before:text-text-muted">Focus on the code. Outperform your opponent.</p>
+              <div className="flex-1 min-h-0 bg-void border border-border-subtle shadow-md p-6 flex flex-col items-center text-center hud-bracket overflow-y-auto">
+                <div className="text-4xl mb-4">🏆</div>
+                <h3 className="font-display text-2xl tracking-tight text-text-primary mb-2">Battle Arena</h3>
+                <p className="text-text-secondary text-xs font-mono mb-4 before:content-['//'] before:mr-2 before:text-text-muted">Focus on the code. Outperform your opponent.</p>
                 
-                <div className="w-full bg-abyss p-4 border border-border-subtle mt-auto relative overflow-hidden shadow-inner">
+                {myUser.role === 'contestant' && room.status === 'battle' && (
+                  <div className="w-full flex flex-col gap-2">
+                    <Button 
+                      variant="primary" 
+                      className="w-full uppercase font-bold tracking-widest"
+                      onClick={handleAISubmit}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'VALIDATING...' : 'SUBMIT SOLUTION'}
+                    </Button>
+                    {aiErrors.length > 0 && (
+                      <HintEngine errors={aiErrors} onShowHint={handleShowHint} onApplyPenalty={() => {}} />
+                    )}
+                  </div>
+                )}
+
+                <div className="w-full bg-abyss p-4 border border-border-subtle mt-auto relative overflow-hidden shadow-inner mt-6">
                   <div className="scanline-overlay"></div>
                   <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest mb-2 relative z-10">Room Code</div>
                   <div className="text-2xl font-mono text-neon-cyan tracking-widest relative z-10">{room.code}</div>

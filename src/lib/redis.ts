@@ -1,11 +1,11 @@
 import { Redis } from '@upstash/redis';
 import type { Room } from '@/types';
 
-const isFake = process.env.UPSTASH_REDIS_REST_URL?.includes('fake-upstash');
+const isFake = !process.env.UPSTASH_REDIS_REST_URL || process.env.UPSTASH_REDIS_REST_URL.includes('fake-upstash');
 
 const redis = isFake ? null : new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  url: process.env.UPSTASH_REDIS_REST_URL as string,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
 });
 
 // Mock stores for local development when Upstash is not configured

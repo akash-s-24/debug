@@ -1,35 +1,35 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Terminal-7 Retro Amber Palette ── */
-  --color-void: #0a0904;
-  --color-abyss: #161208;
-  --color-surface: #1e180d;
+  /* ── Cyber-Slate Cool Palette (Electric Sky Blue & Violet) ── */
+  --color-void: #07090e;
+  --color-abyss: #0f172a;
+  --color-surface: #1e293b;
   
-  --color-neon-cyan: #ffb84a; /* Mapped to Ink (Amber) */
-  --color-neon-violet: #d69830;
-  --color-neon-magenta: #ff5252; /* Mapped to Red */
-  --color-neon-green: #52ff8a; /* Mapped to Green */
-  --color-warn-amber: #ffb84a;
-  --color-danger-red: #ff5252;
+  --color-neon-cyan: #38bdf8; /* Electric Sky Blue (Primary Accent) */
+  --color-neon-violet: #818cf8; /* AI Indigo/Violet (Secondary Accent) */
+  --color-neon-magenta: #c084fc; /* Cool Purple Accent */
+  --color-neon-green: #34d399; /* Success Emerald */
+  --color-warn-amber: #fbbf24; /* Warning Amber */
+  --color-danger-red: #f87171; /* Danger Red */
   
-  --color-text-primary: #f3e6c4; /* Paper */
-  --color-text-secondary: #bda874; /* Dim Paper */
-  --color-text-muted: #7a5f30; /* Dim Amber */
+  --color-text-primary: #f8fafc; /* Crisp Ice White */
+  --color-text-secondary: #94a3b8; /* Cool Slate Gray */
+  --color-text-muted: #475569; /* Muted Slate */
   
-  --color-border-subtle: rgba(255, 184, 74, 0.15);
+  --color-border-subtle: rgba(56, 189, 248, 0.18);
 
   /* Fallback aliases for UI components that might still reference them */
-  --color-primary: #ffb84a;
-  --color-secondary: #7a5f30;
-  --color-tertiary: #ff5252;
-  --color-success: #52ff8a;
-  --color-error: #ff5252;
-  --color-background: #0a0904;
-  --color-on-surface: #f3e6c4;
-  --color-on-surface-variant: #bda874;
-  --color-outline: rgba(255, 184, 74, 0.15);
-  --color-outline-variant: rgba(255, 184, 74, 0.08);
+  --color-primary: #38bdf8;
+  --color-secondary: #475569;
+  --color-tertiary: #818cf8;
+  --color-success: #34d399;
+  --color-error: #f87171;
+  --color-background: #07090e;
+  --color-on-surface: #f8fafc;
+  --color-on-surface-variant: #94a3b8;
+  --color-outline: rgba(56, 189, 248, 0.18);
+  --color-outline-variant: rgba(56, 189, 248, 0.08);
 
   /* ── Fonts ── */
   --font-display: 'Instrument Serif', ui-serif, serif;
@@ -61,8 +61,8 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(255, 184, 74, 0); }
-  50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 12px rgba(255, 184, 74, 0.4); }
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0); }
+  50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
 }
 
 /* ── Base ── */
@@ -92,7 +92,7 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  background: repeating-linear-gradient(180deg, rgba(255,184,74,0) 0, rgba(255,184,74,0) 2px, rgba(255,184,74,0.04) 2px, rgba(255,184,74,0.04) 3px);
+  background: repeating-linear-gradient(180deg, rgba(56,189,248,0) 0, rgba(56,189,248,0) 2px, rgba(56,189,248,0.04) 2px, rgba(56,189,248,0.04) 3px);
   mix-blend-mode: overlay;
 }
 
@@ -136,7 +136,7 @@ h1, h2, h3, h4, h5, h6 {
   .card-hover:hover {
     transform: translateY(-4px);
     border-color: var(--color-neon-cyan);
-    box-shadow: 0 8px 30px -10px rgba(255, 184, 74, 0.1);
+    box-shadow: 0 8px 30px -10px rgba(56, 189, 248, 0.15);
   }
 }
 

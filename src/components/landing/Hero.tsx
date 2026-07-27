@@ -23,11 +23,11 @@ const itemVariants: Variants = {
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen pt-32 pb-20 overflow-hidden bg-[#0A0A0A] flex flex-col items-center">
+    <section className="relative min-h-screen pt-32 pb-20 overflow-hidden bg-void flex flex-col items-center">
       
       {/* Background Glows (Subtle) */}
-      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[20%] left-[20%] w-[500px] h-[400px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-sky-900/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] left-[20%] w-[500px] h-[400px] bg-indigo-900/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Hero Content */}
       <motion.div
@@ -37,14 +37,14 @@ export function Hero() {
         animate="visible"
       >
         <motion.div variants={itemVariants} className="mb-8 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-sm text-gray-300 backdrop-blur-md shadow-sm">
-          <span className="flex h-2 w-2 rounded-full bg-[#8B5CF6] mr-2"></span>
+          <span className="flex h-2 w-2 rounded-full bg-neon-cyan mr-2"></span>
           Arena Engine 2.0 is now live <span className="ml-2 text-gray-500">→</span>
         </motion.div>
 
         <motion.div variants={itemVariants} className="max-w-4xl">
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-medium tracking-tighter text-white leading-[1.1]">
             Code faster.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-600">Battle smarter.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-300 to-purple-400">Battle smarter.</span>
           </h1>
         </motion.div>
 
@@ -58,7 +58,7 @@ export function Hero() {
           variants={itemVariants}
           className="flex flex-col sm:flex-row items-center gap-4 mt-10"
         >
-          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+          <Button variant="primary" size="lg" className="w-full sm:w-auto px-8 h-12 shadow-[0_0_20px_rgba(56,189,248,0.3)]">
             Create a Battle
           </Button>
           <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 h-12 border-white/10 hover:bg-white/5">
@@ -71,13 +71,13 @@ export function Hero() {
           variants={itemVariants} 
           className="mt-20 w-full relative perspective-[2000px]"
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent z-20 top-1/2" />
+          <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent z-20 top-1/2" />
           
           <motion.div 
             initial={{ rotateX: 20, y: 50, opacity: 0 }}
             animate={{ rotateX: 0, y: 0, opacity: 1 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="w-full rounded-2xl border border-white/[0.08] bg-[#09090B] shadow-2xl overflow-hidden shadow-purple-900/20"
+            className="w-full rounded-2xl border border-white/[0.08] bg-abyss shadow-2xl overflow-hidden shadow-sky-900/20"
             style={{ transformStyle: "preserve-3d" }}
           >
             {/* Mockup Header */}
@@ -93,7 +93,7 @@ export function Hero() {
             </div>
             
             {/* Mockup Body (Split View like the actual app) */}
-            <div className="flex h-[400px] sm:h-[600px] bg-[#0A0A0B]">
+            <div className="flex h-[400px] sm:h-[600px] bg-void">
               {/* Left Panel - Code Editor Mock */}
               <div className="flex-1 border-r border-white/[0.05] p-4 font-mono text-sm">
                 <div className="flex text-gray-500 mb-4 gap-4 text-xs">
