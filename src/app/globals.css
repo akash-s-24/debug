@@ -1,35 +1,35 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── 7-Stop Blue Spectrum & Status Accents ── */
-  --color-void: #042C53; /* Navy Void → page/hero backgrounds */
-  --color-abyss: #0C447C; /* Deep Arena → card and panel backgrounds */
-  --color-surface: #185FA5; /* Battle Blue → borders and dividers */
+  /* ── Modern Obsidian & Multi-Color Developer Palette ── */
+  --color-void: #070709; /* Pitch black obsidian → sleek page/hero backgrounds */
+  --color-abyss: #10131B; /* Dark slate glass → card and panel backgrounds */
+  --color-surface: #181D29; /* Elevated glass surface */
   
-  --color-neon-cyan: #378ADD; /* Signal Blue → primary CTA buttons */
-  --color-neon-violet: #534AB7; /* Purple → spectator mode, rank badges */
-  --color-neon-magenta: #85B7EB; /* Terminal Sky → supporting text */
-  --color-neon-green: #1D9E75; /* Green → win states, correct answers */
-  --color-warn-amber: #EF9F27; /* Amber → countdown timers, warnings */
-  --color-danger-red: #E24B4A; /* Red → errors, forfeits */
+  --color-neon-cyan: #38BDF8; /* Electric Sky Blue → primary CTA & active tabs */
+  --color-neon-violet: #8B5CF6; /* Vibrant Violet → AI features & secondary accents */
+  --color-neon-magenta: #EC4899; /* Cyber Pink → tags, badges & AI hints */
+  --color-neon-green: #10B981; /* Emerald Mint → live status, correct answers */
+  --color-warn-amber: #F59E0B; /* Warm Amber → countdown timers, warnings */
+  --color-danger-red: #EF4444; /* Crimson Red → errors, forfeits, urgent */
   
-  --color-text-primary: #ffffff; /* White → screen light contrast */
-  --color-text-secondary: #85B7EB; /* Terminal Sky → secondary text */
-  --color-text-muted: #B5D4F4; /* Frost → muted labels */
+  --color-text-primary: #F8FAFC; /* Crisp Ice White */
+  --color-text-secondary: #94A3B8; /* Cool Slate Gray */
+  --color-text-muted: #64748B; /* Muted Slate */
   
-  --color-border-subtle: #185FA5; /* Battle Blue */
+  --color-border-subtle: rgba(255, 255, 255, 0.08); /* Modern glassmorphism border */
 
   /* Fallback aliases for UI components that might still reference them */
-  --color-primary: #378ADD;
-  --color-secondary: #85B7EB;
-  --color-tertiary: #534AB7;
-  --color-success: #1D9E75;
-  --color-error: #E24B4A;
-  --color-background: #042C53;
-  --color-on-surface: #ffffff;
-  --color-on-surface-variant: #85B7EB;
-  --color-outline: #185FA5;
-  --color-outline-variant: rgba(24, 95, 165, 0.4);
+  --color-primary: #38BDF8;
+  --color-secondary: #8B5CF6;
+  --color-tertiary: #EC4899;
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-background: #070709;
+  --color-on-surface: #F8FAFC;
+  --color-on-surface-variant: #94A3B8;
+  --color-outline: rgba(255, 255, 255, 0.08);
+  --color-outline-variant: rgba(255, 255, 255, 0.04);
 
   /* ── Fonts ── */
   --font-display: 'Instrument Serif', ui-serif, serif;
@@ -61,8 +61,8 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(55, 138, 221, 0); }
-  50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 12px rgba(55, 138, 221, 0.4); }
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0); }
+  50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 16px rgba(139, 92, 246, 0.4); }
 }
 
 /* ── Base ── */
@@ -92,7 +92,7 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  background: repeating-linear-gradient(180deg, rgba(55,138,221,0) 0, rgba(55,138,221,0) 2px, rgba(55,138,221,0.04) 2px, rgba(55,138,221,0.04) 3px);
+  background: repeating-linear-gradient(180deg, rgba(56,189,248,0) 0, rgba(56,189,248,0) 2px, rgba(56,189,248,0.03) 2px, rgba(56,189,248,0.03) 3px);
   mix-blend-mode: overlay;
 }
 
@@ -116,14 +116,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── Reusable Motifs ── */
 
-/* Glass surface -> Flat terminal box */
+/* Glass surface -> True modern glassmorphism card */
 .glass-surface {
-  background: var(--color-void);
+  background: rgba(16, 19, 27, 0.7);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--color-border-subtle);
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 .glass-surface:hover {
-  background: var(--color-abyss);
+  background: rgba(24, 29, 41, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Hover-only animated border on cards */
@@ -136,7 +138,7 @@ h1, h2, h3, h4, h5, h6 {
   .card-hover:hover {
     transform: translateY(-4px);
     border-color: var(--color-neon-cyan);
-    box-shadow: 0 8px 30px -10px rgba(55, 138, 221, 0.2);
+    box-shadow: 0 8px 30px -10px rgba(56, 189, 248, 0.25);
   }
 }
 
