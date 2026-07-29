@@ -60,8 +60,8 @@ export function ChallengeBar({
       <div className="flex flex-col gap-1 w-full md:w-1/3 items-center md:items-start text-center md:text-left">
         <div className="flex flex-wrap justify-center md:justify-start items-center gap-3">
           <h2 className="text-2xl font-display text-text-primary tracking-tight">{title}</h2>
-          <span className="font-mono text-[10px] tracking-widest bg-transparent text-neon-cyan px-2 py-0.5 border border-border-subtle">{language}</span>
-          <span className="font-mono text-[10px] tracking-widest bg-transparent text-neon-magenta px-2 py-0.5 border border-border-subtle">{duelType.replace('-', ' ')}</span>
+          <span className="font-mono text-[10px] tracking-widest bg-transparent text-brand-primary px-2 py-0.5 border border-border-subtle">{language}</span>
+          <span className="font-mono text-[10px] tracking-widest bg-transparent text-brand-secondary px-2 py-0.5 border border-border-subtle">{duelType.replace('-', ' ')}</span>
         </div>
         {description && (
           <p className="text-text-secondary font-mono text-xs leading-tight truncate w-full max-w-sm before:content-['//'] before:mr-2 before:text-text-muted">{description}</p>
@@ -82,7 +82,7 @@ export function ChallengeBar({
             <span className="font-mono text-sm text-text-primary font-bold tracking-widest">{roomId.substring(0, 6).toUpperCase()}</span>
             <button 
               onClick={copyRoomCode}
-              className="ml-2 text-text-muted hover:text-neon-cyan transition-colors"
+              className="ml-2 text-text-muted hover:text-brand-primary transition-colors"
               title="Copy Room Link"
             >
               <span className="material-symbols-outlined text-[16px]">{copied ? 'check' : 'content_copy'}</span>
@@ -96,7 +96,7 @@ export function ChallengeBar({
               <button 
                 key={emoji}
                 onClick={() => sendReaction(emoji, userName || 'Anonymous')}
-                className="text-lg hover:-translate-y-1 transition-transform bg-surface w-8 h-8 rounded flex items-center justify-center border border-border-subtle hover:border-neon-cyan hover:shadow-[0_0_10px_rgba(34,233,225,0.2)]"
+                className="text-lg hover:-translate-y-1 transition-transform bg-surface w-8 h-8 rounded flex items-center justify-center border border-border-subtle hover:border-brand-primary hover:shadow-[0_0_10px_rgba(59,130,246,0.2)]"
               >
                 {emoji}
               </button>

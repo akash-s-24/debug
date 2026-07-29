@@ -93,8 +93,8 @@ export function EditorPanel({
         inherit: true,
         rules: [],
         colors: {
-          'editor.background': '#10131B', // Dark slate glass
-          'editor.lineHighlightBackground': '#38BDF815', // Sky blue tint
+          'editor.background': '#121214', // Dark slate glass
+          'editor.lineHighlightBackground': '#3b82f615', // Sky blue tint
         },
       });
       monaco.editor.setTheme('neon-dark');
@@ -110,12 +110,12 @@ export function EditorPanel({
     }
   }, [monaco, markers, code]); // Re-apply when code changes or markers change
 
-  const colorClass = color === 'cyan' ? 'text-neon-cyan border-neon-cyan/50' : 'text-neon-magenta border-neon-magenta/50';
-  const bgGlow = color === 'cyan' ? 'bg-neon-cyan/5' : 'bg-neon-magenta/5';
+  const colorClass = color === 'cyan' ? 'text-brand-primary border-brand-primary/50' : 'text-brand-secondary border-brand-secondary/50';
+  const bgGlow = color === 'cyan' ? 'bg-brand-primary/5' : 'bg-brand-secondary/5';
 
   return (
     <div className={`relative w-full h-full flex flex-col glass-surface rounded-lg overflow-hidden hud-bracket ${
-      isActive ? `border-${color === 'cyan' ? 'neon-cyan' : 'neon-magenta'} shadow-[0_0_30px_rgba(56,189,248,0.25)]` : 'border-border-subtle'
+      isActive ? `border-${color === 'cyan' ? 'brand-primary' : 'brand-secondary'} shadow-[0_0_30px_rgba(59,130,246,0.25)]` : 'border-border-subtle'
     }`}>
       {/* Header Bar */}
       <div className={`h-12 border-b border-border-subtle flex items-center justify-between px-4 ${bgGlow}`}>
@@ -125,7 +125,7 @@ export function EditorPanel({
             {userName}
           </span>
           {isLocal && (
-            <span className="text-[10px] bg-neon-cyan/10 text-neon-cyan px-2 py-0.5 rounded border border-neon-cyan/30 font-mono">YOU</span>
+            <span className="text-[10px] bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded border border-brand-primary/30 font-mono">YOU</span>
           )}
         </div>
         
@@ -143,17 +143,17 @@ export function EditorPanel({
                 <button 
                   onClick={handleRunCode}
                   disabled={isExecuting}
-                  className="flex items-center gap-1 bg-neon-cyan text-void transition-colors px-3 py-1 rounded font-bold uppercase disabled:opacity-50"
+                  className="flex items-center gap-1 bg-brand-primary text-void transition-colors px-3 py-1 rounded font-bold uppercase disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[14px]">play_arrow</span>
                   {isExecuting ? 'RUNNING' : 'RUN'}
                 </button>
               </div>
             )}
-            <span className={stats.typingSpeed > 100 ? 'text-neon-cyan font-bold' : ''}>
+            <span className={stats.typingSpeed > 100 ? 'text-brand-primary font-bold' : ''}>
               {stats.typingSpeed} CPM
             </span>
-            <span className={stats.errorCount > 0 ? 'text-danger-red font-bold' : 'text-neon-cyan'}>
+            <span className={stats.errorCount > 0 ? 'text-danger-red font-bold' : 'text-brand-primary'}>
               {stats.errorCount} ERR
             </span>
           </div>
@@ -248,7 +248,7 @@ export function EditorPanel({
                 spellCheck={false}
               />
             ) : (
-              <div className={`w-full h-full p-4 font-mono text-sm overflow-y-auto whitespace-pre-wrap ${currentOutput ? (currentIsError ? 'text-danger-red' : 'text-neon-cyan') : 'text-text-primary'}`}>
+              <div className={`w-full h-full p-4 font-mono text-sm overflow-y-auto whitespace-pre-wrap ${currentOutput ? (currentIsError ? 'text-danger-red' : 'text-brand-primary') : 'text-text-primary'}`}>
                 {currentOutput || <span className="text-text-muted/50 italic">No output yet. Click RUN to execute.</span>}
               </div>
             )}

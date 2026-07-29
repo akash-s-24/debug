@@ -44,14 +44,14 @@ function StatItem({ label, value, icon, compact, textClass }: StatItemProps) {
 
 export const LiveStats = React.memo(function LiveStats({ stats, color, compact = false }: LiveStatsProps) {
   const isCyan = color === 'cyan';
-  const textClass = isCyan ? 'text-neon-cyan' : 'text-neon-magenta';
+  const textClass = isCyan ? 'text-brand-primary' : 'text-brand-secondary';
   
   const getMomentumColor = (momentum: string) => {
     switch (momentum) {
       case 'low': return 'bg-border-subtle';
       case 'medium': return 'bg-warn-amber';
-      case 'high': return 'bg-neon-green';
-      case 'extreme': return isCyan ? 'bg-neon-cyan shadow-[0_0_10px_rgba(34,233,225,0.5)]' : 'bg-neon-magenta shadow-[0_0_10px_rgba(247,37,133,0.5)]';
+      case 'high': return 'bg-brand-accent';
+      case 'extreme': return isCyan ? 'bg-brand-primary shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'bg-brand-secondary shadow-[0_0_10px_rgba(99,102,241,0.5)]';
       default: return 'bg-border-subtle';
     }
   };

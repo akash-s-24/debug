@@ -107,7 +107,7 @@ export default function ArenaPage({ params }: { params: Promise<{ roomId: string
   return (
     <div className="bg-void text-white h-screen w-screen overflow-hidden flex font-body selection:bg-blue-500/30">
       {/* Background patterns */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(0,240,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,rgba(8,8,16,0)_0%,rgba(8,8,16,1)_100%)] pointer-events-none" />
 
       {showIntro && c1 && c2 && (

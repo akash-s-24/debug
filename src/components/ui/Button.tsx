@@ -16,7 +16,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants: Record<string, string> = {
       primary: 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] border border-[#3B82F6] font-mono font-bold tracking-wider shadow-none transition-all duration-200 hover:-translate-y-0.5',
-      secondary: 'bg-transparent text-[#38BDF8] border border-[#38BDF8]/60 hover:bg-[#38BDF8]/10 hover:border-[#38BDF8] font-mono font-bold tracking-wider shadow-none transition-all duration-200 hover:-translate-y-0.5',
+      secondary: 'bg-transparent text-[#3b82f6] border border-[#3b82f6]/60 hover:bg-[#3b82f6]/10 hover:border-[#3b82f6] font-mono font-bold tracking-wider shadow-none transition-all duration-200 hover:-translate-y-0.5',
       ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-white/5 font-mono font-bold',
       danger: 'bg-red-600 text-white hover:bg-red-500 border border-red-400 font-mono font-bold tracking-wider shadow-none transition-all duration-200',
     };

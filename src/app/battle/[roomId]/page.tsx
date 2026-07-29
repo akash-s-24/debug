@@ -397,7 +397,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                   {myUser.role === 'contestant' && room.status !== 'battle' ? (
                     <div className="w-full h-full flex items-center justify-center bg-void border border-border-subtle shadow-inner p-8 text-center hud-bracket">
                       <div>
-                        <div className="text-4xl mb-4 text-neon-cyan animate-pulse">[ 🔒 ]</div>
+                        <div className="text-4xl mb-4 text-brand-primary animate-pulse">[ 🔒 ]</div>
                         <h3 className="font-display tracking-tight text-3xl text-text-primary mb-2">Battle Not Started</h3>
                         <p className="font-mono text-[11px] text-text-secondary uppercase tracking-widest">Code is locked until the host starts the battle.</p>
                       </div>
@@ -453,7 +453,7 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 <div className="w-full bg-abyss p-4 border border-border-subtle mt-auto relative overflow-hidden shadow-inner mt-6">
                   <div className="scanline-overlay"></div>
                   <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest mb-2 relative z-10">Room Code</div>
-                  <div className="text-2xl font-mono text-neon-cyan tracking-widest relative z-10">{room.code}</div>
+                  <div className="text-2xl font-mono text-brand-primary tracking-widest relative z-10">{room.code}</div>
                 </div>
               </div>
             </div>

@@ -30,7 +30,7 @@ export function HintEngine({ errors, onShowHint, onApplyPenalty }: HintEnginePro
 
   return (
     <div className="bg-void border border-border-subtle p-4 mt-4 hud-bracket">
-      <h4 className="font-heading text-sm text-neon-cyan uppercase tracking-widest mb-3 flex items-center gap-2">
+      <h4 className="font-heading text-sm text-brand-primary uppercase tracking-widest mb-3 flex items-center gap-2">
         <span className="material-symbols-outlined text-[16px]">psychology</span>
         AI Hint Engine
       </h4>
@@ -41,13 +41,13 @@ export function HintEngine({ errors, onShowHint, onApplyPenalty }: HintEnginePro
             <div key={err.id} className="flex items-center justify-between bg-surface/50 p-2 border border-border-subtle/50 rounded">
               <span className="font-mono text-xs text-text-secondary">Bug #{i + 1}</span>
               {isRevealed ? (
-                <span className="font-mono text-[10px] text-neon-magenta text-right w-48 truncate" title={err.fixHint || err.message}>
+                <span className="font-mono text-[10px] text-brand-secondary text-right w-48 truncate" title={err.fixHint || err.message}>
                   {err.fixHint || err.message}
                 </span>
               ) : (
                 <button
                   onClick={() => handleReveal(err)}
-                  className="font-mono text-[10px] bg-border-subtle hover:bg-neon-cyan/20 hover:text-neon-cyan transition-colors px-2 py-1 rounded text-text-muted uppercase"
+                  className="font-mono text-[10px] bg-border-subtle hover:bg-brand-primary/20 hover:text-brand-primary transition-colors px-2 py-1 rounded text-text-muted uppercase"
                 >
                   Reveal (-50pts)
                 </button>

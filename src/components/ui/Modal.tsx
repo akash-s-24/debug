@@ -36,7 +36,7 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-md' 
                 <h2 className="font-heading text-2xl text-text-primary tracking-tight uppercase">{title}</h2>
                 <button
                   onClick={onClose}
-                  className="text-text-muted hover:text-neon-cyan transition-colors"
+                  className="text-text-muted hover:text-brand-primary transition-colors"
                 >
                   <span className="material-symbols-outlined text-[20px]">close</span>
                 </button>

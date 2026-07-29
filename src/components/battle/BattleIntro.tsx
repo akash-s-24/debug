@@ -69,10 +69,10 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
               animate={{ x: '-15vw', skewX: 0 }}
               className="absolute text-right"
             >
-              <div className="text-neon-cyan font-heading font-bold text-5xl md:text-6xl uppercase tracking-wider drop-shadow-[0_0_15px_rgba(34,233,225,0.5)]">
+              <div className="text-brand-primary font-heading font-bold text-5xl md:text-6xl uppercase tracking-wider drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                 {contestant1.name}
               </div>
-              <div className="text-text-primary mt-2 font-mono text-xl bg-neon-cyan/20 px-4 py-1 inline-block [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)] border border-neon-cyan/50 shadow-[0_0_15px_rgba(34,233,225,0.3)]">
+              <div className="text-text-primary mt-2 font-mono text-xl bg-brand-primary/20 px-4 py-1 inline-block [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)] border border-brand-primary/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                 CHALLENGER ONE
               </div>
             </motion.div>
@@ -83,10 +83,10 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
               animate={{ x: '15vw', skewX: 0 }}
               className="absolute text-left"
             >
-              <div className="text-neon-magenta font-heading font-bold text-5xl md:text-6xl uppercase tracking-wider drop-shadow-[0_0_15px_rgba(247,37,133,0.5)]">
+              <div className="text-brand-secondary font-heading font-bold text-5xl md:text-6xl uppercase tracking-wider drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]">
                 {contestant2.name}
               </div>
-              <div className="text-text-primary mt-2 font-mono text-xl bg-neon-magenta/20 px-4 py-1 inline-block [clip-path:polygon(10px_0,100%_0,100%_100%,0_100%,0_10px)] border border-neon-magenta/50 shadow-[0_0_15px_rgba(247,37,133,0.3)]">
+              <div className="text-text-primary mt-2 font-mono text-xl bg-brand-secondary/20 px-4 py-1 inline-block [clip-path:polygon(10px_0,100%_0,100%_100%,0_100%,0_10px)] border border-brand-secondary/50 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
                 CHALLENGER TWO
               </div>
             </motion.div>
@@ -141,7 +141,7 @@ export function BattleIntro({ contestant1, contestant2, challenge, onComplete }:
             animate={{ scale: 1, opacity: 1 }}
             exit={{ opacity: 0, scale: 1.2 }}
             transition={{ duration: 0.4 }}
-            className="absolute inset-0 flex items-center justify-center z-30 bg-neon-cyan"
+            className="absolute inset-0 flex items-center justify-center z-30 bg-brand-primary"
           >
             <div className="text-[8rem] md:text-[12rem] font-heading font-black text-void tracking-tighter italic">
               CODE!

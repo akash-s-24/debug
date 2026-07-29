@@ -9,13 +9,13 @@ interface BadgeProps {
 }
 
 const colorMap: Record<string, string> = {
-  primary: 'bg-transparent text-neon-cyan border-border-subtle hover:border-neon-cyan',
-  accent: 'bg-transparent text-neon-cyan border-border-subtle hover:border-neon-cyan',
-  success: 'bg-transparent text-neon-green border-border-subtle hover:border-neon-green',
+  primary: 'bg-transparent text-brand-primary border-border-subtle hover:border-brand-primary',
+  accent: 'bg-transparent text-brand-primary border-border-subtle hover:border-brand-primary',
+  success: 'bg-transparent text-brand-accent border-border-subtle hover:border-brand-accent',
   danger: 'bg-transparent text-danger-red border-border-subtle hover:border-danger-red',
   warning: 'bg-transparent text-warn-amber border-border-subtle hover:border-warn-amber',
   neutral: 'bg-transparent text-text-muted border-border-subtle hover:border-text-secondary',
-  cyan: 'bg-transparent text-neon-cyan border-border-subtle',
+  cyan: 'bg-transparent text-brand-primary border-border-subtle',
   magenta: 'bg-transparent text-danger-red border-border-subtle',
 };
 

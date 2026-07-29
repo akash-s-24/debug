@@ -1,17 +1,16 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Modern Obsidian & Multi-Color Developer Palette ── */
-  --color-void: #070709; /* Pitch black obsidian → sleek page/hero backgrounds */
-  --color-abyss: #10131B; /* Dark slate glass → card and panel backgrounds */
-  --color-surface: #181D29; /* Elevated glass surface */
+  /* ── Modern Professional Corporate Palette ── */
+  --color-void: #0A0A0B; /* Obsidian Base */
+  --color-abyss: #121214; /* Deep Surface */
+  --color-surface: #1C1C1F; /* Elevated Surface */
   
-  --color-neon-cyan: #38BDF8; /* Electric Sky Blue → primary CTA & active tabs */
-  --color-neon-violet: #8B5CF6; /* Vibrant Violet → AI features & secondary accents */
-  --color-neon-magenta: #EC4899; /* Cyber Pink → tags, badges & AI hints */
-  --color-neon-green: #10B981; /* Emerald Mint → live status, correct answers */
-  --color-warn-amber: #F59E0B; /* Warm Amber → countdown timers, warnings */
-  --color-danger-red: #EF4444; /* Crimson Red → errors, forfeits, urgent */
+  --color-brand-primary: #3b82f6; /* Blue 500 */
+  --color-brand-secondary: #6366f1; /* Violet 500 */
+  --color-brand-accent: #10b981; /* Emerald 500 */
+  --color-warn-amber: #F59E0B; /* Warm Amber */
+  --color-danger-red: #EF4444; /* Crimson Red */
   
   --color-text-primary: #F8FAFC; /* Crisp Ice White */
   --color-text-secondary: #94A3B8; /* Cool Slate Gray */
@@ -20,12 +19,12 @@
   --color-border-subtle: rgba(255, 255, 255, 0.08); /* Modern glassmorphism border */
 
   /* Fallback aliases for UI components that might still reference them */
-  --color-primary: #38BDF8;
-  --color-secondary: #8B5CF6;
-  --color-tertiary: #EC4899;
+  --color-primary: #3b82f6;
+  --color-secondary: #6366f1;
+  --color-tertiary: #10b981;
   --color-success: #10B981;
   --color-error: #EF4444;
-  --color-background: #070709;
+  --color-background: #0A0A0B;
   --color-on-surface: #F8FAFC;
   --color-on-surface-variant: #94A3B8;
   --color-outline: rgba(255, 255, 255, 0.08);
@@ -61,7 +60,7 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0); }
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px rgba(59, 130, 246, 0); }
   50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 16px rgba(139, 92, 246, 0.4); }
 }
 
@@ -92,7 +91,7 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  background: repeating-linear-gradient(180deg, rgba(56,189,248,0) 0, rgba(56,189,248,0) 2px, rgba(56,189,248,0.03) 2px, rgba(56,189,248,0.03) 3px);
+  background: repeating-linear-gradient(180deg, rgba(59,130,246,0) 0, rgba(59,130,246,0) 2px, rgba(59,130,246,0.03) 2px, rgba(59,130,246,0.03) 3px);
   mix-blend-mode: overlay;
 }
 
@@ -118,13 +117,13 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Glass surface -> True modern glassmorphism card */
 .glass-surface {
-  background: rgba(16, 19, 27, 0.7);
+  background: rgba(10, 10, 10, 0.7);
   backdrop-filter: blur(12px);
   border: 1px solid var(--color-border-subtle);
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 .glass-surface:hover {
-  background: rgba(24, 29, 41, 0.85);
+  background: rgba(23, 23, 23, 0.85);
   border-color: rgba(255, 255, 255, 0.15);
 }
 
@@ -137,8 +136,8 @@ h1, h2, h3, h4, h5, h6 {
 @media (prefers-reduced-motion: no-preference) {
   .card-hover:hover {
     transform: translateY(-4px);
-    border-color: var(--color-neon-cyan);
-    box-shadow: 0 8px 30px -10px rgba(56, 189, 248, 0.25);
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 8px 30px -10px rgba(59, 130, 246, 0.25);
   }
 }
 
@@ -170,12 +169,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 .hud-bracket:hover::before,
 .hud-bracket:hover::after {
-  border-color: var(--color-neon-cyan);
+  border-color: var(--color-brand-primary);
 }
 
 /* Focus Rings for Accessibility */
 *:focus-visible {
-  outline: 1px solid var(--color-neon-cyan);
+  outline: 1px solid var(--color-brand-primary);
   outline-offset: 2px;
 }
 

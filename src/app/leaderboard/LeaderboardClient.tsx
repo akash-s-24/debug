@@ -21,7 +21,7 @@ export function LeaderboardClient({ initialPlayers }: Props) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
       >
-        <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-abyss border border-border-subtle text-[11px] uppercase tracking-widest font-mono text-neon-cyan shadow-inner">
+        <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-abyss border border-border-subtle text-[11px] uppercase tracking-widest font-mono text-brand-primary shadow-inner">
           [ Global Rankings ]
         </div>
         <h1 className="text-4xl md:text-5xl font-display text-text-primary tracking-tight mb-4">
@@ -59,11 +59,11 @@ export function LeaderboardClient({ initialPlayers }: Props) {
                   className="hover:bg-abyss transition-colors group"
                 >
                   <td className="py-4 px-6 text-center">
-                    <span className={`text-sm font-mono tracking-widest ${user.rank <= 3 ? 'text-neon-magenta' : 'text-text-secondary'}`}>
+                    <span className={`text-sm font-mono tracking-widest ${user.rank <= 3 ? 'text-brand-secondary' : 'text-text-secondary'}`}>
                       #{user.rank}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-sm font-mono text-text-primary group-hover:text-neon-cyan transition-colors">
+                  <td className="py-4 px-6 text-sm font-mono text-text-primary group-hover:text-brand-primary transition-colors">
                     {user.name}
                   </td>
                   <td className="py-4 px-6">
@@ -74,7 +74,7 @@ export function LeaderboardClient({ initialPlayers }: Props) {
                   <td className="py-4 px-6 text-right text-sm font-mono text-text-secondary">
                     {user.wins}
                   </td>
-                  <td className="py-4 px-6 text-right text-sm font-mono font-bold text-neon-cyan">
+                  <td className="py-4 px-6 text-right text-sm font-mono font-bold text-brand-primary">
                     {user.points.toLocaleString()}
                   </td>
                 </motion.tr>

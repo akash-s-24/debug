@@ -67,16 +67,16 @@ export function HostDashboard({
           <h2 className="text-2xl font-display text-text-primary tracking-tight">Host Dashboard</h2>
           <div className="flex flex-wrap gap-2 md:gap-4 mt-2">
             <div className="text-text-secondary text-sm flex items-center gap-2 font-mono">
-              Room Code: <span className="text-neon-cyan font-mono bg-neon-cyan/5 px-2 py-0.5 border border-neon-cyan/20">{room.code}</span>
+              Room Code: <span className="text-brand-accent font-mono bg-brand-accent/5 px-2 py-0.5 border border-brand-accent/20">{room.code}</span>
             </div>
             <div className="flex gap-2">
-              <button onClick={handleCopyCode} className="text-[11px] uppercase tracking-widest font-mono text-text-muted hover:text-neon-cyan transition-colors bg-abyss hover:bg-neon-cyan/10 px-2 py-1 border border-border-subtle hover:border-neon-cyan">
+              <button onClick={handleCopyCode} className="text-[11px] uppercase tracking-widest font-mono text-text-muted hover:text-brand-primary transition-colors bg-abyss hover:bg-brand-primary/10 px-2 py-1 border border-border-subtle hover:border-brand-primary">
                 COPY_CODE
               </button>
-              <button onClick={handleCopyLink} className="text-[11px] uppercase tracking-widest font-mono text-text-muted hover:text-neon-cyan transition-colors bg-abyss hover:bg-neon-cyan/10 px-2 py-1 border border-border-subtle hover:border-neon-cyan">
+              <button onClick={handleCopyLink} className="text-[11px] uppercase tracking-widest font-mono text-text-muted hover:text-brand-primary transition-colors bg-abyss hover:bg-brand-primary/10 px-2 py-1 border border-border-subtle hover:border-brand-primary">
                 COPY_LINK
               </button>
-              <button onClick={() => setShowManagePlayers(true)} className="text-[11px] uppercase tracking-widest font-mono text-text-muted hover:text-neon-cyan transition-colors bg-abyss hover:bg-neon-cyan/10 px-2 py-1 border border-border-subtle hover:border-neon-cyan">
+              <button onClick={() => setShowManagePlayers(true)} className="text-[11px] uppercase tracking-widest font-mono text-text-muted hover:text-brand-primary transition-colors bg-abyss hover:bg-brand-primary/10 px-2 py-1 border border-border-subtle hover:border-brand-primary">
                 MANAGE
               </button>
             </div>
@@ -86,7 +86,7 @@ export function HostDashboard({
         <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4 items-start sm:items-center border-t border-border-subtle xl:border-none pt-4 xl:pt-0">
           <div className="text-left sm:text-center shrink-0">
             <div className="text-[10px] text-text-muted font-mono uppercase tracking-widest mb-1">Status</div>
-            <div className="text-neon-cyan font-mono uppercase text-xs tracking-widest bg-transparent px-3 py-1 border border-border-subtle">
+            <div className="text-brand-secondary font-mono uppercase text-xs tracking-widest bg-transparent px-3 py-1 border border-border-subtle">
               {room.status === 'battle' ? (isPaused ? 'Paused' : 'Live') : room.status}
             </div>
           </div>
@@ -111,7 +111,7 @@ export function HostDashboard({
       <div className="flex-1 min-h-0 flex flex-col gap-4">
         {contestants.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center bg-void border border-border-subtle shadow-inner p-8 hud-bracket">
-            <div className="font-mono text-[11px] text-neon-cyan mb-4 animate-pulse uppercase tracking-widest">
+            <div className="font-mono text-[11px] text-warn-amber mb-4 animate-pulse uppercase tracking-widest">
               [ Awaiting Connection ]
             </div>
             <h3 className="text-3xl font-display text-text-primary tracking-tight">Arena is open.</h3>

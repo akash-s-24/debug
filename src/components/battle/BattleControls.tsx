@@ -77,7 +77,7 @@ export function BattleControls({
         <select 
           value={selectedLayout} 
           onChange={handleLayoutChange}
-          className="bg-abyss border border-border-subtle text-text-primary px-3 py-1.5 rounded focus:outline-none focus:border-neon-cyan font-mono text-xs transition-colors appearance-none"
+          className="bg-abyss border border-border-subtle text-text-primary px-3 py-1.5 rounded focus:outline-none focus:border-brand-primary font-mono text-xs transition-colors appearance-none"
         >
           <option value="side-by-side">Side by Side</option>
           <option value="focus-left">Focus Left</option>

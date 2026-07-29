@@ -14,9 +14,9 @@ interface ContestantCardProps {
 
 export function ContestantCard({ user, color, stats, isActive, score }: ContestantCardProps) {
   const isCyan = color === 'cyan';
-  const glowClass = isCyan ? 'shadow-[0_0_15px_rgba(34,233,225,0.5)]' : 'shadow-[0_0_15px_rgba(247,37,133,0.5)]';
-  const borderClass = isCyan ? 'border-neon-cyan' : 'border-neon-magenta';
-  const textClass = isCyan ? 'text-neon-cyan' : 'text-neon-magenta';
+  const glowClass = isCyan ? 'shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'shadow-[0_0_15px_rgba(99,102,241,0.5)]';
+  const borderClass = isCyan ? 'border-brand-primary' : 'border-brand-secondary';
+  const textClass = isCyan ? 'text-brand-primary' : 'text-brand-secondary';
 
   return (
     <div className={`relative flex items-center gap-4 bg-abyss p-3 pr-6 border ${borderClass} ${isActive ? glowClass : ''} transition-all duration-300 [clip-path:polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,0_100%)]`}>
@@ -54,7 +54,7 @@ export function ContestantCard({ user, color, stats, isActive, score }: Contesta
       </div>
       
       {isActive && (
-        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-transparent via-current to-transparent opacity-50" style={{ color: isCyan ? 'var(--neon-cyan)' : 'var(--neon-magenta)' }} />
+        <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-transparent via-current to-transparent opacity-50" style={{ color: isCyan ? 'var(--brand-primary)' : 'var(--brand-secondary)' }} />
       )}
     </div>
   );

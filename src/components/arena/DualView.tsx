@@ -124,8 +124,8 @@ export function DualView({
       {layout === 'side-by-side' && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col items-center pointer-events-none">
           <div className="w-16 h-16 rounded-full bg-abyss border-2 border-border-subtle flex items-center justify-center relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/20 to-neon-magenta/20" />
-            <span className="font-heading font-black text-2xl italic text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-magenta">VS</span>
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20" />
+            <span className="font-heading font-black text-2xl italic text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">VS</span>
           </div>
         </div>
       )}

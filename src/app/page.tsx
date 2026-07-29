@@ -57,7 +57,7 @@ export default function LandingPage() {
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 shadow-none"
+                className="border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 shadow-none"
                 onClick={() => setShowJoinModal(true)}
               >
                 JOIN_BATTLE
@@ -66,8 +66,8 @@ export default function LandingPage() {
           </div>
 
           {/* Right: Terminal Mock */}
-          <div className="bg-[#10131B] border border-[#1E293B] rounded-md overflow-hidden shadow-[0_0_60px_rgba(16,185,129,0.08)] font-mono">
-            <div className="flex items-center gap-1.5 px-3.5 py-2.5 bg-black/40 border-b border-[#1E293B] text-[11px] text-slate-500 tracking-wide">
+          <div className="bg-[#121214] border border-[#121214] rounded-md overflow-hidden shadow-[0_0_60px_rgba(16,185,129,0.08)] font-mono">
+            <div className="flex items-center gap-1.5 px-3.5 py-2.5 bg-black/40 border-b border-[#121214] text-[11px] text-slate-500 tracking-wide">
               <div className="flex gap-[5px] mr-3">
                 <i className="w-2 h-2 rounded-full bg-red-500"></i>
                 <i className="w-2 h-2 rounded-full bg-amber-500"></i>
@@ -105,37 +105,37 @@ export default function LandingPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <div className="bg-[#10131B] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-sky-400/50 hover:shadow-[0_0_30px_rgba(56,189,248,0.15)] group">
+            <div className="bg-[#121214] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-sky-400/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] group">
               <div className="text-[10px] tracking-[0.18em] text-slate-500 mb-3.5 flex justify-between font-mono">
-                <span>// STEP 01</span><b className="text-[#38BDF8] font-bold">[init]</b>
+                <span>// STEP 01</span><b className="text-[#3b82f6] font-bold">[init]</b>
               </div>
               <h3 className="font-display text-2xl tracking-[-0.01em] text-slate-100 mb-2">
-                Configure <em className="italic text-[#38BDF8] font-normal">Loadout</em>
+                Configure <em className="italic text-[#3b82f6] font-normal">Loadout</em>
               </h3>
               <p className="text-[13px] leading-[1.55] text-slate-400 mb-4 font-mono">
                 Host a room, select a coding challenge, and configure the battle rules (language, timer, audience). Generate a secure 6-character room code to invite your opponent.
               </p>
               <div className="flex justify-between pt-3 border-t border-white/[0.08] text-[11px] text-slate-500 tracking-[0.04em] font-mono">
-                <span>Phase</span><b className="text-[#38BDF8] font-normal">Setup</b>
+                <span>Phase</span><b className="text-[#3b82f6] font-normal">Setup</b>
               </div>
             </div>
 
-            <div className="bg-[#10131B] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-pink-500/50 hover:shadow-[0_0_30px_rgba(236,72,153,0.15)] group">
+            <div className="bg-[#121214] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-pink-500/50 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] group">
               <div className="text-[10px] tracking-[0.18em] text-slate-500 mb-3.5 flex justify-between font-mono">
-                <span>// STEP 02</span><b className="text-[#EC4899] font-bold">[sync]</b>
+                <span>// STEP 02</span><b className="text-[#0d9488] font-bold">[sync]</b>
               </div>
               <h3 className="font-display text-2xl tracking-[-0.01em] text-slate-100 mb-2">
-                Connect <em className="italic text-[#EC4899] font-normal">Terminals</em>
+                Connect <em className="italic text-[#0d9488] font-normal">Terminals</em>
               </h3>
               <p className="text-[13px] leading-[1.55] text-slate-400 mb-4 font-mono">
                 Join as a contestant or spectator. Our Pusher + Redis architecture securely locks you into a low-latency socket room. Wait for the countdown sequence to conclude.
               </p>
               <div className="flex justify-between pt-3 border-t border-white/[0.08] text-[11px] text-slate-500 tracking-[0.04em] font-mono">
-                <span>Phase</span><b className="text-[#EC4899] font-normal">Connect</b>
+                <span>Phase</span><b className="text-[#0d9488] font-normal">Connect</b>
               </div>
             </div>
 
-            <div className="bg-[#10131B] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-amber-400/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] group">
+            <div className="bg-[#121214] p-7 rounded-xl border border-white/[0.08] relative transition-all duration-300 hover:border-amber-400/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] group">
               <div className="text-[10px] tracking-[0.18em] text-slate-500 mb-3.5 flex justify-between font-mono">
                 <span>// STEP 03</span><b className="text-[#F59E0B] font-bold">[exec]</b>
               </div>
@@ -154,9 +154,9 @@ export default function LandingPage() {
         </section>
 
         {/* CTA */}
-        <section className="relative py-24 px-6 text-center border-b border-white/[0.08] mb-10 overflow-hidden bg-[#070709]">
+        <section className="relative py-24 px-6 text-center border-b border-white/[0.08] mb-10 overflow-hidden bg-[#0A0A0B]">
           {/* Radial gradient glow of Blue + Magenta at low opacity behind Void Black */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-[#38BDF8]/15 to-[#EC4899]/15 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-[#3b82f6]/15 to-[#0d9488]/15 rounded-full blur-[120px] pointer-events-none" />
           
           <div className="relative z-10">
             <h2 className="font-display text-[40px] md:text-[88px] leading-[0.95] tracking-[-0.03em] text-slate-100 mb-6 text-balance">
@@ -172,7 +172,7 @@ export default function LandingPage() {
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="border border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 shadow-none"
+                className="border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10 font-mono font-bold tracking-wider bg-transparent transition-all duration-300 hover:-translate-y-1 shadow-none"
                 onClick={() => setShowJoinModal(true)}
               >
                 JOIN_BATTLE
@@ -188,7 +188,7 @@ export default function LandingPage() {
       {/* Join Battle Modal */}
       {showJoinModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#10131B] border border-white/[0.08] shadow-[0_0_60px_rgba(56,189,248,0.15)] w-full max-w-md p-6 relative hud-bracket rounded-xl">
+          <div className="bg-[#121214] border border-white/[0.08] shadow-[0_0_60px_rgba(59,130,246,0.15)] w-full max-w-md p-6 relative hud-bracket rounded-xl">
             <button 
               onClick={() => setShowJoinModal(false)}
               className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
@@ -229,7 +229,7 @@ export default function LandingPage() {
                     onClick={() => setJoinRole('contestant')}
                     className={`flex-1 py-2 font-mono text-xs uppercase tracking-widest border transition-colors ${
                       joinRole === 'contestant' 
-                        ? 'bg-[#38BDF8] text-black font-bold border-[#38BDF8]' 
+                        ? 'bg-[#3b82f6] text-black font-bold border-[#3b82f6]' 
                         : 'bg-transparent text-slate-400 border-white/[0.08] hover:border-slate-400'
                     }`}
                   >
@@ -240,7 +240,7 @@ export default function LandingPage() {
                     onClick={() => setJoinRole('spectator')}
                     className={`flex-1 py-2 font-mono text-xs uppercase tracking-widest border transition-colors ${
                       joinRole === 'spectator' 
-                        ? 'bg-[#38BDF8] text-black font-bold border-[#38BDF8]' 
+                        ? 'bg-[#3b82f6] text-black font-bold border-[#3b82f6]' 
                         : 'bg-transparent text-slate-400 border-white/[0.08] hover:border-slate-400'
                     }`}
                   >
