@@ -29,6 +29,7 @@ export function Navbar() {
           <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/">arena</Link>
           <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/leaderboard">leaderboard</Link>
           <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/create">create_battle</Link>
+          <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/about">about</Link>
         </div>
 
         <div className="text-slate-500 text-[11px] font-mono">

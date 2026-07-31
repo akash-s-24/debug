@@ -41,6 +41,7 @@ export default function LandingPage() {
             </div>
             
             <h1 className="font-display text-5xl md:text-[76px] leading-[0.95] tracking-[-0.03em] font-normal text-slate-100 mb-8 text-balance">
+              <span className="block text-xl md:text-3xl text-[#3b82f6] font-bold tracking-wider uppercase mb-4 text-shadow-sm">Debug Duel Arena</span>
               The Ultimate Arena for<br />
               <em className="italic text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-pink-500">Competitive Debugging.</em>
               <span className="inline-block w-[0.4em] h-[0.8em] bg-emerald-400 ml-1 mb-[-0.06em] animate-pulse"></span>
