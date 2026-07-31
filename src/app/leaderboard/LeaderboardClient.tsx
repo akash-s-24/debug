@@ -15,9 +15,18 @@ export function LeaderboardClient({ initialPlayers }: Props) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
+        className="text-center mb-12 relative"
       >
-        <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-abyss border border-border-subtle text-[11px] uppercase tracking-widest font-mono text-brand-primary shadow-inner">
+        <button
+          onClick={async () => {
+            await fetch('/api/stats/clear', { method: 'POST' });
+            window.location.reload();
+          }}
+          className="absolute top-0 right-0 bg-red-500/10 text-red-500 border border-red-500/50 px-4 py-2 text-xs font-mono uppercase tracking-widest hover:bg-red-500 hover:text-white transition-colors"
+        >
+          Force Clear Leaderboard
+        </button>
+        <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-abyss border border-border-subtle text-[11px] uppercase tracking-widest font-mono text-brand-primary shadow-inner mt-8 md:mt-0">
           [ Global Rankings ]
         </div>
         <h1 className="text-4xl md:text-5xl font-display text-text-primary tracking-tight mb-4">
