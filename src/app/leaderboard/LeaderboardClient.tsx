@@ -8,11 +8,7 @@ interface Props {
 }
 
 export function LeaderboardClient({ initialPlayers }: Props) {
-  const players = initialPlayers.length > 0 ? initialPlayers : [
-    { id: '1', rank: 1, name: 'Neo (Mock)', points: 12450, wins: 342, language: 'TypeScript' },
-    { id: '2', rank: 2, name: 'Trinity (Mock)', points: 11200, wins: 298, language: 'Python' },
-    { id: '3', rank: 3, name: 'Morpheus (Mock)', points: 10850, wins: 275, language: 'Go' },
-  ];
+  const players = initialPlayers;
 
   return (
     <>
@@ -50,35 +46,43 @@ export function LeaderboardClient({ initialPlayers }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle">
-              {players.map((user, i) => (
-                <motion.tr
-                  key={user.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * i + 0.2 }}
-                  className="hover:bg-abyss transition-colors group"
-                >
-                  <td className="py-4 px-6 text-center">
-                    <span className={`text-sm font-mono tracking-widest ${user.rank <= 3 ? 'text-brand-secondary' : 'text-text-secondary'}`}>
-                      #{user.rank}
-                    </span>
+              {players.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12 px-6 text-center text-sm font-mono text-text-muted">
+                    No hackers found on the leaderboard. Play a match to claim the #1 spot!
                   </td>
-                  <td className="py-4 px-6 text-sm font-mono text-text-primary group-hover:text-brand-primary transition-colors">
-                    {user.name}
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className="px-2.5 py-1 bg-transparent font-mono tracking-widest text-[10px] text-text-secondary border border-border-subtle">
-                      {user.language}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-right text-sm font-mono text-text-secondary">
-                    {user.wins}
-                  </td>
-                  <td className="py-4 px-6 text-right text-sm font-mono font-bold text-brand-primary">
-                    {user.points.toLocaleString()}
-                  </td>
-                </motion.tr>
-              ))}
+                </tr>
+              ) : (
+                players.map((user, i) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 * i + 0.2 }}
+                    className="hover:bg-abyss transition-colors group"
+                  >
+                    <td className="py-4 px-6 text-center">
+                      <span className={`text-sm font-mono tracking-widest ${user.rank <= 3 ? 'text-brand-secondary' : 'text-text-secondary'}`}>
+                        #{user.rank}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-sm font-mono text-text-primary group-hover:text-brand-primary transition-colors">
+                      {user.name}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className="px-2.5 py-1 bg-transparent font-mono tracking-widest text-[10px] text-text-secondary border border-border-subtle">
+                        {user.language}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-right text-sm font-mono text-text-secondary">
+                      {user.wins}
+                    </td>
+                    <td className="py-4 px-6 text-right text-sm font-mono font-bold text-brand-primary">
+                      {user.points.toLocaleString()}
+                    </td>
+                  </motion.tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
