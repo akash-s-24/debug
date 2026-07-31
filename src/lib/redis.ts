@@ -129,4 +129,22 @@ export async function getTopPlayers(limit: number = 50): Promise<LeaderboardUser
   return players;
 }
 
+export async function clearLeaderboard(): Promise<void> {
+  if (isFake) {
+    mockUsers.clear();
+    mockPoints.clear();
+    return;
+  }
+
+  const members = await redis!.zrange('leaderboard:points', 0, -1);
+  if (members.length > 0) {
+    const pipeline = redis!.pipeline();
+    for (const userId of members) {
+      pipeline.del(`user:${userId}`);
+    }
+    await pipeline.exec();
+  }
+  await redis!.del('leaderboard:points');
+}
+
 export { redis };
