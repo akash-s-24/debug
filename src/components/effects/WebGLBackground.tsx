@@ -175,11 +175,12 @@ export function WebGLBackground() {
     shaderElement.style.left = '0';
     shaderElement.style.zIndex = '-10';
     
-    containerRef.current.appendChild(shaderElement);
+    const container = containerRef.current;
+    container.appendChild(shaderElement);
 
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+      if (container) {
+        container.innerHTML = '';
       }
     };
   }, []);

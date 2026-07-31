@@ -173,6 +173,7 @@ export function EditorPanel({
           options={{
             readOnly: !isLocal,
             minimap: { enabled: false },
+            automaticLayout: true,
             fontSize: 14,
             fontFamily: "'JetBrains Mono', monospace",
             wordWrap: 'on',

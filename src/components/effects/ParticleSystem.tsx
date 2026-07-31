@@ -104,14 +104,15 @@ export function ParticleSystem() {
       
       animationFrameId = requestAnimationFrame(animateParticles);
     };
+    const container = containerRef.current;
     
     animateParticles();
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
-      if (containerRef.current) {
-        containerRef.current.innerHTML = ''; // Cleanup particles
+      if (container) {
+        container.innerHTML = ''; // Cleanup particles
       }
     };
   }, []);

@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { CodingStats } from '@/types';
 
 export function useCodeStats(userId: string) {
-  const [stats, setStats] = useState<CodingStats>({
+  const [stats, setStats] = useState<CodingStats>(() => ({
     userId,
     typingSpeed: 0,
     errorCount: 0,
@@ -14,7 +14,7 @@ export function useCodeStats(userId: string) {
     momentum: 'low',
     initialErrors: -1, // -1 means uninitialized
     errorsSolved: 0,
-  });
+  }));
 
   const keystrokesRef = useRef<number[]>([]);
   

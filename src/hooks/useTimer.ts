@@ -11,8 +11,6 @@ interface UseTimerReturn {
 }
 
 export function useTimer(room: Room | null): UseTimerReturn {
-  const [tick, setTick] = useState(0);
-
   const timerSeconds = room?.config?.timerSeconds || 900;
   const battleStartedAt = room?.battleStartedAt ?? 0;
   const pausedAt = room?.pausedAt ?? 0;
@@ -21,11 +19,15 @@ export function useTimer(room: Room | null): UseTimerReturn {
   const isRunning = room?.status === 'battle' && !room?.pausedAt;
   const isPaused = room?.status === 'paused' || (room?.status === 'battle' && !!room?.pausedAt);
 
+  const [currentNow, setCurrentNow] = useState<number | null>(null);
+
   // Force re-render every second if running
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentNow(Date.now());
     if (isRunning) {
       const interval = setInterval(() => {
-        setTick((t) => t + 1);
+        setCurrentNow(Date.now());
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -39,9 +41,9 @@ export function useTimer(room: Room | null): UseTimerReturn {
       const elapsed = Math.floor((pausedAt - battleStartedAt - totalPausedMs) / 1000);
       timeRemaining = Math.min(timerSeconds, Math.max(0, timerSeconds - elapsed));
     } else if (room.status === 'battle') {
-      // Running — compute from current time using Date.now() directly to avoid stale state jumps when totalPausedMs updates
-      const currentNow = Date.now();
-      const elapsed = Math.floor(Math.max(0, currentNow - battleStartedAt - totalPausedMs) / 1000);
+      // Running — compute from current time using safe currentNow
+      const safeNow = currentNow ?? battleStartedAt;
+      const elapsed = Math.floor(Math.max(0, safeNow - battleStartedAt - totalPausedMs) / 1000);
       timeRemaining = Math.min(timerSeconds, Math.max(0, timerSeconds - elapsed));
     } else if (room.status === 'finished') {
       timeRemaining = 0;

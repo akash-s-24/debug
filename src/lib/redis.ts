@@ -18,7 +18,7 @@ const ROOM_TTL = 24 * 60 * 60; // 24 hours in seconds
 
 export async function getRoom(roomIdOrCode: string): Promise<Room | null> {
   if (isFake) {
-    let room = mockRooms.get(roomIdOrCode);
+    const room = mockRooms.get(roomIdOrCode);
     if (room) return room;
     const actualId = mockCodes.get(roomIdOrCode.toUpperCase());
     if (actualId) return mockRooms.get(actualId) || null;
