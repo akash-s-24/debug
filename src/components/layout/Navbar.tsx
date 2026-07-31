@@ -26,10 +26,10 @@ export function Navbar() {
         </Link>
         
         <div className="hidden md:flex gap-6 justify-self-center text-slate-200 font-mono">
-          <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/">arena</Link>
-          <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/leaderboard">leaderboard</Link>
-          <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/create">create_battle</Link>
-          <Link className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/about">about</Link>
+          <Link title="Debug Duel Arena Homepage" className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/">arena</Link>
+          <Link title="View Live Coding Leaderboard" className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/leaderboard">leaderboard</Link>
+          <Link title="Create a Live Coding Battle" className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/create">create_battle</Link>
+          <Link title="About Debug Duel Arena" className="hover:text-emerald-400 hover:underline decoration-emerald-400 underline-offset-4 transition-all before:content-['['] before:text-slate-500 after:content-[']'] after:text-slate-500" href="/about">about</Link>
         </div>
 
         <div className="text-slate-500 text-[11px] font-mono">

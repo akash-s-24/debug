@@ -37,16 +37,35 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Debug Duel Arena",
-  "applicationCategory": "DeveloperApplication",
-  "operatingSystem": "Web",
-  "description": "An esports-style live coding battle platform where developers go head-to-head in real-time coding and debugging challenges.",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://debugduelarena.com/#website",
+      "url": "https://debugduelarena.com",
+      "name": "Debug Duel Arena",
+      "description": "An esports-style live coding battle platform where developers go head-to-head in real-time coding and debugging challenges.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Debug Duel Arena",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://debugduelarena.com/logo.png"
+        }
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://debugduelarena.com/#software",
+      "name": "Debug Duel Arena",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
 };
 
 export default function RootLayout({

@@ -154,6 +154,43 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* FAQ Section for SEO */}
+        <section className="max-w-[1440px] mx-auto px-6 pb-20 border-b border-white/[0.08] mb-20">
+          <div className="text-[11px] tracking-[0.18em] uppercase text-slate-500 mb-6 flex items-center gap-3 before:content-['╋'] before:text-emerald-400 font-mono">
+            // F.A.Q.
+          </div>
+          <h2 className="font-display text-[40px] md:text-[56px] leading-[0.95] tracking-[-0.025em] text-slate-100 mb-12 max-w-[900px] text-balance">
+            Frequently Asked Questions about <em className="italic text-[#3b82f6] font-normal">Debug Duel Arena</em>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-slate-300">
+            <div className="bg-[#121214] p-6 rounded-lg border border-white/[0.05]">
+              <h3 className="font-display text-xl mb-3 text-slate-100">What is a live coding battle?</h3>
+              <p className="text-sm leading-relaxed text-slate-400">
+                A live coding battle is a competitive programming format where two or more developers compete to solve algorithmic challenges or debug broken code in real-time. Debug Duel Arena provides a synchronized environment with integrated execution so you can test your skills against the clock.
+              </p>
+            </div>
+            <div className="bg-[#121214] p-6 rounded-lg border border-white/[0.05]">
+              <h3 className="font-display text-xl mb-3 text-slate-100">Does it support screen share duels?</h3>
+              <p className="text-sm leading-relaxed text-slate-400">
+                Yes! If you prefer using your own local IDE instead of our built-in Monaco editor, you can opt for a screen share duel. Hosts can monitor multiple contestant screens simultaneously using our ultra-low latency WebRTC integration.
+              </p>
+            </div>
+            <div className="bg-[#121214] p-6 rounded-lg border border-white/[0.05]">
+              <h3 className="font-display text-xl mb-3 text-slate-100">Is Debug Duel Arena free to use?</h3>
+              <p className="text-sm leading-relaxed text-slate-400">
+                Absolutely. Debug Duel Arena is a free platform built for the developer community. You don't even need to create an account to start hosting a coding battle—just generate a room code and share it with your opponents.
+              </p>
+            </div>
+            <div className="bg-[#121214] p-6 rounded-lg border border-white/[0.05]">
+              <h3 className="font-display text-xl mb-3 text-slate-100">What languages are supported?</h3>
+              <p className="text-sm leading-relaxed text-slate-400">
+                Our secure code execution engine supports major languages including JavaScript, TypeScript, Python, Go, and Rust. We continually update our runtime environments to ensure competitive parity during esports coding matches.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="relative py-24 px-6 text-center border-b border-white/[0.08] mb-10 overflow-hidden bg-[#0A0A0B]">
           {/* Radial gradient glow of Blue + Magenta at low opacity behind Void Black */}
