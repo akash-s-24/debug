@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { getClientId } from '@/lib/client-id';
-import { RoomConfig, DuelType } from '@/types';
-import { LANGUAGES, TIMER_PRESETS, DUEL_TYPES } from '@/lib/constants';
+import { RoomConfig, DuelType, RoomMode } from '@/types';
+import { LANGUAGES, TIMER_PRESETS, DUEL_TYPES, ROOM_MODES } from '@/lib/constants';
 import { Button } from '@/components/ui/Button';
 
 export default function CreateRoomPage() {
@@ -27,6 +27,7 @@ export default function CreateRoomPage() {
     duelType: 'debug-battle',
     maxContestants: 2,
     allowAudience: true,
+    roomMode: 'terminal',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,6 +135,41 @@ export default function CreateRoomPage() {
                       </div>
                     </div>
 
+                    {/* Room Mode Group */}
+                    <div className="space-y-4">
+                      <h3 className="font-display text-2xl text-text-primary tracking-tight border-b border-border-subtle pb-2">Room Mode</h3>
+                      <div className="flex flex-col gap-4">
+                        {ROOM_MODES.map((mode, index) => {
+                          const isSelected = config.roomMode === mode.value;
+                          const cardColor = index === 0 ? 'brand-primary' : 'brand-accent';
+                          return (
+                            <div
+                              key={mode.value}
+                              onClick={() => setConfig({...config, roomMode: mode.value as RoomMode})}
+                              className={`p-4 rounded border cursor-pointer flex items-center gap-4 group transition-all duration-300 ${isSelected ? `border-${cardColor} bg-${cardColor}/5 scale-[1.02]` : 'border-border-subtle bg-surface hover:border-text-muted hover:scale-[1.01]'}`}
+                            >
+                              <div className={`w-12 h-12 rounded flex items-center justify-center shrink-0 border ${isSelected ? `bg-${cardColor}/10 border-${cardColor}/30 text-${cardColor}` : 'bg-abyss border-border-subtle text-text-muted group-hover:text-text-secondary'}`}>
+                                <span className="material-symbols-outlined">{mode.icon}</span>
+                              </div>
+                              <div className="flex-1">
+                                <div className={`font-display tracking-tight text-xl ${isSelected ? `text-${cardColor}` : 'text-text-primary'}`}>
+                                  {mode.label}
+                                </div>
+                                <div className="font-mono text-[11px] leading-tight text-text-secondary mt-1">
+                                  {mode.description}
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <div className={`text-${cardColor}`}>
+                                  <span className="material-symbols-outlined">check_circle</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
                     {/* Challenge Group */}
                     <div className="space-y-4">
                       <h3 className="font-display text-2xl text-text-primary tracking-tight border-b border-border-subtle pb-2">Challenge Parameters</h3>
@@ -157,15 +193,18 @@ export default function CreateRoomPage() {
                           className="w-full bg-[#121214] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#3b82f6] focus:outline-none transition-colors min-h-[80px] shadow-none"
                         />
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Initial Debug Code (Optional)</label>
-                        <textarea
-                          placeholder="Provide the buggy code..."
-                          value={config.initialCode || ''}
-                          onChange={(e) => setConfig({...config, initialCode: e.target.value})}
-                          className="w-full bg-[#121214] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#3b82f6] focus:outline-none transition-colors min-h-[120px] shadow-none"
-                        />
-                      </div>
+                      
+                      {config.roomMode === 'terminal' && (
+                        <div className="flex flex-col gap-1.5">
+                          <label className="font-mono text-xs text-text-muted uppercase tracking-widest">Initial Debug Code (Optional)</label>
+                          <textarea
+                            placeholder="Provide the buggy code..."
+                            value={config.initialCode || ''}
+                            onChange={(e) => setConfig({...config, initialCode: e.target.value})}
+                            className="w-full bg-[#121214] border border-white/[0.12] rounded px-4 py-3 font-mono text-sm text-white placeholder:text-slate-500 focus:border-[#3b82f6] focus:outline-none transition-colors min-h-[120px] shadow-none"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Environment Group */}
@@ -282,6 +321,8 @@ export default function CreateRoomPage() {
                   
                   <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-brand-secondary relative z-10">
                     <span className="bg-brand-secondary/10 px-2 py-1 rounded border border-brand-secondary/20">{selectedType}</span>
+                    <span className="text-text-muted">•</span>
+                    <span className="text-brand-primary">{config.roomMode === 'terminal' ? 'Terminal' : 'Screen Share'}</span>
                     <span className="text-text-muted">•</span>
                     <span className="text-text-primary">{selectedLang}</span>
                     <span className="text-text-muted">•</span>

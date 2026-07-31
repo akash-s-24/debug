@@ -6,6 +6,9 @@ import { ChallengeBar } from '@/components/battle/ChallengeBar';
 import { EditorPanel } from '@/components/battle/EditorPanel';
 import { HintEngine } from '@/components/battle/HintEngine';
 import { HostDashboard } from '@/components/battle/HostDashboard';
+import { ScreenShareHostView } from '@/components/battle/ScreenShareHostView';
+import { ScreenSharePanel } from '@/components/battle/ScreenSharePanel';
+import { TimerExpiredOverlay } from '@/components/battle/TimerExpiredOverlay';
 import { LiveStats } from '@/components/battle/LiveStats';
 import { DualView } from '@/components/arena/DualView';
 import { BattleIntro } from '@/components/battle/BattleIntro';
@@ -17,6 +20,7 @@ import { useCodeStats } from '@/hooks/useCodeStats';
 import { useReactions } from '@/hooks/useReactions';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useTimer } from '@/hooks/useTimer';
+import { useScreenShare } from '@/hooks/useScreenShare';
 import { getClientId } from '@/lib/client-id';
 import { LayoutMode, UserRole, CodingStats } from '@/types';
 
@@ -33,7 +37,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   const { room, stats: remoteStats, codes: remoteCodes, joinRoom, leaveRoom, updateStats, broadcastClientEvent, error: roomError } = useRoom(pusher);
   const { reactions } = useReactions(roomId);
   const { timeRemaining, isRunning, isPaused } = useTimer(room);
-  const { playStart, playWarning, playAlarm } = useSoundEffects();
+  const { playStart, playWarning, playStop } = useSoundEffects();
+  const { isSharing, localStream, remoteStreams, startSharing, stopSharing, freezeAllStreams } = useScreenShare(pusher, roomId, clientId, name);
   
   // Local code and stats tracking
   const myUserId = room?.contestants.find(c => c.clientId === clientId)?.id || room?.host.id || 'temp';
@@ -160,9 +165,12 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
   // Handle timer hitting zero
   useEffect(() => {
     if (timeRemaining === 0 && isRunning && !isPaused && room?.status === 'battle') {
-      playAlarm();
+      playStop();
+      if (room?.config?.roomMode === 'screenshare') {
+        freezeAllStreams();
+      }
     }
-  }, [timeRemaining, isRunning, isPaused, room?.status, playAlarm]);
+  }, [timeRemaining, isRunning, isPaused, room?.status, room?.config?.roomMode, playStop, freezeAllStreams]);
 
   useEffect(() => {
     if (isConnected && pusher) {
@@ -284,6 +292,9 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
     // ── HOST DASHBOARD ──────────────────────────────────────────────────
     return (
       <div className="relative min-h-screen bg-background">
+        {timeRemaining === 0 && isRunning && room?.status === 'battle' && (
+          <TimerExpiredOverlay />
+        )}
         <div className="relative z-10 h-full">
           {showIntro && room.contestants.length >= 2 && (
             <BattleIntro
@@ -305,15 +316,26 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
               onExit={handleExit}
               isHost={true}
             />
-            <HostDashboard 
-              room={room}
-              stats={remoteStats}
-              remoteCodes={remoteCodes}
-              timeRemaining={timeRemaining}
-              isRunning={isRunning}
-              isPaused={isPaused}
-              onAction={handleHostAction}
-            />
+            {room.config.roomMode === 'screenshare' ? (
+              <ScreenShareHostView
+                room={room}
+                remoteStreams={remoteStreams}
+                timeRemaining={timeRemaining}
+                isRunning={isRunning}
+                isPaused={isPaused}
+                onAction={handleHostAction}
+              />
+            ) : (
+              <HostDashboard 
+                room={room}
+                stats={remoteStats}
+                remoteCodes={remoteCodes}
+                timeRemaining={timeRemaining}
+                isRunning={isRunning}
+                isPaused={isPaused}
+                onAction={handleHostAction}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -343,6 +365,9 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
 
   return (
     <div className="relative min-h-screen bg-background">
+      {timeRemaining === 0 && isRunning && room?.status === 'battle' && (
+        <TimerExpiredOverlay />
+      )}
       <div className="relative z-10 h-full">
         {showIntro && room.contestants.length >= 2 && (
           <BattleIntro
@@ -370,8 +395,24 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
             userName={myUser.name}
           />
 
-          <div className="flex flex-1 overflow-hidden p-2 gap-2">
-            {/* Main Battle Area */}
+          {room.config.roomMode === 'screenshare' ? (
+            <ScreenSharePanel
+              challengeTitle={room.config.challenge}
+              challengeDescription={room.config.challengeDescription}
+              language={room.config.language}
+              isSharing={isSharing}
+              localStream={localStream}
+              remoteStreams={remoteStreams}
+              onStartSharing={startSharing}
+              onStopSharing={stopSharing}
+              timeRemaining={timeRemaining}
+              formatTime={(s) => `${s || 0}s`}
+              isRunning={isRunning}
+              isBattleStarted={room.status === 'battle'}
+            />
+          ) : (
+            <div className="flex flex-1 overflow-hidden p-2 gap-2">
+              {/* Main Battle Area */}
             <div className="flex-1 flex flex-col min-w-0">
               {layout === 'side-by-side' && user2 && myUser.role !== 'contestant' ? (
                 <DualView
@@ -457,7 +498,8 @@ export default function BattlePage({ params }: { params: Promise<{ roomId: strin
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

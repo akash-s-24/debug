@@ -64,16 +64,57 @@ export async function addIceCandidate(
 
 /**
  * Get recommended display media constraints for screen sharing.
+ * Optimised for buttery-smooth, low-latency screen capture.
  */
 export function getMediaConstraints(): DisplayMediaStreamOptions {
   return {
     video: {
       width: { ideal: 1920, max: 1920 },
       height: { ideal: 1080, max: 1080 },
-      frameRate: { ideal: 30, max: 30 },
+      frameRate: { ideal: 30, max: 60 },
     },
     audio: false,
+  } as DisplayMediaStreamOptions;
+}
+
+/**
+ * Apply content hint to a video track so the encoder optimises for
+ * screen content (sharp text / UI) rather than camera footage.
+ */
+export function applyScreenContentHint(track: MediaStreamTrack): void {
+  if ('contentHint' in track) {
+    track.contentHint = 'detail';
+  }
+}
+
+/**
+ * Configure an RTCRtpSender for ultra-low-latency screen sharing.
+ * Sets high bitrate, high priority, and maintain-framerate degradation.
+ */
+export async function configureForLowLatency(
+  sender: RTCRtpSender,
+): Promise<void> {
+  const params = sender.getParameters();
+  if (!params.encodings || params.encodings.length === 0) {
+    params.encodings = [{}];
+  }
+
+  params.encodings[0] = {
+    ...params.encodings[0],
+    maxBitrate: 6_000_000,        // 6 Mbps for crisp screen content
+    maxFramerate: 30,             // Smooth 30fps minimum encode
+    priority: 'high',             // Prioritise this stream
+    networkPriority: 'high' as RTCPriorityType,
   };
+
+  // Tell the encoder to drop resolution before dropping frames
+  // degradationPreference is not in all TS libs yet
+  if (params.degradationPreference !== undefined || true) {
+    // @ts-ignore
+    params.degradationPreference = 'maintain-framerate';
+  }
+
+  await sender.setParameters(params);
 }
 
 /**

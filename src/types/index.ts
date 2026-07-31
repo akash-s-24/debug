@@ -3,6 +3,7 @@ export type RoomStatus = 'waiting' | 'ready' | 'countdown' | 'battle' | 'paused'
 export type UserRole = 'host' | 'contestant' | 'viewer' | 'judge';
 export type DuelType = 'debug-battle' | 'code-sprint' | 'hackathon' | 'interview' | 'freestyle';
 export type LayoutMode = 'side-by-side' | 'focus-left' | 'focus-right' | 'vertical' | 'quad';
+export type RoomMode = 'terminal' | 'screenshare';
 
 export interface User {
   id: string;
@@ -25,6 +26,7 @@ export interface RoomConfig {
   allowAudience: boolean;
   password?: string;
   initialErrors?: number;
+  roomMode: RoomMode;
 }
 
 export interface Room {

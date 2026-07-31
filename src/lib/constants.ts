@@ -1,4 +1,4 @@
-import type { DuelType, RoomConfig } from '@/types';
+import type { DuelType, RoomConfig, RoomMode } from '@/types';
 
 // WebRTC ICE servers for NAT traversal
 export const ICE_SERVERS: RTCIceServer[] = [
@@ -61,6 +61,27 @@ export const DUEL_TYPES: {
   },
 ];
 
+// Room mode definitions
+export const ROOM_MODES: {
+  value: RoomMode;
+  label: string;
+  description: string;
+  icon: string;
+}[] = [
+  {
+    value: 'terminal',
+    label: 'Terminal Mode',
+    description: 'In-browser Monaco editor with code execution. Players write & run code directly in the app.',
+    icon: 'terminal',
+  },
+  {
+    value: 'screenshare',
+    label: 'Screen Share Mode',
+    description: 'Players share their screen and use their own IDE (VS Code, PyCharm, etc). Great for beginners.',
+    icon: 'screen_share',
+  },
+];
+
 // Timer presets in seconds
 export const TIMER_PRESETS = [
   { value: 300, label: '5 min', shortLabel: '5m' },
@@ -84,6 +105,7 @@ export const DEFAULT_ROOM_CONFIG: RoomConfig = {
   duelType: 'debug-battle',
   maxContestants: 2,
   allowAudience: true,
+  roomMode: 'terminal',
 };
 
 // Arena color theme

@@ -18,9 +18,27 @@ export function useSoundEffects() {
   const playAlarm = useCallback(() => {
     const audio = new Audio('/sounds/alarm.wav');
     audio.volume = 0.5;
-    // Loop the alarm 3 times by playing it sequentially or just let it play its 2s duration
     audio.play().catch(e => console.log('Audio play failed:', e));
   }, []);
 
-  return { playStart, playWarning, playAlarm };
+  const playStop = useCallback(() => {
+    // 1. Play alarm sound at high volume
+    const audio = new Audio('/sounds/alarm.wav');
+    audio.volume = 0.9;
+    audio.play().catch(e => console.log('Audio play failed:', e));
+
+    // 2. Speech synthesis: say "Stop" with a deep, authoritative voice
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      // Small delay so the alarm beep is heard first
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance('Stop');
+        utterance.rate = 0.8;
+        utterance.pitch = 0.6;
+        utterance.volume = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }, 500);
+    }
+  }, []);
+
+  return { playStart, playWarning, playAlarm, playStop };
 }
